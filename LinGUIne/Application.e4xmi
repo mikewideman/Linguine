@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="__wD4oDdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ide.application" bindingContexts="__wD4qTdyEeOR8_lurf-ldg">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="__wD4oTdyEeOR8_lurf-ldg" label="LinGUIne" width="500" height="400">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="__wD4wDdyEeOR8_lurf-ldg">
+      <children xsi:type="advanced:Perspective" xmi:id="__wD4wTdyEeOR8_lurf-ldg">
+        <children xsi:type="basic:PartSashContainer" xmi:id="__wD4wjdyEeOR8_lurf-ldg">
+          <children xsi:type="basic:PartStack" xmi:id="__wD4wzdyEeOR8_lurf-ldg">
+            <children xsi:type="basic:Part" xmi:id="__wD4xDdyEeOR8_lurf-ldg" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.SamplePart" label="Sample Part"/>
+          </children>
+        </children>
+      </children>
+    </children>
+    <mainMenu xmi:id="__wD4uTdyEeOR8_lurf-ldg" elementId="menu:org.eclipse.ui.main.menu">
+      <children xsi:type="menu:Menu" xmi:id="__wD4ujdyEeOR8_lurf-ldg" label="File">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__wD4uzdyEeOR8_lurf-ldg" label="Open" iconURI="platform:/plugin/LinGUIne/icons/sample.gif" command="__wD4sDdyEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__wD4vDdyEeOR8_lurf-ldg" label="Save" iconURI="platform:/plugin/LinGUIne/icons/save_edit.gif" command="__wD4szdyEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__wD4vTdyEeOR8_lurf-ldg" label="Quit" command="__wD4rDdyEeOR8_lurf-ldg"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="__wD4vjdyEeOR8_lurf-ldg" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__wD4vzdyEeOR8_lurf-ldg" label="About" command="__wD4tjdyEeOR8_lurf-ldg"/>
+      </children>
+    </mainMenu>
+    <trimBars xmi:id="__wEfsDdyEeOR8_lurf-ldg">
+      <children xsi:type="menu:ToolBar" xmi:id="__wEfsTdyEeOR8_lurf-ldg" elementId="toolbar:org.eclipse.ui.main.toolbar">
+        <children xsi:type="menu:HandledToolItem" xmi:id="__wEfsjdyEeOR8_lurf-ldg" iconURI="platform:/plugin/LinGUIne/icons/sample.gif" command="__wD4sDdyEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="__wEfszdyEeOR8_lurf-ldg" iconURI="platform:/plugin/LinGUIne/icons/save_edit.gif" command="__wD4szdyEeOR8_lurf-ldg"/>
+      </children>
+    </trimBars>
+  </children>
+  <handlers xmi:id="__wD4rTdyEeOR8_lurf-ldg" elementId="LinGUIne.handler.quitCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.QuitHandler" command="__wD4rDdyEeOR8_lurf-ldg"/>
+  <handlers xmi:id="__wD4sTdyEeOR8_lurf-ldg" elementId="LinGUIne.handler.openCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.OpenHandler" command="__wD4sDdyEeOR8_lurf-ldg"/>
+  <handlers xmi:id="__wD4tDdyEeOR8_lurf-ldg" elementId="LinGUIne.handler.saveCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.SaveHandler" command="__wD4szdyEeOR8_lurf-ldg"/>
+  <handlers xmi:id="__wD4tzdyEeOR8_lurf-ldg" elementId="LinGUIne.handler.aboutCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.AboutHandler" command="__wD4tjdyEeOR8_lurf-ldg"/>
+  <bindingTables xmi:id="__wD4rjdyEeOR8_lurf-ldg" bindingContext="__wD4qTdyEeOR8_lurf-ldg">
+    <bindings xmi:id="__wD4rzdyEeOR8_lurf-ldg" keySequence="M1+Q" command="__wD4rDdyEeOR8_lurf-ldg"/>
+    <bindings xmi:id="__wD4sjdyEeOR8_lurf-ldg" keySequence="M1+O" command="__wD4sDdyEeOR8_lurf-ldg"/>
+    <bindings xmi:id="__wD4tTdyEeOR8_lurf-ldg" keySequence="M1+S" command="__wD4szdyEeOR8_lurf-ldg"/>
+    <bindings xmi:id="__wD4uDdyEeOR8_lurf-ldg" keySequence="M1+A" command="__wD4tjdyEeOR8_lurf-ldg"/>
+  </bindingTables>
+  <rootContext xmi:id="__wD4qTdyEeOR8_lurf-ldg" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="__wD4qjdyEeOR8_lurf-ldg" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
+    <children xmi:id="__wD4qzdyEeOR8_lurf-ldg" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <commands xmi:id="__wD4rDdyEeOR8_lurf-ldg" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
+  <commands xmi:id="__wD4sDdyEeOR8_lurf-ldg" elementId="LinGUIne.open" commandName="openCommand"/>
+  <commands xmi:id="__wD4szdyEeOR8_lurf-ldg" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
+  <commands xmi:id="__wD4tjdyEeOR8_lurf-ldg" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
+  <addons xmi:id="__wD4ojdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="__wD4ozdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="__wD4pDdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="__wD4pTdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="__wD4pjdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="__wD4pzdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="__wD4qDdyEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+</application:Application>
