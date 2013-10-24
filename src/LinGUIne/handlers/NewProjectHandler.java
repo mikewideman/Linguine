@@ -13,7 +13,19 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * Handler for creating a new Project.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewProjectHandler {
+	
+	/**
+	 * Prompts the user for a name and then creates a new Project of the given
+	 * name in the workspace.
+	 * 
+	 * @param shell	The currently active Shell.
+	 */
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		InputDialog projectNamePrompt = new InputDialog(shell, "New Project",

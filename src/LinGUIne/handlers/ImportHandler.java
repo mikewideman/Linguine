@@ -16,7 +16,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * Handler for importing files into a Project in the workspace.
+ * 
+ * @author Kyle Mullins
+ */
 public class ImportHandler {
+	
+	/**
+	 * Prompts the user for one or more files to import into a Project and
+	 * then copies them into the workspace.
+	 * 
+	 * @param shell	The currently active Shell.
+	 */
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
@@ -27,6 +39,7 @@ public class ImportHandler {
 			String[] chosenFiles = dialog.getFileNames();
 			IPath destPath = Platform.getLocation();
 			
+			//Copy selected files into the workspace
 			for(String file: chosenFiles) {
 				Path sourceFile = new File(sourceDir + "\\" + file).toPath();
 				Path destFile = destPath.append(file).toFile().toPath();
