@@ -15,6 +15,10 @@
                name="applicationCSS"
                value="platform:/plugin/LinGUIne/css/default.css">
          </property>
+         <property
+               name="appName"
+               value="LinGUIne">
+         </property>
       </product>
    </extension>
 
