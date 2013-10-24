@@ -3,7 +3,10 @@
   <children xsi:type="basic:TrimmedWindow" xmi:id="_5qnu8TdzEeOR8_lurf-ldg" label="LinGUIne" width="500" height="400">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_5qnvEDdzEeOR8_lurf-ldg">
       <children xsi:type="advanced:Perspective" xmi:id="_5qnvETdzEeOR8_lurf-ldg">
-        <children xsi:type="basic:PartSashContainer" xmi:id="_5qnvEjdzEeOR8_lurf-ldg">
+        <children xsi:type="basic:PartSashContainer" xmi:id="_5qnvEjdzEeOR8_lurf-ldg" horizontal="true">
+          <children xsi:type="basic:PartStack" xmi:id="_wi7UEDt4EeOb2KrfPNKZWQ" elementId="linguine.partstack.0">
+            <children xsi:type="basic:Part" xmi:id="_FaN88DuCEeOb2KrfPNKZWQ" elementId="linguine.part.0" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.ProjectExplorer" label="Project Explorer"/>
+          </children>
           <children xsi:type="basic:PartStack" xmi:id="_5qnvEzdzEeOR8_lurf-ldg">
             <children xsi:type="basic:Part" xmi:id="_5qnvFDdzEeOR8_lurf-ldg" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.SamplePart" label="Sample Part"/>
           </children>
@@ -15,6 +18,9 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvCzdzEeOR8_lurf-ldg" label="Open" iconURI="platform:/plugin/LinGUIne/icons/sample.gif" command="_5qnvADdzEeOR8_lurf-ldg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvDDdzEeOR8_lurf-ldg" label="Save" iconURI="platform:/plugin/LinGUIne/icons/save_edit.gif" command="_5qnvAzdzEeOR8_lurf-ldg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvDTdzEeOR8_lurf-ldg" label="Quit" command="_5qnu_DdzEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_EQPC0DuSEeOsebD9DszETw" elementId="linguine.handledmenuitem.0" label="Import..." command="_qikdoDxIEeOsebD9DszETw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_efmSsDuSEeOsebD9DszETw" elementId="linguine.handledmenuitem.1" label="Export..."/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_xzTYADuSEeOsebD9DszETw" elementId="linguine.handledmenuitem.2" label="New Project..."/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_5qnvDjdzEeOR8_lurf-ldg" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvDzdzEeOR8_lurf-ldg" label="About" command="_5qnvBjdzEeOR8_lurf-ldg"/>
@@ -31,6 +37,7 @@
   <handlers xmi:id="_5qnvATdzEeOR8_lurf-ldg" elementId="LinGUIne.handler.openCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.OpenHandler" command="_5qnvADdzEeOR8_lurf-ldg"/>
   <handlers xmi:id="_5qnvBDdzEeOR8_lurf-ldg" elementId="LinGUIne.handler.saveCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.SaveHandler" command="_5qnvAzdzEeOR8_lurf-ldg"/>
   <handlers xmi:id="_5qnvBzdzEeOR8_lurf-ldg" elementId="LinGUIne.handler.aboutCommand" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.AboutHandler" command="_5qnvBjdzEeOR8_lurf-ldg"/>
+  <handlers xmi:id="_oavOcDxIEeOsebD9DszETw" elementId="linguine.handler.0" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportHandler" command="_qikdoDxIEeOsebD9DszETw"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvAjdzEeOR8_lurf-ldg" keySequence="M1+O" command="_5qnvADdzEeOR8_lurf-ldg"/>
@@ -45,6 +52,7 @@
   <commands xmi:id="_5qnvADdzEeOR8_lurf-ldg" elementId="LinGUIne.open" commandName="openCommand"/>
   <commands xmi:id="_5qnvAzdzEeOR8_lurf-ldg" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
   <commands xmi:id="_5qnvBjdzEeOR8_lurf-ldg" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
+  <commands xmi:id="_qikdoDxIEeOsebD9DszETw" elementId="linguine.command.0" commandName="importCommand"/>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_5qnu8zdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_5qnu9DdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
