@@ -27,7 +27,7 @@ public class ProjectExplorer {
 		tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		tree.setContentProvider(new ViewContentProvider());
 		tree.setLabelProvider(new ViewLabelProvider());
-//		tree.setInput(File.listRoots());
+//		tree.setFilters();
 		tree.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 		tree.setInput(Platform.getLocation().toFile().listFiles());
 	}
@@ -42,7 +42,10 @@ public class ProjectExplorer {
 	}
 
 	class ViewContentProvider implements ITreeContentProvider {
+		private File[] files;
+		
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+			files = (File[])newInput;
 		}
 
 		@Override
@@ -51,7 +54,8 @@ public class ProjectExplorer {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			return (File[]) inputElement;
+//			return (File[]) inputElement;
+			return files;
 		}
 
 		@Override
