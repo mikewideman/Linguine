@@ -15,58 +15,67 @@ import java.util.Map;
 public class MockLibrary {
 
 	String libName;
-	List<String> libFeatures;
-	Map<String, List<String>> featureFunctionMap =  new HashMap<String,List<String>>();
+	Map<String, String> featureFunctionMap =  new HashMap<String,String>();
 	
-	public MockLibrary(String libName, List<String> libFeatures, Map<String, List<String>> featFunctions){
+	public MockLibrary(String libName, List<String> libFeatures, Map<String, String> featFunctions){
 		this.libName = libName;
 		this.featureFunctionMap = featFunctions;
 	}
 	
 	public MockLibrary(){
-		this.libFeatures = new ArrayList<String>();
-		this.featureFunctionMap = new HashMap<String, List<String>>();
+		this.featureFunctionMap = new HashMap<String, String>();
 	}
 	
 	public void setLibName(String libName) {
 		this.libName = libName;
 	}
-
-	public List<String> getLibFeatures() {
-		return libFeatures;
-	}
-
-	public void setLibFeatures(List<String> libFeatures) {
-		this.libFeatures = libFeatures;
-	}
-
-	public Map<String, List<String>> getFeatureFunctionMap() {
-		return this.featureFunctionMap;
-	}
-
-	public void setFeatureFunctionMap(Map<String, List<String>> featureFunctions) {
-		this.featureFunctionMap = featureFunctions;
+	
+	public String getLibName(){
+		return this.libName;
 	}
 	
-	public void addLibFeature(String nFeat){
-		sortAdd(nFeat, this.libFeatures) ;
+	public  Map<String,String> getFeatureFunctionMap(){
+		return this.featureFunctionMap;
 	}
-	/**
-	 * list add function sorted by index where i 0,1,2 etc. = Aaron, Abel, Bob etc.
-	 * If two words are equivalent according to String.compareTo, the newest word takes precedence
-	 * @param input the string being added to the list.
-	 * @param libFeatures - the list being added to.
-	 */
-	public void sortAdd(String input, List<String> libFeatures){
-		for(String libFeature : libFeatures){
-			int compareValue = input.compareTo(libFeature);
-			if(compareValue >= 0){
-				libFeatures.add(libFeatures.indexOf(libFeature), input);
-				return;
-			}
-		}
-		libFeatures.add(libFeatures.size(), input);
+	
+	public void setFeatureFunctionMap(Map<String,String> feats){
+		this.featureFunctionMap = feats;
 	}
+
+
+	
+	public static ArrayList<MockLibrary> generateDemoLibs(){
+		ArrayList<MockLibrary> demoLibs = new ArrayList<MockLibrary>();
+		MockLibrary stan = new MockLibrary();
+		MockLibrary other = new MockLibrary();
+		stan.setLibName("Stanford NLP");
+		other.setLibName("Library X");
+		HashMap<String,String> stanFeatsAndScripts = new HashMap<String,String>();
+		stanFeatsAndScripts.put("Part of Speech Analysis", "Stanford NLP PoS Algorithm");
+		stanFeatsAndScripts.put("Normalization", "Stanford NLP Normalization Algorithm");
+		stanFeatsAndScripts.put("Tokenization", "Stanford NLP Tokenization Algorithm, will separate file into tokens specified by delimiter");
+		stanFeatsAndScripts.put("Sentiment Analysis", "Stanford NLP Sentiment Analysis");
+		
+		stan.setFeatureFunctionMap(stanFeatsAndScripts);
+		
+		HashMap<String,String> oFeatsAndScripts = new HashMap<String,String>();
+		oFeatsAndScripts.put("Part of Speech Analysis", "Library X PoS Algorithm");
+		oFeatsAndScripts.put("Normalization", "Library X Normalization Algorithm");
+		oFeatsAndScripts.put("Tokenization", "Library X Tokenization Algorithm, will separate file into tokens specified by delimiter");
+		oFeatsAndScripts.put("Sentiment Analysis", "Library X Sentiment Analysis");
+		oFeatsAndScripts.put("New and Exciting Analysis", "Library X's New and Exciting Analysis!");
+		
+		other.setFeatureFunctionMap(oFeatsAndScripts);
+		demoLibs.add(stan);
+		demoLibs.add(other);
+		
+		return demoLibs;
+		
+	}
+
+
+
+
 	
 
 }
