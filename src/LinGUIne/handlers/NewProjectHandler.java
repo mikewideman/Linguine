@@ -1,17 +1,18 @@
 package LinGUIne.handlers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import javax.inject.Named;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
+
+import LinGUIne.model.Project;
+import LinGUIne.wizards.NewProjectWizard;
 
 /**
  * Handler for creating a new Project.
@@ -21,24 +22,24 @@ import org.eclipse.swt.widgets.Shell;
 public class NewProjectHandler {
 	
 	/**
-	 * Prompts the user for a name and then creates a new Project of the given
-	 * name in the workspace.
+	 * Opens the New Project Wizard then creates a new Project in the
+	 * workspace.
 	 * 
 	 * @param shell	The currently active Shell.
 	 */
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
-		InputDialog projectNamePrompt = new InputDialog(shell, "New Project",
-				"Input the Project name:", null, null);
+		NewProjectWizard projectWizard = new NewProjectWizard();
+		WizardDialog wizardDialog = new WizardDialog(shell, projectWizard);
 		
-		int retval = projectNamePrompt.open();
+		int retval = wizardDialog.open();
 		
-		if(retval == InputDialog.OK) {
-			String projectName = projectNamePrompt.getValue();
-			Path dir = Platform.getLocation().append(projectName).toFile().toPath();
+		if(retval == WizardDialog.OK) {
+			Project newProj = projectWizard.getProject();
+			newProj.setParentDirectory(Platform.getLocation());
 			
 			try {
-				Files.createDirectory(dir);
+				newProj.createProjectFiles();
 			}
 			catch(IOException ioe) {
 				MessageDialog.openError(shell, "Error", "Could not create "
