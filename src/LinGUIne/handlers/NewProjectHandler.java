@@ -1,6 +1,7 @@
 package LinGUIne.handlers;
 
 import java.io.IOException;
+import java.util.TreeMap;
 
 import javax.inject.Named;
 
@@ -28,8 +29,10 @@ public class NewProjectHandler {
 	 * @param shell	The currently active Shell.
 	 */
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
-		NewProjectWizard projectWizard = new NewProjectWizard();
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+			@Named("ProjectSet") TreeMap<String, Project> projectSet) {
+		
+		NewProjectWizard projectWizard = new NewProjectWizard(projectSet);
 		WizardDialog wizardDialog = new WizardDialog(shell, projectWizard);
 		
 		int retval = wizardDialog.open();
@@ -40,6 +43,7 @@ public class NewProjectHandler {
 			
 			try {
 				newProj.createProjectFiles();
+				projectSet.put(newProj.getName().toLowerCase(), newProj);
 			}
 			catch(IOException ioe) {
 				MessageDialog.openError(shell, "Error", "Could not create "

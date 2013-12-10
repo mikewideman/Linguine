@@ -1,5 +1,7 @@
 package LinGUIne.wizards;
 
+import java.util.TreeMap;
+
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -19,14 +21,18 @@ public class NewProjectWizardNamePage extends WizardPage {
 	private Label lblError;
 	
 	private Project newProject;
+	private TreeMap<String, Project> projectSet;
 	
-	public NewProjectWizardNamePage(Project newProj){
+	public NewProjectWizardNamePage(Project newProj,
+			TreeMap<String, Project> projects){
+		
 		super("New Project Wizard");
 		setTitle("New Project Wizard");
 		setDescription("Choose a name for the new project.");
 		setControl(txtName);
 		
 		newProject = newProj;
+		projectSet = projects;
 	}
 	
 	@Override
@@ -77,6 +83,10 @@ public class NewProjectWizardNamePage extends WizardPage {
 		
 		if(name.length() == 0){
 			errorText = "Project name must not have length 0!";
+			isValid = false;
+		}
+		else if(projectSet.containsKey(name.toLowerCase())){
+			errorText = "A Project with that name already exists!";
 			isValid = false;
 		}
 		
