@@ -24,8 +24,17 @@ public class ProjectManager {
 		return projectSet.containsKey(projectName.toLowerCase());
 	}
 	
-	public void addProject(Project newProject){
-		projectSet.put(newProject.getName().toLowerCase(), newProject);
+	public boolean addProject(Project newProject){
+		if(newProject.getName() == null){
+			return false;
+		}
+		else if(!containsProject(newProject.getName())){
+			projectSet.put(newProject.getName().toLowerCase(), newProject);
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public Project getProject(String projectName){

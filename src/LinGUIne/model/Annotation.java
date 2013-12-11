@@ -13,4 +13,13 @@ public class Annotation implements IProjectData {
 	public File getFile() {
 		return annotationFile;
 	}
+
+	@Override
+	public int compareTo(IProjectData projData) {
+		if(projData == null){
+			return 1;
+		}
+		
+		return annotationFile.compareTo(projData.getFile());
+	}
 }

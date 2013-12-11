@@ -56,15 +56,25 @@ public class Project {
 		return parentDirectory.append(name);
 	}
 	
-	public void addProjectData(IProjectData projData){
+	public boolean addProjectData(IProjectData projData){
 		int id = getNextId();
+		
+		if(projData == null || projectData.containsKey(projData)){
+			return false;
+		}
 		
 		projectData.put(projData, id);
 		annotations.put(id, null);
+		
+		return true;
 	}
 	
 	public boolean addResult(Result result, Collection<IProjectData> analyzedData){
 		HashSet<Integer> dataIds = new HashSet<Integer>();
+		
+		if(analyzedData == null || analyzedData.isEmpty()){
+			return false;
+		}
 		
 		for(IProjectData projData: analyzedData){
 			if(!containsProjectData(projData)){
@@ -74,20 +84,8 @@ public class Project {
 			dataIds.add(projectData.get(projData));
 		}
 		
-		addProjectData(result);
-		results.put(result, dataIds);
-		
-		return true;
-	}
-	
-	public boolean addAnnotation(Annotation annotation, IProjectData annotatedData){
-		int dataId;
-		
-		if(containsProjectData(annotatedData)){
-			dataId = projectData.get(annotatedData);
-			
-			addProjectData(annotation);
-			annotations.put(dataId, annotation);
+		if(addProjectData(result)){
+			results.put(result, dataIds);
 			
 			return true;
 		}
@@ -95,7 +93,27 @@ public class Project {
 		return false;
 	}
 	
+	public boolean addAnnotation(Annotation annotation, IProjectData annotatedData){
+		int dataId;
+		
+		if(containsProjectData(annotatedData) && !isAnnotated(annotatedData)){
+			dataId = projectData.get(annotatedData);
+			
+			if(addProjectData(annotation)){
+				annotations.put(dataId, annotation);
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public boolean containsProjectData(IProjectData projData){
+		if(projData == null){
+			return false;
+		}
+		
 		return projectData.containsKey(projData);
 	}
 	
@@ -119,15 +137,21 @@ public class Project {
 		return textData;
 	}
 	
-	public boolean isAnnotated(IProjectData dataFile){
-		int id = projectData.get(dataFile);
+	public boolean isAnnotated(IProjectData projData){
+		if(containsProjectData(projData)){
+			int id = projectData.get(projData);
+			
+			return annotations.get(id) != null;
+		}
 		
-		return annotations.get(id) != null;
+		return false;
 	}
 	
 	public Annotation getAnnotation(IProjectData projData){
 		if(containsProjectData(projData)){
-			return annotations.get(projData);
+			int id = projectData.get(projData);
+			
+			return annotations.get(id);
 		}
 		
 		return null;

@@ -13,4 +13,13 @@ public class Result implements IProjectData {
 	public File getFile() {
 		return resultFile;
 	}
+
+	@Override
+	public int compareTo(IProjectData projData) {
+		if(projData == null){
+			return 1;
+		}
+		
+		return resultFile.compareTo(projData.getFile());
+	}
 }

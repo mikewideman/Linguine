@@ -13,4 +13,13 @@ public class TextData implements IProjectData {
 	public File getFile() {
 		return dataFile;
 	}
+
+	@Override
+	public int compareTo(IProjectData projData) {
+		if(projData == null){
+			return 1;
+		}
+		
+		return dataFile.compareTo(projData.getFile());
+	}
 }
