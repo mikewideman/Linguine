@@ -1,8 +1,6 @@
 package LinGUIne.parts;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -13,7 +11,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -22,8 +19,11 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
+import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
+import LinGUIne.model.TextData;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
@@ -50,18 +50,15 @@ public class ProjectExplorer {
 		parent.setLayout(new GridLayout());
 
 		tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-//		tree.setContentProvider(new ViewContentProvider());
-//		tree.setLabelProvider(new ViewLabelProvider());
 		tree.setContentProvider(new ProjectExplorerContentProvider());
 		tree.setLabelProvider(new ProjectExplorerLabelProvider());
 		tree.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
-//		tree.setInput(Platform.getLocation().toFile().listFiles());
 		
-		TreeMap<String, Project> projectSet = new TreeMap<String, Project>();
-		loadProjects(projectSet);
-		tree.setInput(projectSet);
+		ProjectManager projectMan = new ProjectManager(Platform.getLocation());
+		projectMan.loadProjects();
+		tree.setInput(projectMan);
 		
-		application.getContext().set("ProjectSet", projectSet);
+		application.getContext().set("ProjectManager", projectMan);
 	}
 
 	/**
@@ -75,54 +72,33 @@ public class ProjectExplorer {
 	@PreDestroy
 	public void dispose() {
 	}
-	
-	private void loadProjects(TreeMap<String, Project> projectSet){
-		IPath workspace = Platform.getLocation();
-		
-		for(File dir: workspace.toFile().listFiles()){
-			if(dir.isDirectory()){
-				for(String filename: dir.list()){
-					if(filename.equals(Project.PROJECT_FILE)){
-						String projectName = dir.getName(); //TODO: change this to read from project file
-						Project project = new Project();
-						
-						project.setName(projectName);
-						project.setParentDirectory(workspace);
-						
-						projectSet.put(projectName, project);
-					}
-				}
-			}
-		}
-	}
 
 	class ProjectExplorerContentProvider implements ITreeContentProvider {
 		
-		private ArrayList<ProjectExplorerNode> rootNodes;
+		private ArrayList<ProjectExplorerTree> projectTrees;
 		
 		public ProjectExplorerContentProvider(){
-			rootNodes = new ArrayList<ProjectExplorerNode>();
+			projectTrees = new ArrayList<ProjectExplorerTree>();
 		}
 		
 		@Inject
-		public void inputChanged(@Named("ProjectSet") TreeMap<String, Project> projects){
-			System.out.println("Other input changed called.");
-			rootNodes = new ArrayList<ProjectExplorerNode>();
+		public void inputChanged(@Named("ProjectManager") ProjectManager projectMan){
+			projectTrees = new ArrayList<ProjectExplorerTree>();
 			
-			for(Project proj: projects.values()){
-				ProjectExplorerNode newRoot = new ProjectExplorerNode(proj.getName(), proj);
-				ProjectExplorerNode dataNode = newRoot.addChild("Project Data", null);
-				ProjectExplorerNode resultsNode = newRoot.addChild("Results", null);
+			for(Project proj: projectMan.getProjects()){
+				ProjectExplorerTree newRoot = new ProjectExplorerTree(proj);
+				ProjectExplorerNode dataNode = newRoot.addChild("Project Data");
+				ProjectExplorerNode resultsNode = newRoot.addChild("Results");
 				
-				for(File dataFile: proj.getProjectData()){
-					dataNode.addChild(dataFile.getName(), dataFile);
+				for(TextData data: proj.getTextData()){
+					dataNode.addDataChild(data.getFile().getName(), data);
 				}
 				
 				for(Result result: proj.getResults()){
-//					resultsNode.addChild(result.getName(), result);
+					resultsNode.addDataChild(result.getFile().getName(), result);
 				}
 				
-				rootNodes.add(newRoot);
+				projectTrees.add(newRoot);
 			}
 		}
 		
@@ -132,12 +108,15 @@ public class ProjectExplorer {
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			System.out.println("inputChanged called.");
-			inputChanged((TreeMap<String, Project>)newInput);
+			
+			if(newInput != null){
+				inputChanged((ProjectManager)newInput);
+			}
 		}
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			return rootNodes.toArray();
+			return projectTrees.toArray();
 		}
 
 		@Override
@@ -156,25 +135,33 @@ public class ProjectExplorer {
 		}
 	}
 	
+	/**
+	 * A tree node within the Project Explorer with an arbitrary number of
+	 * children, 0-1 parents, and a name.
+	 * 
+	 * @author Kyle
+	 */
 	class ProjectExplorerNode{
 		
-		private String nodeName;
-		private ProjectExplorerNode parentNode;
-		private ArrayList<ProjectExplorerNode> children;
+		protected String nodeName;
+		protected ProjectExplorerNode parentNode;
+		protected ArrayList<ProjectExplorerNode> children;
 		
-		public ProjectExplorerNode(String name, Object data){
-			this(name, data, null);
-		}
-		
-		public ProjectExplorerNode(String name, Object data,
-				ProjectExplorerNode parent){
+		public ProjectExplorerNode(String name, ProjectExplorerNode parent){
 			nodeName = name;
-			parent = parentNode;
+			parentNode = parent;
 			children = new ArrayList<ProjectExplorerNode>();
 		}
 		
-		public ProjectExplorerNode addChild(String name, Object data){
-			ProjectExplorerNode newNode = new ProjectExplorerNode(name, data, this);
+		public ProjectExplorerNode addChild(String name){
+			ProjectExplorerNode newNode = new ProjectExplorerNode(name, this);
+			children.add(newNode);
+			
+			return newNode;
+		}
+		
+		public ProjectExplorerNode addDataChild(String name, IProjectData data){
+			ProjectExplorerNode newNode = new ProjectExplorerDataNode(name, this, data);
 			children.add(newNode);
 			
 			return newNode;
@@ -192,6 +179,10 @@ public class ProjectExplorer {
 			return children.toArray(new ProjectExplorerNode[]{});
 		}
 		
+		public boolean hasParent(){
+			return parentNode != null;
+		}
+		
 		public ProjectExplorerNode getParent(){
 			return parentNode;
 		}
@@ -201,107 +192,57 @@ public class ProjectExplorer {
 		}
 	}
 	
+	/**
+	 * A root node for a Project Explorer tree which has no parents and a
+	 * Project object associated with it.
+	 * 
+	 * @author Kyle
+	 */
+	class ProjectExplorerTree extends ProjectExplorerNode{
+		private Project project;
+		
+		public ProjectExplorerTree(Project proj){
+			super(proj.getName(), null);
+			project = proj;
+		}
+		
+		public Project getProject(){
+			return project;
+		}
+	}
+	
+	/**
+	 * A child node for a Project Explorer tree which has an IProjectData
+	 * object associated with it.
+	 * 
+	 * @author Kyle
+	 */
+	class ProjectExplorerDataNode extends ProjectExplorerNode{
+		private IProjectData nodeData;
+		
+		public ProjectExplorerDataNode(String name, ProjectExplorerNode parent,
+				IProjectData data){
+			
+			super(name, parent);
+			nodeData = data;
+		}
+		
+		public IProjectData getNodeData(){
+			return nodeData;
+		}
+	}
+	
+	/**
+	 * Simple label provider which returns the name of a ProjectExplorerNode
+	 * to be used as a label.
+	 * 
+	 * @author Kyle
+	 */
 	class ProjectExplorerLabelProvider extends LabelProvider{
 		@Override
 		public String getText(Object element){
 			return ((ProjectExplorerNode)element).getName();
 		}
 	}
-	
-	/**
-	 * Controls the content provided to a TreeViewer, in this case displays a
-	 * directory tree.
-	 * 
-	 * @author Kyle Mullins
-	 */
-	class ViewContentProvider implements ITreeContentProvider {
-		private File[] files;
-		
-		/**
-		 * Updates the input data provided to the TreeViewer.
-		 * 
-		 * @param view		The view to which data is being provided.
-		 * @param oldInput	The previous set of data being proivded.
-		 * @param newInput	The new input data to be provided to the view.
-		 */
-		public void inputChanged(Viewer view, Object oldInput, Object newInput) {
-			files = (File[])newInput;
-//			view.refresh();
-		}
 
-		@Override
-		public void dispose() {
-		}
-
-		/**
-		 * Returns the current file list to the TreeViewer.
-		 */
-		@Override
-		public Object[] getElements(Object inputElement) {
-//			return (File[]) inputElement;
-			return files;
-		}
-
-		/**
-		 * Returns all sub-files and directories of the given parent file.
-		 * 
-		 * @param parentElement	The parent file for which children are to be
-		 * 						returned.
-		 */
-		@Override
-		public Object[] getChildren(Object parentElement) {
-			File file = (File) parentElement;
-			return file.listFiles();
-		}
-
-		/**
-		 * Returns the parent directory of the given file.
-		 * 
-		 * @param element	The file for which the parent directory is to be
-		 * 					returned.
-		 */
-		@Override
-		public Object getParent(Object element) {
-			File file = (File) element;
-			return file.getParentFile();
-		}
-
-		/**
-		 * Returns whether or not the given file is a directory (i.e. has
-		 * children).
-		 * 
-		 * @param element	The file to be checked.
-		 */
-		@Override
-		public boolean hasChildren(Object element) {
-			File file = (File) element;
-			if (file.isDirectory()) {
-				return true;
-			}
-			return false;
-		}
-
-	}
-
-	
-	/**
-	 * Simple label provider which reutrns a file name to be used as the node
-	 * label.
-	 * 
-	 * @author Kyle Mullins
-	 */
-	class ViewLabelProvider extends LabelProvider {
-		
-		/**
-		 * Returns the name of the given file to be used as the node label.
-		 * 
-		 * @param element	The file for which the name is to be returned.
-		 */
-		@Override
-		public String getText(Object element) {
-			File file = (File) element;
-			String name = file.getName();
-			return name.isEmpty() ? file.getPath() : name;
-		}
-	}
 }

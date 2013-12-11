@@ -1,11 +1,9 @@
 package LinGUIne.handlers;
 
 import java.io.IOException;
-import java.util.TreeMap;
 
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -13,6 +11,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectManager;
 import LinGUIne.wizards.NewProjectWizard;
 
 /**
@@ -30,20 +29,20 @@ public class NewProjectHandler {
 	 */
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-			@Named("ProjectSet") TreeMap<String, Project> projectSet) {
+			@Named("ProjectManager") ProjectManager projectMan) {
 		
-		NewProjectWizard projectWizard = new NewProjectWizard(projectSet);
+		NewProjectWizard projectWizard = new NewProjectWizard(projectMan);
 		WizardDialog wizardDialog = new WizardDialog(shell, projectWizard);
 		
 		int retval = wizardDialog.open();
 		
 		if(retval == WizardDialog.OK) {
 			Project newProj = projectWizard.getProject();
-			newProj.setParentDirectory(Platform.getLocation());
+			newProj.setParentDirectory(projectMan.getWorkspace());
 			
 			try {
 				newProj.createProjectFiles();
-				projectSet.put(newProj.getName().toLowerCase(), newProj);
+				projectMan.addProject(newProj);
 			}
 			catch(IOException ioe) {
 				MessageDialog.openError(shell, "Error", "Could not create "

@@ -1,27 +1,26 @@
 package LinGUIne.wizards;
 
-import java.util.TreeMap;
-
 import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectManager;
 
 public class NewProjectWizard extends Wizard {
 
 	private NewProjectWizardNamePage namePage;
 	
 	private Project newProject;
-	private TreeMap<String, Project> projectSet;
+	private ProjectManager projectMan;
 	
-	public NewProjectWizard(TreeMap<String, Project> projects){
+	public NewProjectWizard(ProjectManager projects){
 		super();
 		newProject = new Project();
-		projectSet = projects;
+		projectMan = projects;
 	}
 	
 	@Override
 	public void addPages(){
-		namePage = new NewProjectWizardNamePage(newProject, projectSet);
+		namePage = new NewProjectWizardNamePage(newProject, projectMan);
 		
 		addPage(namePage);
 	}

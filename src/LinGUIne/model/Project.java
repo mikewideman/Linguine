@@ -1,9 +1,9 @@
 package LinGUIne.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeMap;
@@ -18,7 +18,7 @@ public class Project {
 	
 	private IPath parentDirectory;
 	private String name;
-	private TreeMap<File, Integer> projectData;
+	private TreeMap<IProjectData, Integer> projectData;
 	private TreeMap<Result, HashSet<Integer>> results;
 	private HashMap<Integer, Annotation> annotations;
 	
@@ -27,7 +27,7 @@ public class Project {
 	public Project(){
 		lastId = 0;
 		
-		projectData = new TreeMap<File, Integer>();
+		projectData = new TreeMap<IProjectData, Integer>();
 		results = new TreeMap<Result, HashSet<Integer>>();
 		annotations = new HashMap<Integer, Annotation>();
 	}
@@ -56,25 +56,81 @@ public class Project {
 		return parentDirectory.append(name);
 	}
 	
-	public void addProjectDataFile(File dataFile){
+	public void addProjectData(IProjectData projData){
 		int id = getNextId();
 		
-		projectData.put(dataFile, id);
+		projectData.put(projData, id);
 		annotations.put(id, null);
 	}
 	
-	public File[] getProjectData(){
-		return projectData.keySet().toArray(new File[]{});
+	public boolean addResult(Result result, Collection<IProjectData> analyzedData){
+		HashSet<Integer> dataIds = new HashSet<Integer>();
+		
+		for(IProjectData projData: analyzedData){
+			if(!containsProjectData(projData)){
+				return false;
+			}
+			
+			dataIds.add(projectData.get(projData));
+		}
+		
+		addProjectData(result);
+		results.put(result, dataIds);
+		
+		return true;
 	}
 	
-	public Result[] getResults(){
-		return results.keySet().toArray(new Result[]{});
+	public boolean addAnnotation(Annotation annotation, IProjectData annotatedData){
+		int dataId;
+		
+		if(containsProjectData(annotatedData)){
+			dataId = projectData.get(annotatedData);
+			
+			addProjectData(annotation);
+			annotations.put(dataId, annotation);
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
-	public boolean isAnnotated(File dataFile){
+	public boolean containsProjectData(IProjectData projData){
+		return projectData.containsKey(projData);
+	}
+	
+	public Collection<IProjectData> getProjectData(){
+		return projectData.keySet();
+	}
+	
+	public Collection<Result> getResults(){
+		return results.keySet();
+	}
+	
+	public Collection<TextData> getTextData(){
+		ArrayList<TextData> textData = new ArrayList<TextData>();
+		
+		for(IProjectData projData: projectData.keySet()){
+			if(projData instanceof TextData){
+				textData.add((TextData)projData);
+			}
+		}
+		
+		return textData;
+	}
+	
+	public boolean isAnnotated(IProjectData dataFile){
 		int id = projectData.get(dataFile);
 		
 		return annotations.get(id) != null;
+	}
+	
+	public Annotation getAnnotation(IProjectData projData){
+		if(containsProjectData(projData)){
+			return annotations.get(projData);
+		}
+		
+		return null;
 	}
 	
 	public boolean createProjectFiles() throws IOException{
