@@ -2,9 +2,11 @@ package LinGUIne.handlers;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -21,6 +23,10 @@ import LinGUIne.wizards.NewProjectWizard;
  */
 public class NewProjectHandler {
 	
+	@Inject
+	@Optional
+	private ProjectManager projectMan;
+	
 	/**
 	 * Opens the New Project Wizard then creates a new Project in the
 	 * workspace.
@@ -28,8 +34,7 @@ public class NewProjectHandler {
 	 * @param shell	The currently active Shell.
 	 */
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-			@Named("ProjectManager") ProjectManager projectMan) {
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		
 		NewProjectWizard projectWizard = new NewProjectWizard(projectMan);
 		WizardDialog wizardDialog = new WizardDialog(shell, projectWizard);

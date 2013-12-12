@@ -13,6 +13,12 @@ import org.eclipse.swt.widgets.Text;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * A WizardPage for the NewProjectWizard which prompts the user to input a name
+ * for their new Project.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewProjectWizardNamePage extends WizardPage {
 
 	private Text txtName;
@@ -22,9 +28,14 @@ public class NewProjectWizardNamePage extends WizardPage {
 	private Project newProject;
 	private ProjectManager projectMan;
 	
-	public NewProjectWizardNamePage(Project newProj,
-			ProjectManager projects){
-		
+	/**
+	 * Creates a new instance of the page with the given empty Project object,
+	 * and the given instance of ProjectManager.
+	 * 
+	 * @param newProj
+	 * @param projects
+	 */
+	public NewProjectWizardNamePage(Project newProj, ProjectManager projects){
 		super("New Project Wizard");
 		setTitle("New Project Wizard");
 		setDescription("Choose a name for the new project.");
@@ -34,6 +45,9 @@ public class NewProjectWizardNamePage extends WizardPage {
 		projectMan = projects;
 	}
 	
+	/**
+	 * Assembles the UI components for the page and registers a KeyListener.
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
@@ -76,6 +90,14 @@ public class NewProjectWizardNamePage extends WizardPage {
 		setPageComplete(false);
 	}
 
+	/**
+	 * Returns whether or not the given name is a valid Project name. An empty
+	 * name is invalid and Projects cannot have duplicate names.
+	 * 
+	 * @param name	The prospective Project name the user has entered.
+	 * 
+	 * @return	True iff the given name is valid, false otherwise.
+	 */
 	private boolean isProjectNameValid(String name){
 		String errorText = "";
 		boolean isValid = true;

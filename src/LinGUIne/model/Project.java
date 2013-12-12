@@ -10,20 +10,35 @@ import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
 
+/**
+ * Represents a LinGUIne Project with a name, a file system location, and
+ * containing Project Data.
+ * 
+ * @author Kyle Mullins
+ */
 public class Project {
+	/*
+	 * Constants for directory and file names used when creating a Project on
+	 * disk.
+	 */
 	public static final String DATA_SUBDIR = "data";
 	public static final String RESULTS_SUBDIR = "results";
 	public static final String ANNOTATIONS_SUBDIR = "annotations";
 	public static final String PROJECT_FILE = "linguine.project";
 	
 	private IPath parentDirectory;
-	private String name;
+	private String projectName;
 	private TreeMap<IProjectData, Integer> projectData;
 	private TreeMap<Result, HashSet<Integer>> results;
 	private HashMap<Integer, Annotation> annotations;
 	
 	private int lastId;
 	
+	/**
+	 * Creates a new Project without a name or any Project Data of any kind.
+	 * Note: a Project created with this constructor is NOT complete; it must
+	 * be given a name.
+	 */
 	public Project(){
 		lastId = 0;
 		
@@ -32,30 +47,72 @@ public class Project {
 		annotations = new HashMap<Integer, Annotation>();
 	}
 	
+	/**
+	 * Creates a Project just as the default constructor, but the given name is
+	 * assigned as well.
+	 * 
+	 * @param projName	The name of the Project.
+	 */
+	public Project(String projName){
+		this();
+		
+		projectName = projName;
+	}
+	
+	/**
+	 * Sets the name of this Project.
+	 */
 	public void setName(String projName){
-		name = projName;
+		projectName = projName;
 	}
 	
+	/**
+	 * Returns this Project's name.
+	 */
 	public String getName(){
-		return name;
+		return projectName;
 	}
 	
+	/**
+	 * Sets the path of the root directory in which this Project resides on
+	 * disk.
+	 */
 	public void setParentDirectory(IPath parentDir){
 		parentDirectory = parentDir;
 	}
 	
+	/**
+	 * Returns the path of this Project's root directory on disk.
+	 */
 	public IPath getParentDirectory(){
 		return parentDirectory;
 	}
 	
+	/**
+	 * Returns the path of this Project's directory which is a folder of the
+	 * Project's name within the parent directory.
+	 * 
+	 * @return	The path of the Project directory, or null if the Project is
+	 * 			missing either a name or a parent directory.
+	 */
 	public IPath getProjectDirectory(){
-		if(name == null || parentDirectory == null){
+		if(projectName == null || parentDirectory == null){
 			return null;
 		}
 
-		return parentDirectory.append(name);
+		return parentDirectory.append(projectName);
 	}
 	
+	/**
+	 * Adds the given ProjectData to the Project if it is not already in the
+	 * Project and is not null.
+	 * Note: Results and Annotations should not be added with this method.
+	 * 
+	 * @param projData	The ProjectData to be added to the Project.
+	 * 
+	 * @return	True iff the ProjectData was successfully added, false
+	 * 			otherwise.
+	 */
 	public boolean addProjectData(IProjectData projData){
 		int id = getNextId();
 		
@@ -69,6 +126,18 @@ public class Project {
 		return true;
 	}
 	
+	/**
+	 * Adds the given Result to the Project as dependent upon all of the
+	 * ProjectData provided in the analyzedData collection. Null Results or
+	 * ProjectData collections are disallowed, and all of the ProjectData
+	 * objects in the collection must be present within this Project.
+	 * 
+	 * @param result		The Result to be added.
+	 * @param analyzedData	A collection of ProjectData objects upon which the
+	 * 						Result is dependent.
+	 * 
+	 * @return	True iff the Result was added successfully, false otherwise.
+	 */
 	public boolean addResult(Result result, Collection<IProjectData> analyzedData){
 		HashSet<Integer> dataIds = new HashSet<Integer>();
 		
@@ -93,6 +162,18 @@ public class Project {
 		return false;
 	}
 	
+	/**
+	 * Adds the given Annotation to the Project as markup for the given
+	 * ProjectData. Both the Annotation and ProjectData objects must not be
+	 * null, and the ProjectData object must be both in the Project and not
+	 * already annotated.
+	 * 
+	 * @param annotation	The Annotation to be added to the Project.
+	 * @param annotatedData	The ProjectData that the Annotation is marking up.
+	 * 
+	 * @return	True iff the Annotation was successfully added, false
+	 * 			otherwise.
+	 */
 	public boolean addAnnotation(Annotation annotation, IProjectData annotatedData){
 		int dataId;
 		
@@ -109,6 +190,9 @@ public class Project {
 		return false;
 	}
 	
+	/**
+	 * Returns whether or not the given ProjectData is in this Project.
+	 */
 	public boolean containsProjectData(IProjectData projData){
 		if(projData == null){
 			return false;
@@ -117,14 +201,23 @@ public class Project {
 		return projectData.containsKey(projData);
 	}
 	
+	/**
+	 * Returns a collection of all the ProjectData objects in this Project.
+	 */
 	public Collection<IProjectData> getProjectData(){
 		return projectData.keySet();
 	}
 	
+	/**
+	 * Returns all of the Results in this Project.
+	 */
 	public Collection<Result> getResults(){
 		return results.keySet();
 	}
 	
+	/**
+	 * Returns all of the TextData objects in this Project.
+	 */
 	public Collection<TextData> getTextData(){
 		ArrayList<TextData> textData = new ArrayList<TextData>();
 		
@@ -137,6 +230,10 @@ public class Project {
 		return textData;
 	}
 	
+	/**
+	 * Returns whether or not the given ProjectData object is annotated in this
+	 * Project.
+	 */
 	public boolean isAnnotated(IProjectData projData){
 		if(containsProjectData(projData)){
 			int id = projectData.get(projData);
@@ -147,6 +244,9 @@ public class Project {
 		return false;
 	}
 	
+	/**
+	 * Returns the Annotation associated with the given ProjectData (if any).
+	 */
 	public Annotation getAnnotation(IProjectData projData){
 		if(containsProjectData(projData)){
 			int id = projectData.get(projData);
@@ -157,6 +257,16 @@ public class Project {
 		return null;
 	}
 	
+	/**
+	 * Creates all of the necessary files and directories for an empty Project
+	 * of this Project's name and parent directory.
+	 * 
+	 * @return	True iff all files and folders were created successfully, false
+	 * 			otherwise.
+	 * 
+	 * @throws IOException	If files or directories cannot be created in the
+	 * 						Project's parent directory.
+	 */
 	public boolean createProjectFiles() throws IOException{
 		IPath projectDir = getProjectDirectory();
 		
@@ -178,6 +288,9 @@ public class Project {
 		return true;
 	}
 	
+	/**
+	 * Returns the Project name.
+	 */
 	public String toString(){
 		return getName();
 	}

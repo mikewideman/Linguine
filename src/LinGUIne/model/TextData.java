@@ -2,6 +2,11 @@ package LinGUIne.model;
 
 import java.io.File;
 
+/**
+ * Represents text-based ProjectData.
+ * 
+ * @author Kyle Mullins
+ */
 public class TextData implements IProjectData {
 
 	private File dataFile;

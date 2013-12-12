@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -58,7 +57,7 @@ public class ProjectExplorer {
 		projectMan.loadProjects();
 		tree.setInput(projectMan);
 		
-		application.getContext().set("ProjectManager", projectMan);
+		application.getContext().set(ProjectManager.class, projectMan);
 	}
 
 	/**
@@ -70,19 +69,31 @@ public class ProjectExplorer {
 	}
 
 	@PreDestroy
-	public void dispose() {
-	}
+	public void dispose() {}
 
+	/**
+	 * Builds up a tree of all the Projects so that they can be displayed in
+	 * the TreeViewer.
+	 * 
+	 * @author Kyle Mullins
+	 */
 	class ProjectExplorerContentProvider implements ITreeContentProvider {
 		
 		private ArrayList<ProjectExplorerTree> projectTrees;
 		
+		/**
+		 * Creates a new empty ProjectExplorerContentProvider.
+		 */
 		public ProjectExplorerContentProvider(){
 			projectTrees = new ArrayList<ProjectExplorerTree>();
 		}
 		
+		/**
+		 * Rebuilds the TreeViewer's content based on the Projects in the
+		 * given ProjectManager.
+		 */
 		@Inject
-		public void inputChanged(@Named("ProjectManager") ProjectManager projectMan){
+		public void inputChanged(ProjectManager projectMan){
 			projectTrees = new ArrayList<ProjectExplorerTree>();
 			
 			for(Project proj: projectMan.getProjects()){
@@ -105,6 +116,9 @@ public class ProjectExplorer {
 		@Override
 		public void dispose() {}
 
+		/**
+		 * Called when the input to the TreeViewer changes.
+		 */
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			System.out.println("inputChanged called.");
@@ -114,21 +128,33 @@ public class ProjectExplorer {
 			}
 		}
 
+		/**
+		 * Returns all of the root elements for the TreeViewer.
+		 */
 		@Override
 		public Object[] getElements(Object inputElement) {
 			return projectTrees.toArray();
 		}
 
+		/**
+		 * Returns the given element's parent in the tree.
+		 */
 		@Override
 		public Object getParent(Object element) {
 			return ((ProjectExplorerNode)element).getParent();
 		}
 
+		/**
+		 * Returns whether or not the given element has any children.
+		 */
 		@Override
 		public boolean hasChildren(Object element) {
 			return ((ProjectExplorerNode)element).hasChildren();
 		}
 		
+		/**
+		 * Returns the children of the given element, if any.
+		 */
 		@Override
 		public Object[] getChildren(Object parentElement) {
 			return ((ProjectExplorerNode)parentElement).getChildren();
@@ -139,7 +165,7 @@ public class ProjectExplorer {
 	 * A tree node within the Project Explorer with an arbitrary number of
 	 * children, 0-1 parents, and a name.
 	 * 
-	 * @author Kyle
+	 * @author Kyle Mullins
 	 */
 	class ProjectExplorerNode{
 		
@@ -147,12 +173,26 @@ public class ProjectExplorer {
 		protected ProjectExplorerNode parentNode;
 		protected ArrayList<ProjectExplorerNode> children;
 		
+		/**
+		 * Creates a new ProjectExplorerNode with a name and a parent node.
+		 * 
+		 * @param name		The name of this node.
+		 * @param parent	This node's parent node.
+		 */
 		public ProjectExplorerNode(String name, ProjectExplorerNode parent){
 			nodeName = name;
 			parentNode = parent;
 			children = new ArrayList<ProjectExplorerNode>();
 		}
 		
+		/**
+		 * Creates a new ProjectExplorerNode child with the given name and with
+		 * this node as its parent.
+		 * 
+		 * @param name	The name of the new node to be created.
+		 * 
+		 * @return	The node that was created.
+		 */
 		public ProjectExplorerNode addChild(String name){
 			ProjectExplorerNode newNode = new ProjectExplorerNode(name, this);
 			children.add(newNode);
@@ -160,6 +200,16 @@ public class ProjectExplorer {
 			return newNode;
 		}
 		
+		/**
+		 * Creates a new ProjectExplorerDataNode child with the given name, the
+		 * given ProjectData, and with this node as its parent.
+		 * 
+		 * @param name	The name of the new node to be created.
+		 * @param data	The ProjectData the new node is to be given at
+		 * 				creation.
+		 * 
+		 * @return	The node that was created.
+		 */
 		public ProjectExplorerNode addDataChild(String name, IProjectData data){
 			ProjectExplorerNode newNode = new ProjectExplorerDataNode(name, this, data);
 			children.add(newNode);
@@ -167,26 +217,44 @@ public class ProjectExplorer {
 			return newNode;
 		}
 		
+		/**
+		 * Returns the node's name.
+		 */
 		public String getName(){
 			return nodeName;
 		}
 		
+		/**
+		 * Returns whether or not the node has any child nodes.
+		 */
 		public boolean hasChildren(){
 			return !children.isEmpty();
 		}
 		
+		/**
+		 * Returns a list of all of this ProjectExplorerNode's child nodes.
+		 */
 		public ProjectExplorerNode[] getChildren(){
 			return children.toArray(new ProjectExplorerNode[]{});
 		}
 		
+		/**
+		 * Returns whether or not this node has a parent node.
+		 */
 		public boolean hasParent(){
 			return parentNode != null;
 		}
 		
+		/**
+		 * Returns this node's parent node, or null if it does not have one.
+		 */
 		public ProjectExplorerNode getParent(){
 			return parentNode;
 		}
 		
+		/**
+		 * Returns this node's name.
+		 */
 		public String toString(){
 			return nodeName;
 		}
@@ -196,16 +264,26 @@ public class ProjectExplorer {
 	 * A root node for a Project Explorer tree which has no parents and a
 	 * Project object associated with it.
 	 * 
-	 * @author Kyle
+	 * @author Kyle Mullins
 	 */
 	class ProjectExplorerTree extends ProjectExplorerNode{
 		private Project project;
 		
+		/**
+		 * Creates a new ProjectExplorerTree to be used as the root for a tree
+		 * of the given Project. The Project name is used as the name for this
+		 * node.
+		 * 
+		 * @param proj	The Project object for which this is the root node.
+		 */
 		public ProjectExplorerTree(Project proj){
 			super(proj.getName(), null);
 			project = proj;
 		}
 		
+		/**
+		 * Returns the associated Project object.
+		 */
 		public Project getProject(){
 			return project;
 		}
@@ -215,11 +293,19 @@ public class ProjectExplorer {
 	 * A child node for a Project Explorer tree which has an IProjectData
 	 * object associated with it.
 	 * 
-	 * @author Kyle
+	 * @author Kyle Mullins
 	 */
 	class ProjectExplorerDataNode extends ProjectExplorerNode{
 		private IProjectData nodeData;
 		
+		/**
+		 * Creates a new ProjectExplorerDataNode with the given name, the given
+		 * parent node, and the given ProjectData.
+		 * 
+		 * @param name		The name of this node.
+		 * @param parent	This node's parent node.
+		 * @param data		The ProjectData to be associated with this node.
+		 */
 		public ProjectExplorerDataNode(String name, ProjectExplorerNode parent,
 				IProjectData data){
 			
@@ -227,6 +313,9 @@ public class ProjectExplorer {
 			nodeData = data;
 		}
 		
+		/**
+		 * Returns the ProjectData associated with this node.
+		 */
 		public IProjectData getNodeData(){
 			return nodeData;
 		}
@@ -236,9 +325,13 @@ public class ProjectExplorer {
 	 * Simple label provider which returns the name of a ProjectExplorerNode
 	 * to be used as a label.
 	 * 
-	 * @author Kyle
+	 * @author Kyle Mullins
 	 */
 	class ProjectExplorerLabelProvider extends LabelProvider{
+		
+		/**
+		 * Returns a String label for a ProjectExplorerNode based on its name.
+		 */
 		@Override
 		public String getText(Object element){
 			return ((ProjectExplorerNode)element).getName();

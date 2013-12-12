@@ -2,6 +2,11 @@ package LinGUIne.model;
 
 import java.io.File;
 
+/**
+ * Represents the annotations of some ProjectData.
+ * 
+ * @author Kyle Mullins
+ */
 public class Annotation implements IProjectData {
 
 	private File annotationFile;

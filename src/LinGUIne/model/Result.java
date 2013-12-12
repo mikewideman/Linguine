@@ -2,6 +2,11 @@ package LinGUIne.model;
 
 import java.io.File;
 
+/**
+ * Represents the result of some analysis on some ProjectData.
+ * 
+ * @author Kyle Mullins
+ */
 public class Result implements IProjectData {
 
 	private File resultFile;
