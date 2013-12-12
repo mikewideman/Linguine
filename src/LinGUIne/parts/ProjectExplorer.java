@@ -7,14 +7,20 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -58,6 +64,38 @@ public class ProjectExplorer {
 		tree.setInput(projectMan);
 		
 		application.getContext().set(ProjectManager.class, projectMan);
+		
+		/*
+		 * Add listeners to TreeViewer
+		 */
+		tree.addSelectionChangedListener(new ISelectionChangedListener(){
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				//TODO
+			}
+		});
+		
+		tree.addDoubleClickListener(new IDoubleClickListener(){
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				//TODO: if user double clicks a file, attempt to open it in an editor
+			}
+		});
+		
+		tree.getTree().addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(e.keyCode == SWT.DEL){
+					//TODO: if user presses delete, attempt to delete the selected element
+				}
+			}
+		});
 	}
 
 	/**
