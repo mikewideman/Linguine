@@ -16,8 +16,8 @@
             <children xsi:type="basic:Part" xmi:id="_SM2zwD0IEeO2ApE61zFgiA" elementId="linguine.part.SettingsPart" containerData="1500" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.SettingsPart" label="Settings Part"/>
           </children>
           <children xsi:type="basic:PartSashContainer" xmi:id="_0U00ED0HEeO2ApE61zFgiA" elementId="linguine.partsashcontainer.lowerPartStash" containerData="3000" horizontal="true">
-            <children xsi:type="basic:Part" xmi:id="_bBJ68D0IEeO2ApE61zFgiA" elementId="linguine.part.QuickAnalysisPart" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.QuickAnalysisPart" label="Quick Analysis Part"/>
-            <children xsi:type="basic:Part" xmi:id="_el07kD0IEeO2ApE61zFgiA" elementId="linguine.part.MetaPart" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.MetaPart" label="Meta Data Part"/>
+            <children xsi:type="basic:Part" xmi:id="_bBJ68D0IEeO2ApE61zFgiA" elementId="linguine.part.QuickAnalysisPart" containerData="3000" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.QuickAnalysisPart" label="Quick Analysis Part"/>
+            <children xsi:type="basic:Part" xmi:id="_el07kD0IEeO2ApE61zFgiA" elementId="linguine.part.MetaPart" containerData="7000" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.MetaPart" label="Meta Data Part"/>
           </children>
         </children>
       </children>
