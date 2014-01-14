@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.TreeMap;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.e4.core.services.events.IEventBroker;
 
 /**
  * Encapsulates all Projects within some workspace and controls access to them.
@@ -13,6 +16,17 @@ import org.eclipse.core.runtime.IPath;
  */
 public class ProjectManager {
 
+	/**
+	 * Event strings used to subscribe to project-related events.
+	 */
+	public static final String ALL_PROJECT_EVENTS = "Project/*";
+	public static final String PROJECT_ADDED = "Project/Added";
+	public static final String PROJECT_REMOVED = "Project/Removed";
+	public static final String PROJECT_MODIFIED = "Project/Modified";
+	
+	@Inject
+	private IEventBroker eventBroker;
+	
 	private TreeMap<String, Project> projectSet;
 	private IPath workspace;
 	
@@ -55,6 +69,7 @@ public class ProjectManager {
 		}
 		else if(!containsProject(newProject.getName())){
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
+			postEvent(PROJECT_ADDED);
 			
 			return true;
 		}
@@ -98,6 +113,12 @@ public class ProjectManager {
 					}
 				}
 			}
+		}
+	}
+	
+	private void postEvent(String eventStr) {
+		if(eventBroker != null){
+			eventBroker.post(eventStr, this);
 		}
 	}
 }

@@ -13,7 +13,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -64,6 +67,7 @@ public class ProjectExplorer {
 		tree.setInput(projectMan);
 		
 		application.getContext().set(ProjectManager.class, projectMan);
+		ContextInjectionFactory.inject(projectMan, application.getContext());
 		
 		/*
 		 * Add listeners to TreeViewer
@@ -96,6 +100,15 @@ public class ProjectExplorer {
 				}
 			}
 		});
+	}
+	
+	@Inject
+	@Optional
+	public void projectEvent(@UIEventTopic(ProjectManager.ALL_PROJECT_EVENTS)
+			ProjectManager projectMan){
+		
+		tree.getContentProvider().inputChanged(tree, null, projectMan);
+		tree.refresh();
 	}
 
 	/**
@@ -159,8 +172,6 @@ public class ProjectExplorer {
 		 */
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			System.out.println("inputChanged called.");
-			
 			if(newInput != null){
 				inputChanged((ProjectManager)newInput);
 			}
