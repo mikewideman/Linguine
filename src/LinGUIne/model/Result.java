@@ -27,4 +27,16 @@ public class Result implements IProjectData {
 		
 		return resultFile.compareTo(projData.getFile());
 	}
+
+	@Override
+	public IProjectDataContents getContents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateContents(IProjectDataContents newContents) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

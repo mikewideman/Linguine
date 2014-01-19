@@ -27,4 +27,16 @@ public class Annotation implements IProjectData {
 		
 		return annotationFile.compareTo(projData.getFile());
 	}
+
+	@Override
+	public IProjectDataContents getContents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateContents(IProjectDataContents newContents) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
