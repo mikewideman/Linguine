@@ -6,9 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
+
+import LinGUIne.utilities.ParameterCheck;
 
 /**
  * Represents text-based ProjectData.
@@ -20,7 +20,15 @@ public class TextData implements IProjectData {
 	private File dataFile;
 	private TextDataContents contents;
 	
+	/**
+	 * Creates a new TextData object representing the given File.
+	 * Note: textFile parameter must not be null.
+	 * 
+	 * @param textFile	The File in the workspace that this TextData represents.
+	 */
 	public TextData(File textFile){
+		ParameterCheck.notNull(textFile, "textFile");
+		
 		dataFile = textFile;
 		contents = null;
 	}
@@ -29,6 +37,13 @@ public class TextData implements IProjectData {
 		return dataFile;
 	}
 
+	/**
+	 * Returns a TextDataContents associated with this TextData file, reading
+	 * from disk if necessary.
+	 * 
+	 * @return	A copy of the TextDataContents object for this TextData or null
+	 * 			if the file could not be read.
+	 */
 	@Override
 	public IProjectDataContents getContents() {
 		if(contents == null){
@@ -49,15 +64,25 @@ public class TextData implements IProjectData {
 			}
 		}
 		
-		return contents;
+		return contents.copy();
 	}
 
+	/**
+	 * Updates this TextData with the new given TextDataContents and writes
+	 * them to disk, overwriting the existing file contents.
+	 * 
+	 * @param newContents	TextDataContents instance to write to disk.
+	 * 
+	 * @return	Returns true iff newContents is an instance of TextDataContents
+	 * 			and was written to disk successfully, false otherwise.
+	 */
 	@Override
 	public boolean updateContents(IProjectDataContents newContents) {
-		if(newContents instanceof TextDataContents){
+		if(newContents != null && newContents instanceof TextDataContents){
 			TextDataContents newTextContents = (TextDataContents)newContents;
 			
-			if(newTextContents.getText() != null){
+			//Only write to disk if the two contents are different
+			if(contents.compareTo(newTextContents) != 0){
 				try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(),
 							Charset.defaultCharset(), StandardOpenOption.TRUNCATE_EXISTING)){
 					
@@ -66,11 +91,11 @@ public class TextData implements IProjectData {
 				catch(IOException e){
 					return false;
 				}
-				
-				contents = newTextContents;
-				
-				return true;
 			}
+				
+			contents = newTextContents;
+			
+			return true;
 		}
 		
 		return false;
