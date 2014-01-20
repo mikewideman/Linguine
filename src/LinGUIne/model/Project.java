@@ -30,7 +30,7 @@ public class Project {
 	private String projectName;
 	private TreeMap<IProjectData, Integer> projectData;
 	private TreeMap<Result, HashSet<Integer>> results;
-	private HashMap<Integer, Annotation> annotations;
+	private HashMap<Integer, AnnotationSet> annotationSets;
 	
 	private int lastId;
 	
@@ -44,7 +44,7 @@ public class Project {
 		
 		projectData = new TreeMap<IProjectData, Integer>();
 		results = new TreeMap<Result, HashSet<Integer>>();
-		annotations = new HashMap<Integer, Annotation>();
+		annotationSets = new HashMap<Integer, AnnotationSet>();
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public class Project {
 		}
 		
 		projectData.put(projData, id);
-		annotations.put(id, null);
+		annotationSets.put(id, null);
 		
 		return true;
 	}
@@ -163,25 +163,25 @@ public class Project {
 	}
 	
 	/**
-	 * Adds the given Annotation to the Project as markup for the given
-	 * ProjectData. Both the Annotation and ProjectData objects must not be
+	 * Adds the given AnnotationSet to the Project as markup for the given
+	 * ProjectData. Both the AnnotationSet and ProjectData objects must not be
 	 * null, and the ProjectData object must be both in the Project and not
 	 * already annotated.
 	 * 
-	 * @param annotation	The Annotation to be added to the Project.
-	 * @param annotatedData	The ProjectData that the Annotation is marking up.
+	 * @param annotationSet	The AnnotationSet to be added to the Project.
+	 * @param annotatedData	The ProjectData that the AnnotationSet is marking up.
 	 * 
-	 * @return	True iff the Annotation was successfully added, false
+	 * @return	True iff the AnnotationSet was successfully added, false
 	 * 			otherwise.
 	 */
-	public boolean addAnnotation(Annotation annotation, IProjectData annotatedData){
+	public boolean addAnnotation(AnnotationSet annotationSet, IProjectData annotatedData){
 		int dataId;
 		
 		if(containsProjectData(annotatedData) && !isAnnotated(annotatedData)){
 			dataId = projectData.get(annotatedData);
 			
-			if(addProjectData(annotation)){
-				annotations.put(dataId, annotation);
+			if(addProjectData(annotationSet)){
+				annotationSets.put(dataId, annotationSet);
 				
 				return true;
 			}
@@ -216,18 +216,19 @@ public class Project {
 	}
 	
 	/**
-	 * Returns all of the TextData objects in this Project.
+	 * Returns all of the original Project Data objects in this Project (i.e.
+	 * neither AnnotationSets nor Results).
 	 */
-	public Collection<TextData> getTextData(){
-		ArrayList<TextData> textData = new ArrayList<TextData>();
+	public Collection<IProjectData> getOriginalData(){
+		ArrayList<IProjectData> originalData = new ArrayList<IProjectData>();
 		
 		for(IProjectData projData: projectData.keySet()){
-			if(projData instanceof TextData){
-				textData.add((TextData)projData);
+			if(!(projData instanceof Result)){
+				originalData.add((TextData)projData);
 			}
 		}
 		
-		return textData;
+		return originalData;
 	}
 	
 	/**
@@ -238,20 +239,20 @@ public class Project {
 		if(containsProjectData(projData)){
 			int id = projectData.get(projData);
 			
-			return annotations.get(id) != null;
+			return annotationSets.get(id) != null;
 		}
 		
 		return false;
 	}
 	
 	/**
-	 * Returns the Annotation associated with the given ProjectData (if any).
+	 * Returns the AnnotationSet associated with the given ProjectData (if any).
 	 */
-	public Annotation getAnnotation(IProjectData projData){
+	public AnnotationSet getAnnotation(IProjectData projData){
 		if(containsProjectData(projData)){
 			int id = projectData.get(projData);
 			
-			return annotations.get(id);
+			return annotationSets.get(id);
 		}
 		
 		return null;
