@@ -62,7 +62,14 @@
          <attribute name="file_mask" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  A file mask to allow only the types of file which this importer handles (e.g. &quot;*.txt&quot;).
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="file_type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A human-readable short description for the types of file for which this importer works (e.g. &quot;Plaintext file&quot;).
                </documentation>
             </annotation>
          </attribute>

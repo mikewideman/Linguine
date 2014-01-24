@@ -172,7 +172,7 @@ public class ProjectExplorer {
 				ProjectExplorerNode dataNode = newRoot.addChild("Project Data");
 				ProjectExplorerNode resultsNode = newRoot.addChild("Results");
 				
-				for(TextData data: proj.getOriginalData()){
+				for(IProjectData data: proj.getOriginalData()){
 					dataNode.addDataChild(data.getFile().getName(), data);
 				}
 				

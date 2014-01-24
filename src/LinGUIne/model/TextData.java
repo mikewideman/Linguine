@@ -84,7 +84,7 @@ public class TextData implements IProjectData {
 			//Only write to disk if the two contents are different
 			if(contents == null || contents.compareTo(newTextContents) != 0){
 				try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(),
-							Charset.defaultCharset(), StandardOpenOption.TRUNCATE_EXISTING)){
+							Charset.defaultCharset())){
 					
 					writer.write(newTextContents.getText());
 				}
