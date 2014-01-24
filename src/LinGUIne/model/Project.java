@@ -18,6 +18,13 @@ import org.eclipse.core.runtime.IPath;
  */
 public class Project {
 	/*
+	 * Enum used for specifying a subdirectory of a Project.
+	 */
+	public static enum Subdirectory{
+		Data, Results, Annotations;
+	}
+	
+	/*
 	 * Constants for directory and file names used when creating a Project on
 	 * disk.
 	 */
@@ -33,6 +40,7 @@ public class Project {
 	private HashMap<Integer, AnnotationSet> annotationSets;
 	
 	private int lastId;
+	private HashSet<ProjectListener> listeners;
 	
 	/**
 	 * Creates a new Project without a name or any Project Data of any kind.
@@ -41,6 +49,7 @@ public class Project {
 	 */
 	public Project(){
 		lastId = 0;
+		listeners = new HashSet<ProjectListener>();
 		
 		projectData = new TreeMap<IProjectData, Integer>();
 		results = new TreeMap<Result, HashSet<Integer>>();
@@ -104,6 +113,35 @@ public class Project {
 	}
 	
 	/**
+	 * Returns the path of the requested subdirectory of this Project's
+	 * directory.
+	 * 
+	 * @param subdir	Enum denoting for which subdirectory to return the path.
+	 * 
+	 * @return	The path of the requested subdirectory or null if an invalid
+	 * 			enum option is provided.
+	 */
+	public IPath getSubdirectory(Subdirectory subdir){
+		String subdirPath;
+		
+		switch(subdir){
+			case Data:
+				subdirPath = DATA_SUBDIR;
+				break;
+			case Results:
+				subdirPath = RESULTS_SUBDIR;
+				break;
+			case Annotations:
+				subdirPath = ANNOTATIONS_SUBDIR;
+				break;
+			default:
+				return null;
+		}
+		
+		return getProjectDirectory().append(subdirPath);
+	}
+	
+	/**
 	 * Adds the given ProjectData to the Project if it is not already in the
 	 * Project and is not null.
 	 * Note: Results and Annotations should not be added with this method.
@@ -122,6 +160,8 @@ public class Project {
 		
 		projectData.put(projData, id);
 		annotationSets.put(id, null);
+		
+		notifyListeners();
 		
 		return true;
 	}
@@ -296,7 +336,45 @@ public class Project {
 		return getName();
 	}
 	
+	/**
+	 * Registers the given listener which will get notified whenever this
+	 * Project is modified.
+	 * 
+	 * @param listener	The listener to be registered.
+	 */
+	public void addListener(ProjectListener listener){
+		listeners.add(listener);
+	}
+	
+	/**
+	 * Unregisters the given listener such that it will no longer receive
+	 * notifications when this Project is modified.
+	 * 
+	 * @param listener	The listener to be unregistered.
+	 */
+	public void removeListener(ProjectListener listener){
+		listeners.remove(listener);
+	}
+	
+	/**
+	 * Notifies all listeners on this Project that it was modified.
+	 */
+	private void notifyListeners(){
+		for(ProjectListener listener: listeners){
+			listener.notify(this);
+		}
+	}
+	
 	private int getNextId(){
 		return lastId++;
+	}
+	
+	/**
+	 * Simple listener for receiving notifications when a Project is modified.
+	 * 
+	 * @author Kyle Mullins
+	 */
+	public abstract static class ProjectListener {
+		public abstract void notify(Project modifiedProj);
 	}
 }

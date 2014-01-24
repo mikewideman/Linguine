@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import LinGUIne.model.Project.ProjectListener;
+
 /**
  * Encapsulates all Projects within some workspace and controls access to them.
  * 
@@ -30,12 +32,22 @@ public class ProjectManager {
 	private TreeMap<String, Project> projectSet;
 	private IPath workspace;
 	
+	private ProjectListener projListener;
+	
 	/**
 	 * Creates a new ProjectManager for the given workspace.
 	 */
 	public ProjectManager(IPath workspacePath){
 		workspace = workspacePath;
 		projectSet = new TreeMap<String, Project>();
+		
+		projListener = new ProjectListener() {
+			
+			@Override
+			public void notify(Project modifiedProj) {
+				postEvent(PROJECT_MODIFIED);
+			}
+		};
 	}
 	
 	/**
@@ -69,6 +81,7 @@ public class ProjectManager {
 		}
 		else if(!containsProject(newProject.getName())){
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
+			newProject.addListener(projListener);
 			postEvent(PROJECT_ADDED);
 			
 			return true;
