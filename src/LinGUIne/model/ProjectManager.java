@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
 import LinGUIne.model.Project.ProjectListener;
+import LinGUIne.utilities.FileUtils;
 
 /**
  * Encapsulates all Projects within some workspace and controls access to them.
@@ -118,8 +119,8 @@ public class ProjectManager {
 			if(dir.isDirectory()){
 				for(String filename: dir.list()){
 					if(filename.equals(Project.PROJECT_FILE)){
-						String projectName = dir.getName(); //TODO: change this to read from project file
-						Project project = new Project(projectName);
+						Project project = Project.createFromFile(
+								FileUtils.appendPath(dir, filename));
 						
 						project.setParentDirectory(workspace);
 						addProject(project);

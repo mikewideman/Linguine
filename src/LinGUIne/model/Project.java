@@ -1,7 +1,12 @@
 package LinGUIne.model;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +14,8 @@ import java.util.HashSet;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
+
+import LinGUIne.utilities.FileUtils;
 
 /**
  * Represents a LinGUIne Project with a name, a file system location, and
@@ -66,6 +73,56 @@ public class Project {
 		this();
 		
 		projectName = projName;
+	}
+	
+	public static Project createFromFile(File projectFile){
+		Project newProj = new Project();
+		
+		try(BufferedReader reader = Files.newBufferedReader(projectFile.toPath(),
+				Charset.defaultCharset())){
+			
+			IPath parentDir = FileUtils.toEclipsePath(projectFile.
+					getParentFile().getParentFile());
+			newProj.setParentDirectory(parentDir);
+			
+			//TODO: replace with parsing for actual file format
+			if(reader.ready()){
+				newProj.setName(reader.readLine());
+				
+				while(reader.ready()){
+					String[] lineParts = reader.readLine().split(":");
+					
+					//TODO: full format should specify in-memory type of each file
+					IPath filePath = newProj.getProjectDirectory().append(lineParts[0]);
+					
+					if(lineParts[0].startsWith(DATA_SUBDIR)){
+						IProjectData projData = new TextData(filePath.toFile());
+						
+						newProj.addProjectData(projData);
+					}
+					else if(lineParts[0].startsWith(ANNOTATIONS_SUBDIR)){
+//						IProjectData annotation = new AnnotationSet(filePath.toFile());
+//						
+//						//TODO: parse annotated file from lineParts[1]
+//						newProj.addAnnotation(annotation);
+					}
+					else if(lineParts[0].startsWith(RESULTS_SUBDIR)){
+//						IProjectData result = new Result(filePath.toFile());
+//						
+//						//TODO: parse affected files from lineParts[1]
+//						newProj.addResult(result, analyzedData)
+					}
+				}
+			}
+			else{
+				return null;
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return newProj;
 	}
 	
 	/**
@@ -324,7 +381,15 @@ public class Project {
 		Files.createDirectory(projectDir.append(ANNOTATIONS_SUBDIR).toFile().toPath());
 		
 		//Create project file
-		Files.createFile(projectDir.append(PROJECT_FILE).toFile().toPath());
+//		Files.createFile(projectDir.append(PROJECT_FILE).toFile().toPath());
+		
+		Path projectFilePath = projectDir.append(PROJECT_FILE).toFile().toPath();
+		
+		BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
+				Charset.defaultCharset());
+			
+		writer.write(projectName + "\n");
+		writer.close();
 		
 		return true;
 	}
