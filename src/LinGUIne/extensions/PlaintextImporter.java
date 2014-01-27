@@ -9,6 +9,12 @@ import java.nio.file.Files;
 import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.TextDataContents;
 
+/**
+ * Simple importer for flat, plain-text files; performs no special processing
+ * when importing.
+ * 
+ * @author Kyle Mullins
+ */
 public class PlaintextImporter implements IFileImporter {
 
 	@Override
@@ -22,22 +28,16 @@ public class PlaintextImporter implements IFileImporter {
 	}
 
 	@Override
-	public IProjectDataContents importFile(File rawFile) {
-		try(BufferedReader reader = Files.newBufferedReader(rawFile.toPath(),
-				Charset.defaultCharset())){
-			
-			String contentStr = "";
-			
-			while(reader.ready()){
-				 contentStr += reader.readLine();
-				 contentStr += "\n";
-			}
-			
-			return new TextDataContents(contentStr);
+	public IProjectDataContents importFile(File rawFile) throws IOException {
+		BufferedReader reader = Files.newBufferedReader(rawFile.toPath(),
+				Charset.defaultCharset());
+		String contentStr = "";
+		
+		while(reader.ready()){
+			 contentStr += reader.readLine();
+			 contentStr += "\n";
 		}
-		catch (IOException e) {
-			return null;
-		}
+		
+		return new TextDataContents(contentStr);
 	}
-
 }

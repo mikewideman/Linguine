@@ -42,10 +42,8 @@ public class ImportFileWizardSetupPage extends WizardPage {
 	
 	
 	/**
-	 * Creates a new instance of the page with the given empty Project object,
-	 * and the given instance of ProjectManager.
-	 * 
-	 * @param projects
+	 * Creates a new instance of the page with the given ImportFileData and the
+	 * given instance of ProjectManager.
 	 */
 	public ImportFileWizardSetupPage(ImportFileData data, ProjectManager projects){
 		super("Import File Wizard");
@@ -95,6 +93,9 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		
 		lstImporters.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Set which IFileImporter is currently selected.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String selectedFileType = lstImporters.getSelection()[0];
@@ -142,6 +143,9 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		
 		lstProjects.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Set which Project is selected.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
@@ -164,6 +168,9 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		radExistingProject.setSelection(true);
 		radExistingProject.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Re-enable the Project list.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				lstProjects.setEnabled(true);
@@ -180,6 +187,10 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		radNewProject.setText("Create new Project.");
 		radNewProject.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Disable the Project list and set that a new Project should be
+			 * created.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				lstProjects.setEnabled(false);

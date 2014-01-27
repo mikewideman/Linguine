@@ -1,19 +1,15 @@
 package LinGUIne.wizards;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.model.ProjectManager;
 
 /**
- * Wizard for creating a new Project.
+ * Wizard for importing one or more Files into a Project.
  * 
  * @author Kyle Mullins
  */
@@ -21,17 +17,18 @@ public class ImportFileWizard extends Wizard {
 
 	@Inject
 	private ProjectManager projectMan;
-	private ImportFileData wizardData;
 	
+	private ImportFileData wizardData;
 	private ImportFileWizardSetupPage setupPage;
 	private ImportFileWizardChooseFilesPage chooseFilesPage;
 	
 	/**
-	 * Creates a new NewProjectWizard referencing the given ProjectManager to
-	 * obtain information about existing Projects.
+	 * Creates a new ImportFileWizard.
 	 */
 	public ImportFileWizard(){
 		super();
+		
+		wizardData = new ImportFileData();
 	}
 	
 	/**
@@ -39,8 +36,6 @@ public class ImportFileWizard extends Wizard {
 	 */
 	@Override
 	public void addPages(){
-		wizardData = new ImportFileData();
-		
 		setupPage = new ImportFileWizardSetupPage(wizardData, projectMan);
 		chooseFilesPage = new ImportFileWizardChooseFilesPage(wizardData);
 		
@@ -48,6 +43,10 @@ public class ImportFileWizard extends Wizard {
 		addPage(chooseFilesPage);
 	}
 	
+	/**
+	 * Determines which page is to be shown next. Launches the NewProjectWizard
+	 * if a new Project needs to be created.
+	 */
 	@Override
 	public IWizardPage getNextPage(IWizardPage page){
 		if(page == setupPage && wizardData.shouldCreateNewProject()){
@@ -58,6 +57,9 @@ public class ImportFileWizard extends Wizard {
 		return super.getNextPage(page);
 	}
 	
+	/**
+	 * Runs the import job once the wizard has finished.
+	 */
 	@Override
 	public boolean performFinish() {
 		SafeImporter safeImporter = new SafeImporter(getShell(),

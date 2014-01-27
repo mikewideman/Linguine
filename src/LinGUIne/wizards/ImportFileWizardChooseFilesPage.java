@@ -1,11 +1,7 @@
 package LinGUIne.wizards;
 
 import java.io.File;
-import java.util.HashMap;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,14 +11,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-
-import LinGUIne.model.Project;
-import LinGUIne.model.ProjectManager;
-import LinGUIne.extensions.IFileImporter;
-import LinGUIne.extensions.PlaintextImporter;
 
 /**
  * A WizardPage for the NewProjectWizard which prompts the user to input a name
@@ -76,6 +66,9 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		
 		lstFiles.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Sets which File is selected.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				checkListSelection();
@@ -93,6 +86,9 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		btnAddFile.setText("Add file...");
 		btnAddFile.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Adds a file to the list of Files.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog openDialog = new FileDialog(finalParent.getShell(), SWT.OPEN);
@@ -116,6 +112,9 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		btnRemoveFile.setEnabled(false);
 		btnRemoveFile.addSelectionListener(new SelectionListener(){
 
+			/**
+			 * Removes the selected File.
+			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String[] selection = lstFiles.getSelection();
