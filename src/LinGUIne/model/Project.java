@@ -75,6 +75,14 @@ public class Project {
 		projectName = projName;
 	}
 	
+	/**
+	 * Parses the given projectFile and creates a new Project based on it.
+	 * 
+	 * @param projectFile	The linguine.project file for the new Project.
+	 * 
+	 * @return	A new Project based on the given linguine.project file or null
+	 * 			if an error occurred or the file was incorrect.
+	 */
 	public static Project createFromFile(File projectFile){
 		Project newProj = new Project();
 		
@@ -120,6 +128,7 @@ public class Project {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
 		
 		return newProj;
@@ -196,6 +205,15 @@ public class Project {
 		}
 		
 		return getProjectDirectory().append(subdirPath);
+	}
+	
+	/**
+	 * Returns the path of the project file for this Project.
+	 * 
+	 * @return	Path to the project file.
+	 */
+	public IPath getProjectFile(){
+		return getProjectDirectory().append(PROJECT_FILE);
 	}
 	
 	/**
@@ -381,17 +399,46 @@ public class Project {
 		Files.createDirectory(projectDir.append(ANNOTATIONS_SUBDIR).toFile().toPath());
 		
 		//Create project file
-//		Files.createFile(projectDir.append(PROJECT_FILE).toFile().toPath());
+		updateProjectFile();
 		
-		Path projectFilePath = projectDir.append(PROJECT_FILE).toFile().toPath();
+		return true;
+	}
+	
+	/**
+	 * Updates the project file to reflect the current state of the Project.
+	 * Creates the file if it does not already exist.
+	 * 
+	 * @throws IOException
+	 */
+	public void updateProjectFile() throws IOException{
+		
+		Path projectFilePath = getProjectFile().toFile().toPath();
 		
 		BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
 				Charset.defaultCharset());
-			
-		writer.write(projectName + "\n");
-		writer.close();
 		
-		return true;
+		writer.write(projectName + "\n");
+
+		for(IProjectData projData: projectData.keySet()){
+				
+			String parentFolderName = projData.getFile().getParentFile().getName();
+			String pathToWrite = "";
+			
+			if(parentFolderName.equalsIgnoreCase(DATA_SUBDIR)){
+				pathToWrite += DATA_SUBDIR;
+			}
+			else if(parentFolderName.equalsIgnoreCase(ANNOTATIONS_SUBDIR)){
+				pathToWrite += ANNOTATIONS_SUBDIR;
+			}
+			else if(parentFolderName.equalsIgnoreCase(RESULTS_SUBDIR)){
+				pathToWrite += RESULTS_SUBDIR;
+			}
+			
+			pathToWrite += "/" + projData.getFile().getName();
+			writer.write(pathToWrite);
+		}
+		
+		writer.close();
 	}
 	
 	/**

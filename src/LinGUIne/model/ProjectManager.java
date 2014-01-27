@@ -1,9 +1,11 @@
 package LinGUIne.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.TreeMap;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IPath;
@@ -49,6 +51,24 @@ public class ProjectManager {
 				postEvent(PROJECT_MODIFIED);
 			}
 		};
+	}
+	
+	/**
+	 * Called just before the ProjectManager is destroyed to remove Project
+	 * listeners and force updates of all Project files.
+	 */
+	@PreDestroy
+	public void preDestroy(){
+		for(Project proj: projectSet.values()){
+			proj.removeListener(projListener);
+			
+			try{
+				proj.updateProjectFile();
+			}
+			catch(IOException ioe){
+				ioe.printStackTrace();
+			}
+		}
 	}
 	
 	/**
