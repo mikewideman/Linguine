@@ -2,6 +2,11 @@ package LinGUIne.model;
 
 import LinGUIne.utilities.ParameterCheck;
 
+/**
+ * Represents the contents of some text-based data.
+ * 
+ * @author Kyle Mullins
+ */
 public class TextDataContents implements IProjectDataContents {
 	
 	private String textData;

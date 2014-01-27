@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 /**
- * A WizardPage for the NewProjectWizard which prompts the user to input a name
- * for their new Project.
+ * A WizardPage for the ImportFileWizard which prompts the user to choose which
+ * Files they would like to import.
  * 
  * @author Kyle Mullins
  */
@@ -31,8 +31,7 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 	
 	
 	/**
-	 * Creates a new instance of the page with the given empty Project object,
-	 * and the given instance of ProjectManager.
+	 * Creates a new instance of the page with the given ImportFileData.
 	 * 
 	 * @param projects
 	 */
@@ -133,10 +132,17 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		setPageComplete(false);
 	}
 	
+	/**
+	 * Updates the File List with the names of all the currently chosen Files.
+	 */
 	private void updateFileList(){
 		lstFiles.setItems(wizardData.getChosenFileNames());
 	}
 	
+	/**
+	 * Checks whether or not there is a File selected and enables/disables the
+	 * remove file button accordingly.
+	 */
 	private void checkListSelection() {
 		if(lstFiles.getSelectionCount() == 0){
 			btnRemoveFile.setEnabled(false);
@@ -146,6 +152,9 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * Sets whether or not the page is complete.
+	 */
 	private void checkIfPageComplete(){
 		if(wizardData.isComplete()){
 			setPageComplete(true);

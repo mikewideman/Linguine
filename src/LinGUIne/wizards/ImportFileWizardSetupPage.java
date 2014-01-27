@@ -23,8 +23,9 @@ import LinGUIne.extensions.IFileImporter;
 import LinGUIne.extensions.PlaintextImporter;
 
 /**
- * A WizardPage for the NewProjectWizard which prompts the user to input a name
- * for their new Project.
+ * A WizardPage for the ImportFileWizard which prompts the user select an
+ * IFileImporter they would like to use and a Project they would like to import
+ * Files into.
  * 
  * @author Kyle Mullins
  */
@@ -207,6 +208,9 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		setPageComplete(false);
 	}
 	
+	/**
+	 * Sets whether or not the page is complete.
+	 */
 	private void checkIfPageComplete(){
 		if(wizardData.isReadyForFiles()){
 			setPageComplete(true);

@@ -15,7 +15,7 @@ import LinGUIne.model.ProjectManager;
 import LinGUIne.wizards.ImportFileWizard;
 
 /**
- * Handler for importing files into a Project in the workspace.
+ * Handler for importing one or more Files into a Project in the workspace.
  * 
  * @author Kyle Mullins
  */
@@ -29,8 +29,7 @@ public class ImportHandler {
 	private MApplication application;
 	
 	/**
-	 * Prompts the user for one or more files to import into a Project and
-	 * then copies them into the workspace.
+	 * Opens the ImportFileWizard.
 	 * 
 	 * @param shell	The currently active Shell.
 	 */
@@ -45,32 +44,7 @@ public class ImportHandler {
 		int retval = wizardDialog.open();
 		
 		if(retval == WizardDialog.OK){
-			//TODO: stuff
+			//TODO: stuff?
 		}
-		
-		/*FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-		String chosenFile = dialog.open();
-		
-		if(chosenFile != null) {
-			String sourceDir = new File(chosenFile).getParent();
-			String[] chosenFiles = dialog.getFileNames();
-			IPath destPath = Platform.getLocation();
-			
-			//Copy selected files into the workspace
-			for(String file: chosenFiles) {
-				Path sourceFile = new File(sourceDir + "\\" + file).toPath();
-				Path destFile = destPath.append(file).toFile().toPath();
-				
-				try {
-					Files.copy(sourceFile, destFile);
-				}
-				catch(IOException ioe) {
-					MessageDialog.openError(shell, "Error", "Could not copy " +
-							"files to Project workspace: " + ioe.getMessage());
-					
-					return;
-				}
-			}
-		}*/
 	}
 }
