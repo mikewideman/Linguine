@@ -23,10 +23,13 @@ public class NewProjectWizardNamePage extends WizardPage {
 
 	private Text txtName;
 	private Label lblName;
-	private Label lblError;
 	
 	private Project newProject;
 	private ProjectManager projectMan;
+	
+	private final static String NORMAL_DESCRIPTION = "Enter a name for the new project.";
+	private final static String TOO_SHORT_ERROR = "Project name must not have length 0!";
+	private final static String ALREADY_EXISTS_ERROR = "A Project with that name already exists!";
 	
 	/**
 	 * Creates a new instance of the page with the given empty Project object,
@@ -38,7 +41,7 @@ public class NewProjectWizardNamePage extends WizardPage {
 	public NewProjectWizardNamePage(Project newProj, ProjectManager projects){
 		super("New Project Wizard");
 		setTitle("New Project Wizard");
-		setDescription("Choose a name for the new project.");
+		setDescription(NORMAL_DESCRIPTION);
 		setControl(txtName);
 		
 		newProject = newProj;
@@ -77,12 +80,6 @@ public class NewProjectWizardNamePage extends WizardPage {
 			}
 		});
 		
-		new Label(container, SWT.NONE); //Empty grid cell
-		
-		lblError = new Label(container, SWT.NONE);
-		lblError.setText("");
-		lblError.setForeground(new org.eclipse.swt.graphics.Color(null, 255, 0, 0));
-		
 		GridData grid = new GridData(GridData.FILL_HORIZONTAL);
 		txtName.setLayoutData(grid);
 		
@@ -99,20 +96,19 @@ public class NewProjectWizardNamePage extends WizardPage {
 	 * @return	True iff the given name is valid, false otherwise.
 	 */
 	private boolean isProjectNameValid(String name){
-		String errorText = "";
 		boolean isValid = true;
-		
+		String errorMessage = null;
+				
 		if(name.length() == 0){
-			errorText = "Project name must not have length 0!";
+			errorMessage = TOO_SHORT_ERROR;
 			isValid = false;
 		}
 		else if(projectMan.containsProject(name)){
-			errorText = "A Project with that name already exists!";
+			errorMessage = ALREADY_EXISTS_ERROR;
 			isValid = false;
 		}
 		
-		lblError.setText(errorText);
-		lblError.getParent().layout();
+		setErrorMessage(errorMessage);
 		
 		return isValid;
 	}

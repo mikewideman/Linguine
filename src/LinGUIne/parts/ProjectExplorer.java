@@ -6,23 +6,28 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
@@ -37,9 +42,14 @@ import LinGUIne.model.TextData;
  */
 public class ProjectExplorer {
 
+	public static final String PROJECT_EXPLORER_DOUBLE_CLICK = "Project_Explorer/Double_Click";
+	
 	private TreeViewer tree;
 	private MApplication application;
 
+	@Inject
+	private IEventBroker eventBroker;
+	
 	@Inject
 	public ProjectExplorer(MApplication app){
 		application = app;
@@ -64,6 +74,7 @@ public class ProjectExplorer {
 		tree.setInput(projectMan);
 		
 		application.getContext().set(ProjectManager.class, projectMan);
+		ContextInjectionFactory.inject(projectMan, application.getContext());
 		
 		/*
 		 * Add listeners to TreeViewer
@@ -77,10 +88,23 @@ public class ProjectExplorer {
 		});
 		
 		tree.addDoubleClickListener(new IDoubleClickListener(){
-
+			
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				//TODO: if user double clicks a file, attempt to open it in an editor
+				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+				Object selectedNode = selection.getFirstElement();
+				
+				if(selectedNode instanceof ProjectExplorerDataNode){
+					//If user double clicks a file, post an event for the editor
+					ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)selectedNode;
+					IProjectData data = dataNode.getNodeData();
+					
+					eventBroker.post(PROJECT_EXPLORER_DOUBLE_CLICK, data);
+				}
+				else {
+					tree.setExpandedState(selectedNode,
+							!tree.getExpandedState(selectedNode));
+				}
 			}
 		});
 		
@@ -96,6 +120,15 @@ public class ProjectExplorer {
 				}
 			}
 		});
+	}
+	
+	@Inject
+	@Optional
+	public void projectEvent(@UIEventTopic(ProjectManager.ALL_PROJECT_EVENTS)
+			ProjectManager projectMan){
+		
+		tree.getContentProvider().inputChanged(tree, null, projectMan);
+		tree.refresh();
 	}
 
 	/**
@@ -139,7 +172,7 @@ public class ProjectExplorer {
 				ProjectExplorerNode dataNode = newRoot.addChild("Project Data");
 				ProjectExplorerNode resultsNode = newRoot.addChild("Results");
 				
-				for(TextData data: proj.getTextData()){
+				for(IProjectData data: proj.getOriginalData()){
 					dataNode.addDataChild(data.getFile().getName(), data);
 				}
 				
@@ -159,8 +192,6 @@ public class ProjectExplorer {
 		 */
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			System.out.println("inputChanged called.");
-			
 			if(newInput != null){
 				inputChanged((ProjectManager)newInput);
 			}

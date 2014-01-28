@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import LinGUIne.model.Annotation;
+import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.Result;
@@ -71,19 +71,19 @@ public class ProjectTest {
 
 	@Test
 	public void testAddAnnotation() {
-		Annotation annotation1 = new Annotation(new File("somefile.annotation"));
-		Annotation annotation2 = new Annotation(new File("some_other_file"));
+		AnnotationSet annotation1 = new AnnotationSet(new File("somefile.annotation"));
+		AnnotationSet annotation2 = new AnnotationSet(new File("some_other_file"));
 		
-		assertFalse("Cannot add an Annotation with null AnnotatedData.",
+		assertFalse("Cannot add an AnnotationSet with null AnnotatedData.",
 				project.addAnnotation(annotation1, null));
-		assertFalse("Cannot add a null Annotation.",
+		assertFalse("Cannot add a null AnnotationSet.",
 				project.addAnnotation(null, textData1));
 		
-		assertTrue("Should be able to add a valid Annotation with valid AnnotatedData.",
+		assertTrue("Should be able to add a valid AnnotationSet with valid AnnotatedData.",
 				project.addAnnotation(annotation1, textData1));
 		assertFalse("Cannot have multiple Annotations for the same AnnotatedData",
 				project.addAnnotation(annotation2, textData1));
-		assertTrue("Should be able to add a Valid Annotation with valid AnnotatedData.",
+		assertTrue("Should be able to add a Valid AnnotationSet with valid AnnotatedData.",
 				project.addAnnotation(annotation2, textData2));
 	}
 
@@ -136,21 +136,21 @@ public class ProjectTest {
 		Project testProj = new Project();
 		
 		assertNotNull("TextData collection should never be null.",
-				testProj.getTextData());
+				testProj.getOriginalData());
 		assertEquals("TextData collection should be empty.",
-				testProj.getTextData().size(), 0);
+				testProj.getOriginalData().size(), 0);
 		assertEquals("TextData collection should contain 3 elements.",
-				project.getTextData().size(), 3);
+				project.getOriginalData().size(), 3);
 	}
 
 	@Test
 	public void testIsAnnotated() {
-		Annotation annotation = new Annotation(new File("annotationFile.annotation"));
+		AnnotationSet annotationSet = new AnnotationSet(new File("annotationFile.annotation"));
 		
 		assertFalse("ProjectData that has not been annotated should not return that it is.",
 				project.isAnnotated(textData3));
 		
-		project.addAnnotation(annotation, textData3);
+		project.addAnnotation(annotationSet, textData3);
 		
 		assertFalse("ProjectData that has not been annotated should not return that it is.",
 				project.isAnnotated(textData2));
@@ -160,16 +160,16 @@ public class ProjectTest {
 
 	@Test
 	public void testGetAnnotation() {
-		Annotation annotation = new Annotation(new File("annotationFile.annotation"));
+		AnnotationSet annotationSet = new AnnotationSet(new File("annotationFile.annotation"));
 		
 		assertNull("ProjectData that has not been annotated should return a null annotation.",
 				project.getAnnotation(textData1));
 		
-		project.addAnnotation(annotation, textData2);
+		project.addAnnotation(annotationSet, textData2);
 		
 		assertFalse("ProjectData that has not been annotated should not return that it is.",
 				project.isAnnotated(textData3));
-		assertSame("ProjectData that has been annotated should be able to have the Annotation retrieved.",
-				project.getAnnotation(textData2), annotation);
+		assertSame("ProjectData that has been annotated should be able to have the AnnotationSet retrieved.",
+				project.getAnnotation(textData2), annotationSet);
 	}
 }

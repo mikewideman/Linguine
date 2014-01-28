@@ -1,7 +1,12 @@
 package LinGUIne.model;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +15,8 @@ import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
 
+import LinGUIne.utilities.FileUtils;
+
 /**
  * Represents a LinGUIne Project with a name, a file system location, and
  * containing Project Data.
@@ -17,6 +24,13 @@ import org.eclipse.core.runtime.IPath;
  * @author Kyle Mullins
  */
 public class Project {
+	/*
+	 * Enum used for specifying a subdirectory of a Project.
+	 */
+	public static enum Subdirectory{
+		Data, Results, Annotations;
+	}
+	
 	/*
 	 * Constants for directory and file names used when creating a Project on
 	 * disk.
@@ -30,9 +44,10 @@ public class Project {
 	private String projectName;
 	private TreeMap<IProjectData, Integer> projectData;
 	private TreeMap<Result, HashSet<Integer>> results;
-	private HashMap<Integer, Annotation> annotations;
+	private HashMap<Integer, AnnotationSet> annotationSets;
 	
 	private int lastId;
+	private HashSet<ProjectListener> listeners;
 	
 	/**
 	 * Creates a new Project without a name or any Project Data of any kind.
@@ -41,10 +56,11 @@ public class Project {
 	 */
 	public Project(){
 		lastId = 0;
+		listeners = new HashSet<ProjectListener>();
 		
 		projectData = new TreeMap<IProjectData, Integer>();
 		results = new TreeMap<Result, HashSet<Integer>>();
-		annotations = new HashMap<Integer, Annotation>();
+		annotationSets = new HashMap<Integer, AnnotationSet>();
 	}
 	
 	/**
@@ -57,6 +73,65 @@ public class Project {
 		this();
 		
 		projectName = projName;
+	}
+	
+	/**
+	 * Parses the given projectFile and creates a new Project based on it.
+	 * 
+	 * @param projectFile	The linguine.project file for the new Project.
+	 * 
+	 * @return	A new Project based on the given linguine.project file or null
+	 * 			if an error occurred or the file was incorrect.
+	 */
+	public static Project createFromFile(File projectFile){
+		Project newProj = new Project();
+		
+		try(BufferedReader reader = Files.newBufferedReader(projectFile.toPath(),
+				Charset.defaultCharset())){
+			
+			IPath parentDir = FileUtils.toEclipsePath(projectFile.
+					getParentFile().getParentFile());
+			newProj.setParentDirectory(parentDir);
+			
+			//TODO: replace with parsing for actual file format
+			if(reader.ready()){
+				newProj.setName(reader.readLine());
+				
+				while(reader.ready()){
+					String[] lineParts = reader.readLine().split(":");
+					
+					//TODO: full format should specify in-memory type of each file
+					IPath filePath = newProj.getProjectDirectory().append(lineParts[0]);
+					
+					if(lineParts[0].startsWith(DATA_SUBDIR)){
+						IProjectData projData = new TextData(filePath.toFile());
+						
+						newProj.addProjectData(projData);
+					}
+					else if(lineParts[0].startsWith(ANNOTATIONS_SUBDIR)){
+//						IProjectData annotation = new AnnotationSet(filePath.toFile());
+//						
+//						//TODO: parse annotated file from lineParts[1]
+//						newProj.addAnnotation(annotation);
+					}
+					else if(lineParts[0].startsWith(RESULTS_SUBDIR)){
+//						IProjectData result = new Result(filePath.toFile());
+//						
+//						//TODO: parse affected files from lineParts[1]
+//						newProj.addResult(result, analyzedData)
+					}
+				}
+			}
+			else{
+				return null;
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return newProj;
 	}
 	
 	/**
@@ -104,6 +179,44 @@ public class Project {
 	}
 	
 	/**
+	 * Returns the path of the requested subdirectory of this Project's
+	 * directory.
+	 * 
+	 * @param subdir	Enum denoting for which subdirectory to return the path.
+	 * 
+	 * @return	The path of the requested subdirectory or null if an invalid
+	 * 			enum option is provided.
+	 */
+	public IPath getSubdirectory(Subdirectory subdir){
+		String subdirPath;
+		
+		switch(subdir){
+			case Data:
+				subdirPath = DATA_SUBDIR;
+				break;
+			case Results:
+				subdirPath = RESULTS_SUBDIR;
+				break;
+			case Annotations:
+				subdirPath = ANNOTATIONS_SUBDIR;
+				break;
+			default:
+				return null;
+		}
+		
+		return getProjectDirectory().append(subdirPath);
+	}
+	
+	/**
+	 * Returns the path of the project file for this Project.
+	 * 
+	 * @return	Path to the project file.
+	 */
+	public IPath getProjectFile(){
+		return getProjectDirectory().append(PROJECT_FILE);
+	}
+	
+	/**
 	 * Adds the given ProjectData to the Project if it is not already in the
 	 * Project and is not null.
 	 * Note: Results and Annotations should not be added with this method.
@@ -121,7 +234,9 @@ public class Project {
 		}
 		
 		projectData.put(projData, id);
-		annotations.put(id, null);
+		annotationSets.put(id, null);
+		
+		notifyListeners();
 		
 		return true;
 	}
@@ -163,25 +278,25 @@ public class Project {
 	}
 	
 	/**
-	 * Adds the given Annotation to the Project as markup for the given
-	 * ProjectData. Both the Annotation and ProjectData objects must not be
+	 * Adds the given AnnotationSet to the Project as markup for the given
+	 * ProjectData. Both the AnnotationSet and ProjectData objects must not be
 	 * null, and the ProjectData object must be both in the Project and not
 	 * already annotated.
 	 * 
-	 * @param annotation	The Annotation to be added to the Project.
-	 * @param annotatedData	The ProjectData that the Annotation is marking up.
+	 * @param annotationSet	The AnnotationSet to be added to the Project.
+	 * @param annotatedData	The ProjectData that the AnnotationSet is marking up.
 	 * 
-	 * @return	True iff the Annotation was successfully added, false
+	 * @return	True iff the AnnotationSet was successfully added, false
 	 * 			otherwise.
 	 */
-	public boolean addAnnotation(Annotation annotation, IProjectData annotatedData){
+	public boolean addAnnotation(AnnotationSet annotationSet, IProjectData annotatedData){
 		int dataId;
 		
 		if(containsProjectData(annotatedData) && !isAnnotated(annotatedData)){
 			dataId = projectData.get(annotatedData);
 			
-			if(addProjectData(annotation)){
-				annotations.put(dataId, annotation);
+			if(addProjectData(annotationSet)){
+				annotationSets.put(dataId, annotationSet);
 				
 				return true;
 			}
@@ -216,18 +331,19 @@ public class Project {
 	}
 	
 	/**
-	 * Returns all of the TextData objects in this Project.
+	 * Returns all of the original Project Data objects in this Project (i.e.
+	 * neither AnnotationSets nor Results).
 	 */
-	public Collection<TextData> getTextData(){
-		ArrayList<TextData> textData = new ArrayList<TextData>();
+	public Collection<IProjectData> getOriginalData(){
+		ArrayList<IProjectData> originalData = new ArrayList<IProjectData>();
 		
 		for(IProjectData projData: projectData.keySet()){
-			if(projData instanceof TextData){
-				textData.add((TextData)projData);
+			if(!(projData instanceof Result)){
+				originalData.add((TextData)projData);
 			}
 		}
 		
-		return textData;
+		return originalData;
 	}
 	
 	/**
@@ -238,20 +354,20 @@ public class Project {
 		if(containsProjectData(projData)){
 			int id = projectData.get(projData);
 			
-			return annotations.get(id) != null;
+			return annotationSets.get(id) != null;
 		}
 		
 		return false;
 	}
 	
 	/**
-	 * Returns the Annotation associated with the given ProjectData (if any).
+	 * Returns the AnnotationSet associated with the given ProjectData (if any).
 	 */
-	public Annotation getAnnotation(IProjectData projData){
+	public AnnotationSet getAnnotation(IProjectData projData){
 		if(containsProjectData(projData)){
 			int id = projectData.get(projData);
 			
-			return annotations.get(id);
+			return annotationSets.get(id);
 		}
 		
 		return null;
@@ -283,9 +399,46 @@ public class Project {
 		Files.createDirectory(projectDir.append(ANNOTATIONS_SUBDIR).toFile().toPath());
 		
 		//Create project file
-		Files.createFile(projectDir.append(PROJECT_FILE).toFile().toPath());
+		updateProjectFile();
 		
 		return true;
+	}
+	
+	/**
+	 * Updates the project file to reflect the current state of the Project.
+	 * Creates the file if it does not already exist.
+	 * 
+	 * @throws IOException
+	 */
+	public void updateProjectFile() throws IOException{
+		
+		Path projectFilePath = getProjectFile().toFile().toPath();
+		
+		BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
+				Charset.defaultCharset());
+		
+		writer.write(projectName + "\n");
+
+		for(IProjectData projData: projectData.keySet()){
+				
+			String parentFolderName = projData.getFile().getParentFile().getName();
+			String pathToWrite = "";
+			
+			if(parentFolderName.equalsIgnoreCase(DATA_SUBDIR)){
+				pathToWrite += DATA_SUBDIR;
+			}
+			else if(parentFolderName.equalsIgnoreCase(ANNOTATIONS_SUBDIR)){
+				pathToWrite += ANNOTATIONS_SUBDIR;
+			}
+			else if(parentFolderName.equalsIgnoreCase(RESULTS_SUBDIR)){
+				pathToWrite += RESULTS_SUBDIR;
+			}
+			
+			pathToWrite += "/" + projData.getFile().getName();
+			writer.write(pathToWrite);
+		}
+		
+		writer.close();
 	}
 	
 	/**
@@ -295,7 +448,45 @@ public class Project {
 		return getName();
 	}
 	
+	/**
+	 * Registers the given listener which will get notified whenever this
+	 * Project is modified.
+	 * 
+	 * @param listener	The listener to be registered.
+	 */
+	public void addListener(ProjectListener listener){
+		listeners.add(listener);
+	}
+	
+	/**
+	 * Unregisters the given listener such that it will no longer receive
+	 * notifications when this Project is modified.
+	 * 
+	 * @param listener	The listener to be unregistered.
+	 */
+	public void removeListener(ProjectListener listener){
+		listeners.remove(listener);
+	}
+	
+	/**
+	 * Notifies all listeners on this Project that it was modified.
+	 */
+	private void notifyListeners(){
+		for(ProjectListener listener: listeners){
+			listener.notify(this);
+		}
+	}
+	
 	private int getNextId(){
 		return lastId++;
+	}
+	
+	/**
+	 * Simple listener for receiving notifications when a Project is modified.
+	 * 
+	 * @author Kyle Mullins
+	 */
+	public abstract static class ProjectListener {
+		public abstract void notify(Project modifiedProj);
 	}
 }

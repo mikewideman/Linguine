@@ -28,7 +28,7 @@ public class NewProjectHandler {
 	private ProjectManager projectMan;
 	
 	/**
-	 * Opens the New Project Wizard then creates a new Project in the
+	 * Opens the NewProjectWizard then creates a new Project in the
 	 * workspace.
 	 * 
 	 * @param shell	The currently active Shell.

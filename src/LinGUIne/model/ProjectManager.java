@@ -1,10 +1,18 @@
 package LinGUIne.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.TreeMap;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.e4.core.services.events.IEventBroker;
+
+import LinGUIne.model.Project.ProjectListener;
+import LinGUIne.utilities.FileUtils;
 
 /**
  * Encapsulates all Projects within some workspace and controls access to them.
@@ -13,8 +21,21 @@ import org.eclipse.core.runtime.IPath;
  */
 public class ProjectManager {
 
+	/**
+	 * Event strings used to subscribe to project-related events.
+	 */
+	public static final String ALL_PROJECT_EVENTS = "Project/*";
+	public static final String PROJECT_ADDED = "Project/Added";
+	public static final String PROJECT_REMOVED = "Project/Removed";
+	public static final String PROJECT_MODIFIED = "Project/Modified";
+	
+	@Inject
+	private IEventBroker eventBroker;
+	
 	private TreeMap<String, Project> projectSet;
 	private IPath workspace;
+	
+	private ProjectListener projListener;
 	
 	/**
 	 * Creates a new ProjectManager for the given workspace.
@@ -22,6 +43,32 @@ public class ProjectManager {
 	public ProjectManager(IPath workspacePath){
 		workspace = workspacePath;
 		projectSet = new TreeMap<String, Project>();
+		
+		projListener = new ProjectListener() {
+			
+			@Override
+			public void notify(Project modifiedProj) {
+				postEvent(PROJECT_MODIFIED);
+			}
+		};
+	}
+	
+	/**
+	 * Called just before the ProjectManager is destroyed to remove Project
+	 * listeners and force updates of all Project files.
+	 */
+	@PreDestroy
+	public void preDestroy(){
+		for(Project proj: projectSet.values()){
+			proj.removeListener(projListener);
+			
+			try{
+				proj.updateProjectFile();
+			}
+			catch(IOException ioe){
+				ioe.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -55,6 +102,8 @@ public class ProjectManager {
 		}
 		else if(!containsProject(newProject.getName())){
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
+			newProject.addListener(projListener);
+			postEvent(PROJECT_ADDED);
 			
 			return true;
 		}
@@ -90,14 +139,20 @@ public class ProjectManager {
 			if(dir.isDirectory()){
 				for(String filename: dir.list()){
 					if(filename.equals(Project.PROJECT_FILE)){
-						String projectName = dir.getName(); //TODO: change this to read from project file
-						Project project = new Project(projectName);
+						Project project = Project.createFromFile(
+								FileUtils.appendPath(dir, filename));
 						
 						project.setParentDirectory(workspace);
 						addProject(project);
 					}
 				}
 			}
+		}
+	}
+	
+	private void postEvent(String eventStr) {
+		if(eventBroker != null){
+			eventBroker.post(eventStr, this);
 		}
 	}
 }
