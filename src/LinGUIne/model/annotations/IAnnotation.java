@@ -1,11 +1,14 @@
 package LinGUIne.model.annotations;
 
 /**
- * The composite interface for all types of annotations.
- * TODO: Potentially obviated by single Annotation subclass
+ * The interface for all types of Annotations.
  * 
  * @author Kyle Mullins
  */
-public interface IAnnotation extends IAnnotatable{
+public interface IAnnotation{
+	
+	/**
+	 * Returns the Tag associated with this Annotation.
+	 */
 	Tag getTag();
 }
