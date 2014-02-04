@@ -42,6 +42,9 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 		createTab();
 	}
 	
+	/**
+	 * Creates a new blank text editor tab
+	 */
 	public void createTab(){
 		CTabItem newTab = new CTabItem(tabFolder,SWT.CLOSE);
 		newTab.setText("New File");
@@ -52,6 +55,11 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 		newTab.setControl(textArea);
 	}
 	
+	/**
+	 * Creates a new text editor tab and populates the editor with data from a text file
+	 * @param fileName - the name of the File
+	 * @param contents - the text data from the File
+	 */
 	public void createTab(String fileName, String[] contents){
 		CTabItem newTab = new CTabItem(tabFolder,SWT.CLOSE);
 		newTab.setText(fileName);
