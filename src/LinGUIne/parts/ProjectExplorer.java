@@ -6,7 +6,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -25,15 +32,18 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
-import LinGUIne.model.TextData;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
@@ -49,6 +59,9 @@ public class ProjectExplorer {
 
 	@Inject
 	private IEventBroker eventBroker;
+	
+	@Inject
+	private ECommandService commandService;
 	
 	@Inject
 	public ProjectExplorer(MApplication app){
@@ -75,6 +88,8 @@ public class ProjectExplorer {
 		
 		application.getContext().set(ProjectManager.class, projectMan);
 		ContextInjectionFactory.inject(projectMan, application.getContext());
+		
+		createContextMenu();
 		
 		/*
 		 * Add listeners to TreeViewer
@@ -141,6 +156,61 @@ public class ProjectExplorer {
 
 	@PreDestroy
 	public void dispose() {}
+	
+	/**
+	 * Builds the ProjectExplorer's context menu
+	 */
+	private void createContextMenu(){
+		Menu contextMenu = new Menu(tree.getTree());
+		
+		MenuItem newProject = new MenuItem(contextMenu, SWT.NONE);
+		newProject.setText("New Project...");
+		newProject.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: We need to go through and change all these IDs
+				Command newProjectCommand = commandService.getCommand("linguine.command.1");
+				
+				try {
+					newProjectCommand.executeWithChecks(new ExecutionEvent());
+				}
+				catch(ExecutionException | NotDefinedException
+						| NotEnabledException | NotHandledException e1) {
+					//TODO: Oh no the command is not defined!
+					e1.printStackTrace();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		MenuItem refreshExplorer = new MenuItem(contextMenu, SWT.NONE);
+		refreshExplorer.setText("Refresh");
+		refreshExplorer.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: We need to go through and change all these IDs
+				Command newProjectCommand = commandService.getCommand("linguine.command.3");
+				
+				try {
+					newProjectCommand.executeWithChecks(new ExecutionEvent());
+				}
+				catch(ExecutionException | NotDefinedException
+						| NotEnabledException | NotHandledException e1) {
+					//TODO: Oh no the command is not defined!
+					e1.printStackTrace();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		tree.getTree().setMenu(contextMenu);
+	}
 
 	/**
 	 * Builds up a tree of all the Projects so that they can be displayed in
