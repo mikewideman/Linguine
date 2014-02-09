@@ -17,6 +17,13 @@ public interface IProjectData extends Comparable<IProjectData> {
 	File getFile();
 	
 	/**
+	 * Returns a name for this Project Data which can be used to identify it.
+	 * 
+	 * @return	String name of this Project Data.
+	 */
+	String getName();
+	
+	/**
 	 * Returns the contents of the associated Project Data file.
 	 * Note: This function may read from disk.
 	 * 

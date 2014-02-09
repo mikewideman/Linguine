@@ -35,6 +35,11 @@ public class TextData implements IProjectData {
 	public File getFile() {
 		return dataFile;
 	}
+	
+	@Override
+	public String getName() {
+		return dataFile.getName();
+	}
 
 	/**
 	 * Returns a TextDataContents associated with this TextData file, reading

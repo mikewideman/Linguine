@@ -20,6 +20,11 @@ public class AnnotationSet implements IProjectData {
 	}
 
 	@Override
+	public String getName() {
+		return annotatedFile.getName();
+	}
+	
+	@Override
 	public IProjectDataContents getContents() {
 		// TODO Auto-generated method stub
 		return null;

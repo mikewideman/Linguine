@@ -1,15 +1,21 @@
 package LinGUIne.wizards;
 
+import java.util.LinkedList;
+
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.List;
+
+import LinGUIne.model.IProjectData;
+import LinGUIne.model.Project;
+import LinGUIne.model.ProjectManager;
 
 /**
  * Analysis Page object; this is the GUI components
@@ -22,17 +28,27 @@ import org.eclipse.swt.SWT;
 
 public class AnalysisWizardSelectFilePage extends WizardPage{
 
-	private Text text1;
-	private Composite container;
+	private Label lblProjects;
+	private List lstProjects;
+	private Label lblFiles;
+	private List lstFiles;
+	
+	private ProjectManager projectMan;
+	private AnalysisData wizardData;
 
 	/**
 	 * Straightforward constructor. Sets the title and the
 	 * "directions" for the first page.
 	 */
-	public AnalysisWizardSelectFilePage(){
+	public AnalysisWizardSelectFilePage(AnalysisData data,
+			ProjectManager projects){
+		
 		super("Analysis Wizard");
 		setTitle("Analysis Wizard - Step 1");
 		setDescription("Select the file(s) you wish to analyze.");
+		
+		wizardData = data;
+		projectMan = projects;
 	}
 	
 	/**
@@ -43,39 +59,109 @@ public class AnalysisWizardSelectFilePage extends WizardPage{
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
+		Composite container = new Composite(parent, SWT.NONE);
 	    GridLayout layout = new GridLayout();
+	    layout.numColumns = 1;
 	    container.setLayout(layout);
-	    layout.numColumns = 2;
-	    Label label1 = new Label(container, SWT.NONE);
-	    label1.setText("Put here a value");
+	    
+	    Group grpProjects = new Group(container, SWT.NONE);
+	    grpProjects.setLayout(new GridLayout(1, false));
+	    grpProjects.setLayoutData(new GridData(GridData.FILL_BOTH));
+	    grpProjects.setText("Project");
+	    
+	    lblProjects = new Label(grpProjects, SWT.NONE);
+	    lblProjects.setText("Select from which Project to select files:");
 
-	    text1 = new Text(container, SWT.BORDER | SWT.SINGLE);
-	    text1.setText("");
-	    text1.addKeyListener(new KeyListener() {
+	    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL);
+	    lstProjects.setLayoutData(new GridData(GridData.FILL_BOTH));
+	    
+	    for(Project project: projectMan.getProjects()){
+	    	lstProjects.add(project.getName());
+	    }
+	    
+	    lstProjects.addSelectionListener(new SelectionListener(){
 
-	      @Override
-	      public void keyPressed(KeyEvent e) {
-	      }
+	    	/**
+	    	 * Sets which Project is currently selected and populates the 
+	    	 * List of Project Data in the Project.
+	    	 */
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Project selectedProject = projectMan.getProject(lstProjects.getSelection()[0]);
+				wizardData.setChosenProject(selectedProject);
+				wizardData.setChosenProjectData(new LinkedList<IProjectData>());
+				
+				updateFileList();
+				lstFiles.setEnabled(true);
+				checkIfPageComplete();
+			}
 
-	      @Override
-	      public void keyReleased(KeyEvent e) {
-	        if (!text1.getText().isEmpty()) {
-	          setPageComplete(true);
-
-	        }
-	      }
-
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+	    	
 	    });
-	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-	    text1.setLayoutData(gd);
+	    
+	    Group grpFiles = new Group(container, SWT.NONE);
+	    grpFiles.setLayout(new GridLayout(1, false));
+	    grpFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
+	    grpFiles.setText("Files");
+	    
+	    lblFiles = new Label(grpFiles, SWT.NONE);
+	    lblFiles.setText("Select the Files on which to run the Analysis:");
+	    
+	    lstFiles = new List(grpFiles, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+	    lstFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
+	    lstFiles.setEnabled(false);
+	    lstFiles.addSelectionListener(new SelectionListener(){
+
+	    	/**
+	    	 * Sets which Project Data are currently selected.
+	    	 */
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkedList<IProjectData> selectedProjectData =
+						new LinkedList<IProjectData>();
+				
+				for(String dataName: lstFiles.getSelection()){
+					selectedProjectData.add(wizardData.getChosenProject().
+							getProjectData(dataName));
+				}
+				
+				wizardData.setChosenProjectData(selectedProjectData);
+				checkIfPageComplete();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+	    });
+	    
 	    // Required to avoid an error in the system
 	    setControl(container);
 	    setPageComplete(false);
 	}
 	
-	public String getText1() {
-		return text1.getText();
+	/**
+	 * Updates the contents of lstFiles.
+	 */
+	private void updateFileList(){
+		lstFiles.deselectAll();
+		lstFiles.removeAll();
+		
+		for(IProjectData projData: wizardData.getChosenProject().getOriginalData()){
+			lstFiles.add(projData.getName());
+		}
+		
+		lstFiles.update();
 	}
 	
+	private void checkIfPageComplete(){
+		if(wizardData.getChosenProject() != null &&
+				!wizardData.getChosenProjectData().isEmpty()){
+			
+			setPageComplete(true);
+		}
+		else{
+			setPageComplete(false);
+		}
+	}
 }

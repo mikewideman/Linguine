@@ -20,6 +20,11 @@ public class Result implements IProjectData {
 	}
 
 	@Override
+	public String getName() {
+		return resultFile.getName();
+	}
+	
+	@Override
 	public int compareTo(IProjectData projData) {
 		if(projData == null){
 			return 1;

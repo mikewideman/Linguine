@@ -29,7 +29,6 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 	
 	private ImportFileData wizardData;
 	
-	
 	/**
 	 * Creates a new instance of the page with the given ImportFileData.
 	 * 

@@ -317,6 +317,32 @@ public class Project {
 	}
 	
 	/**
+	 * Returns whether or not this Project contains ProjectData of the given
+	 * name.
+	 */
+	public boolean containsProjectData(String projDataName){
+		return getProjectData(projDataName) != null;
+	}
+	
+	/**
+	 * Returns the ProjectData with the given name if one such ProjectData
+	 * object exists in this Project.
+	 * 
+	 * @param projDataName	The name of the ProjectData to return.
+	 * 
+	 * @return	The ProjectData instance of the given name, or null.
+	 */
+	public IProjectData getProjectData(String projDataName){
+		for(IProjectData data: projectData.keySet()){
+			if(data.getName().equals(projDataName)){
+				return data;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Returns a collection of all the ProjectData objects in this Project.
 	 */
 	public Collection<IProjectData> getProjectData(){

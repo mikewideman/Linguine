@@ -243,11 +243,11 @@ public class ProjectExplorer {
 				ProjectExplorerNode resultsNode = newRoot.addChild("Results");
 				
 				for(IProjectData data: proj.getOriginalData()){
-					dataNode.addDataChild(data.getFile().getName(), data);
+					dataNode.addDataChild(data.getName(), data);
 				}
 				
 				for(Result result: proj.getResults()){
-					resultsNode.addDataChild(result.getFile().getName(), result);
+					resultsNode.addDataChild(result.getName(), result);
 				}
 				
 				projectTrees.add(newRoot);
