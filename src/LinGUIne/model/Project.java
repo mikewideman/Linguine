@@ -14,7 +14,10 @@ import java.util.HashSet;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 
+import LinGUIne.model.annotations.Tag;
 import LinGUIne.utilities.FileUtils;
 
 /**
@@ -109,13 +112,13 @@ public class Project {
 						newProj.addProjectData(projData);
 					}
 					else if(lineParts[0].startsWith(ANNOTATIONS_SUBDIR)){
-//						IProjectData annotation = new AnnotationSet(filePath.toFile());
-//						
-//						//TODO: parse annotated file from lineParts[1]
-//						newProj.addAnnotation(annotation);
+						AnnotationSet annotation = new AnnotationSet(filePath.toFile());
+						IProjectData annotatedData = newProj.getProjectData(lineParts[1]);
+						
+						newProj.addAnnotation(annotation, annotatedData);
 					}
 					else if(lineParts[0].startsWith(RESULTS_SUBDIR)){
-//						IProjectData result = new Result(filePath.toFile());
+//						Result result = new Result(filePath.toFile());
 //						
 //						//TODO: parse affected files from lineParts[1]
 //						newProj.addResult(result, analyzedData)
@@ -364,7 +367,7 @@ public class Project {
 		ArrayList<IProjectData> originalData = new ArrayList<IProjectData>();
 		
 		for(IProjectData projData: projectData.keySet()){
-			if(!(projData instanceof Result)){
+			if(!(projData instanceof Result) && !(projData instanceof AnnotationSet)){
 				originalData.add((TextData)projData);
 			}
 		}
@@ -420,9 +423,9 @@ public class Project {
 		Files.createDirectory(projectDir.toFile().toPath());
 		
 		//Create sub-directories
-		Files.createDirectory(projectDir.append(DATA_SUBDIR).toFile().toPath());
-		Files.createDirectory(projectDir.append(RESULTS_SUBDIR).toFile().toPath());
-		Files.createDirectory(projectDir.append(ANNOTATIONS_SUBDIR).toFile().toPath());
+		Files.createDirectory(getSubdirectory(Subdirectory.Data).toFile().toPath());
+		Files.createDirectory(getSubdirectory(Subdirectory.Results).toFile().toPath());
+		Files.createDirectory(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
 		
 		//Create project file
 		updateProjectFile();
@@ -448,20 +451,30 @@ public class Project {
 		for(IProjectData projData: projectData.keySet()){
 				
 			String parentFolderName = projData.getFile().getParentFile().getName();
-			String pathToWrite = "";
+			String lineToWrite = "";
 			
 			if(parentFolderName.equalsIgnoreCase(DATA_SUBDIR)){
-				pathToWrite += DATA_SUBDIR;
+				lineToWrite += DATA_SUBDIR;
+				lineToWrite += "/" + projData.getFile().getName();
+				
+				if(isAnnotated(projData)){
+					AnnotationSet annotation = getAnnotation(projData);
+					
+					lineToWrite += "\n" + ANNOTATIONS_SUBDIR;
+					lineToWrite += "/" + annotation.getFile().getName();
+					lineToWrite += ":" + projData.getName();
+				}
 			}
 			else if(parentFolderName.equalsIgnoreCase(ANNOTATIONS_SUBDIR)){
-				pathToWrite += ANNOTATIONS_SUBDIR;
+//				lineToWrite += ANNOTATIONS_SUBDIR;
+				continue;
 			}
 			else if(parentFolderName.equalsIgnoreCase(RESULTS_SUBDIR)){
-				pathToWrite += RESULTS_SUBDIR;
+				lineToWrite += RESULTS_SUBDIR;
+				lineToWrite += "/" + projData.getFile().getName();
 			}
 			
-			pathToWrite += "/" + projData.getFile().getName();
-			writer.write(pathToWrite);
+			writer.write(lineToWrite + "\n");
 		}
 		
 		writer.close();

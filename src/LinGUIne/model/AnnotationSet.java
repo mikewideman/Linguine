@@ -58,7 +58,7 @@ public class AnnotationSet implements IProjectData {
 			}
 		}
 		
-		return contents;
+		return contents.copy();
 	}
 
 	@Override

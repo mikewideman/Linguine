@@ -23,20 +23,26 @@ class AnnotationSetTranslator {
 	private final static String ANNOTATIONS_ATTRIB = "Annotations";
 	
 	/**
+	 * Converts the given AnnotationSetContents to Json format so that it may
+	 * be written to disk.
 	 * 
+	 * @param contents	The AnnotationSetContents object to be converted.
 	 * 
-	 * @param contents
-	 * @return
+	 * @return	A Json String representing the given AnnotationSetContents.
 	 */
 	public static String toJson(AnnotationSetContents contents){
-		return "";
+		JsonElement json = composeJsonFromContents(contents);
+		
+		return json.toString();
 	}
 	
 	/**
+	 * Converts the given Json String into an AnnotationSetContents object.
 	 * 
+	 * @param jsonStr	A Json String to be converted to an in-memory object.
 	 * 
-	 * @param jsonStr
-	 * @return
+	 * @return	An AnnotationSetContents object representing the given Json
+	 * 			or null if the Json could not be parsed.
 	 */
 	public static AnnotationSetContents fromJson(String jsonStr){
 		JsonParser parser = new JsonParser();
@@ -46,14 +52,11 @@ class AnnotationSetTranslator {
 	}
 	
 	/*
-	 * Composing
+	 * Composing into Json
 	 */
 	
 	/**
-	 * 
-	 * 
-	 * @param contents
-	 * @return
+	 * Returns the root JsonElement of the given AnnotationSetContents object.
 	 */
 	private static JsonElement composeJsonFromContents(AnnotationSetContents contents){
 		JsonObject contentsRootObj = new JsonObject();
@@ -67,17 +70,20 @@ class AnnotationSetTranslator {
 			tags.put(tag, id);
 			tagsArray.add(composeJsonFromTag(tag, id));
 			
-			JsonObject annotationRootObj = new JsonObject();
-			JsonArray locationsArray = new JsonArray();
-			
-			annotationRootObj.addProperty("TagID", id);
-			annotationRootObj.add("Locations", locationsArray);
-			
-			for(IAnnotation annotation: contents.getAnnotations(tag)){
-				locationsArray.add(composeJsonFromAnnotation(annotation, tags));
+			if(!contents.getAnnotations(tag).isEmpty()){
+				JsonObject annotationRootObj = new JsonObject();
+				JsonArray locationsArray = new JsonArray();
+				
+				annotationRootObj.addProperty("TagID", id);
+				annotationRootObj.add("Locations", locationsArray);
+				
+				for(IAnnotation annotation: contents.getAnnotations(tag)){
+					locationsArray.add(composeJsonFromAnnotation(annotation, tags));
+				}
+				
+				annotationsArray.add(annotationRootObj);
 			}
 			
-			annotationsArray.add(annotationRootObj);
 			id++;
 		}
 		
@@ -88,10 +94,8 @@ class AnnotationSetTranslator {
 	}
 	
 	/**
-	 * 
-	 * 
-	 * @param tag
-	 * @return
+	 * Returns the root JsonElement of the given Tag object, assigning it the
+	 * provided id.
 	 */
 	private static JsonElement composeJsonFromTag(Tag tag, int id){
 		JsonObject tagRootObj = new JsonObject();
@@ -104,21 +108,24 @@ class AnnotationSetTranslator {
 		tagRootObj.addProperty("ID", id);
 		tagRootObj.addProperty("Tagname", tag.getName());
 		tagRootObj.add("Color", colorArray);
-		tagRootObj.addProperty("Description", tag.getComment());
+		
+		if(tag.getComment() != null){
+			tagRootObj.addProperty("Description", tag.getComment());
+		}
 		
 		return tagRootObj;
 	}
 	
 	/**
-	 * 
-	 * 
-	 * @param annotation
-	 * @return
+	 * Returns the JsonElement of the Location entry corresponding to the given
+	 * IAnnotation object. The tags map is used to look up the ids associated
+	 * with different Tags.
 	 */
 	private static JsonElement composeJsonFromAnnotation(IAnnotation annotation,
 			HashMap<Tag, Integer> tags){
 		JsonElement locationElem = null;
 		
+		//TODO: Make all locations objects and add a 'Type' property
 		if(annotation instanceof MetaAnnotation){
 			MetaAnnotation metaAnnotation = (MetaAnnotation)annotation;
 			
@@ -139,14 +146,12 @@ class AnnotationSetTranslator {
 	}
 	
 	/*
-	 * Parsing
+	 * Parsing from Json
 	 */
 	
 	/**
-	 * 
-	 * 
-	 * @param json
-	 * @return
+	 * Returns the AnnotationSetContents object described by the given Json
+	 * root object.
 	 */
 	private static AnnotationSetContents parseContentsFromJson(JsonElement json){
 		AnnotationSetContents newContents = new AnnotationSetContents();
@@ -183,12 +188,8 @@ class AnnotationSetTranslator {
 	}
 	
 	/**
-	 * 
-	 * 
-	 * @param json
-	 * @param tags
-	 * @param contents
-	 * @return
+	 * Parses the Tag described by the given JsonElement and adds it to both
+	 * the tags map and the AnnotationSetContents instance being constructed.
 	 */
 	private static boolean parseTagFromJson(JsonElement json,
 			HashMap<Integer, Tag> tags, AnnotationSetContents contents){
@@ -226,12 +227,9 @@ class AnnotationSetTranslator {
 	}
 	
 	/**
-	 * 
-	 * 
-	 * @param json
-	 * @param tags
-	 * @param contents
-	 * @return
+	 * Parses all of the Annotations described by the given JsonElement and
+	 * adds all of them to the AnnotationSetContents instance being constructed.
+	 * The tags map is used to look up ids associated with different Tags.
 	 */
 	private static boolean parseAnnotationsFromJson(JsonElement json,
 			HashMap<Integer, Tag> tags, AnnotationSetContents contents){
@@ -253,6 +251,7 @@ class AnnotationSetTranslator {
 				for(JsonElement location: locationsArray){
 					IAnnotation newAnnotation = null;
 					
+					//TODO: Make all locations objects and add a 'Type' property
 					if(location.isJsonObject()){
 						//Standard TextAnnotation
 						JsonObject locationObject = location.getAsJsonObject();
