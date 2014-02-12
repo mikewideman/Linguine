@@ -74,6 +74,15 @@ public class AnnotationSetContents implements IProjectDataContents {
 	}
 	
 	/**
+	 * Returns a collection of the Tags contained in this AnnotationSet.
+	 * 
+	 * @return	All Tags this AnnotationSet contains.
+	 */
+	public Collection<Tag> getTags(){
+		return annotations.keySet();
+	}
+	
+	/**
 	 * Returns all of the Annotations associated with the given tag.
 	 * 
 	 * @param tag	The Tag for which Annotations are to be returned.
@@ -105,10 +114,27 @@ public class AnnotationSetContents implements IProjectDataContents {
 	public int compareTo(IProjectDataContents otherContents) {
 		if(otherContents != null && otherContents instanceof
 				AnnotationSetContents){
-			AnnotationSetContents annotationSet =
+			AnnotationSetContents otherAnnotationSet =
 					(AnnotationSetContents)otherContents;
 			
-			return 0;//TODO: actually compare to other AnnotationSet
+			for(Tag otherTag: otherAnnotationSet.annotations.keySet()){
+				if(annotations.containsKey(otherTag)){
+					HashSet<IAnnotation> myAnnotations = annotations.get(otherTag);
+					
+					for(IAnnotation otherAnnotation:
+						otherAnnotationSet.annotations.get(otherTag)){
+						
+						if(!myAnnotations.contains(otherAnnotation)){
+							return -1;
+						}
+					}
+				}
+				else{
+					return -1;
+				}
+			}
+			
+			return 0;
 		}
 		
 		return 1;

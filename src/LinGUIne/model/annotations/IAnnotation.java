@@ -5,10 +5,15 @@ package LinGUIne.model.annotations;
  * 
  * @author Kyle Mullins
  */
-public interface IAnnotation{
+public interface IAnnotation extends Comparable<IAnnotation>{
 	
 	/**
 	 * Returns the Tag associated with this Annotation.
 	 */
 	Tag getTag();
+	
+	/**
+	 * Implemented classes must override hashCode.
+	 */
+	int hashCode();
 }

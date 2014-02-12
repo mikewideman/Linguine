@@ -13,8 +13,8 @@ import LinGUIne.utilities.ParameterCheck;
  * 
  * @author Kyle Mullins
  */
-public class Tag {
-	
+public class Tag implements Comparable<Tag>{
+
 	private String tagName;
 	private String tagComment;
 	private Color tagColor;
@@ -99,4 +99,25 @@ public class Tag {
 		
 		tagColor = newColor;
 	}
+
+	@Override
+	public int compareTo(Tag otherTag) {
+		return tagName.compareTo(otherTag.tagName);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof Tag)){
+			return false;
+		}
+		
+		return compareTo((Tag)obj) == 0;
+	}
+	
+	@Override
+	public int hashCode() {
+		return tagName.hashCode();
+	}
+
+	
 }

@@ -1,6 +1,11 @@
 package LinGUIne.model;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 /**
  * Represents the annotations of some single ProjectData.
@@ -8,31 +13,83 @@ import java.io.File;
  * @author Kyle Mullins
  */
 public class AnnotationSet implements IProjectData {
-
-	private File annotatedFile;
+	
+	private File annotationFile;
+	private AnnotationSetContents contents;
 	
 	public AnnotationSet(File annotation){
-		annotatedFile = annotation;
+		annotationFile = annotation;
+		contents = null;
 	}
 	
 	public File getFile() {
-		return annotatedFile;
+		return annotationFile;
 	}
 
 	@Override
 	public String getName() {
-		return annotatedFile.getName();
+		return annotationFile.getName();
 	}
 	
 	@Override
 	public IProjectDataContents getContents() {
-		// TODO Auto-generated method stub
-		return null;
+		if(contents == null){
+			try(BufferedReader reader = Files.newBufferedReader(
+					annotationFile.toPath(), Charset.defaultCharset())){
+				
+				String jsonStr = "";
+				
+				while(reader.ready()){
+					 jsonStr += reader.readLine();
+					 jsonStr += "\n";
+				}
+				
+				AnnotationSetContents newContents = AnnotationSetTranslator.fromJson(jsonStr);
+				
+				if(newContents != null){
+					contents = newContents;
+				}
+				else{
+					//TODO: Throw an exception of some sort
+				}
+			}
+			catch(IOException ioe) {
+				return null;
+			}
+		}
+		
+		return contents;
 	}
 
 	@Override
 	public boolean updateContents(IProjectDataContents newContents) {
-		// TODO Auto-generated method stub
+		if(newContents != null && newContents instanceof AnnotationSetContents){
+			AnnotationSetContents newAnnotationContents =
+					(AnnotationSetContents)newContents;
+			
+			if(contents == null || contents.compareTo(newAnnotationContents) != 0){
+				try(BufferedWriter writer = Files.newBufferedWriter(
+						annotationFile.toPath(), Charset.defaultCharset())){
+					
+					String jsonStr = AnnotationSetTranslator.toJson(newAnnotationContents);
+					
+					if(jsonStr != null){
+						writer.write(jsonStr);
+					}
+					else{
+						//TODO: Throw and exception of some sort
+					}
+				}
+				catch(IOException e){
+					return false;
+				}
+			}
+				
+			contents = newAnnotationContents;
+			
+			return true;
+		}
+		
 		return false;
 	}
 	
@@ -42,6 +99,6 @@ public class AnnotationSet implements IProjectData {
 			return 1;
 		}
 		
-		return annotatedFile.compareTo(projData.getFile());
+		return annotationFile.compareTo(projData.getFile());
 	}
 }

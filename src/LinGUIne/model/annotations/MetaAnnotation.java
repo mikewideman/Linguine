@@ -40,4 +40,38 @@ public class MetaAnnotation implements IAnnotation {
 		return myTag;
 	}
 
+	@Override
+	public int compareTo(IAnnotation otherAnnotation) {
+		if(otherAnnotation == null){
+			return 1;
+		}
+		else if(otherAnnotation instanceof MetaAnnotation){
+			MetaAnnotation otherMetaAnnotation = (MetaAnnotation)otherAnnotation;
+			
+			return annotatedTag.compareTo(otherMetaAnnotation.annotatedTag);
+		}
+		
+		return Integer.compare(hashCode(), otherAnnotation.hashCode());
+	}
+
+	@Override
+	public int hashCode() {
+		return annotatedTag.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if(this == obj) {
+			return true;
+		}
+		else if(obj == null || !(obj instanceof MetaAnnotation)) {
+			return false;
+		}
+		
+		MetaAnnotation other = (MetaAnnotation)obj;
+		
+		return annotatedTag.equals(other.annotatedTag);
+	}
+
 }

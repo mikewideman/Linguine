@@ -91,4 +91,54 @@ public class TextAnnotation implements IAnnotation {
 	public Tag getTag() {
 		return myTag;
 	}
+
+	@Override
+	public int compareTo(IAnnotation otherAnnotation) {
+		if(otherAnnotation == null){
+			return 1;
+		}
+		else if(otherAnnotation instanceof TextAnnotation){
+			TextAnnotation otherTextAnnotation = (TextAnnotation)otherAnnotation;
+			
+			int result = Integer.compare(startChar, otherTextAnnotation.startChar);
+			
+			if(result == 0){
+				result = Integer.compare(textLength, otherTextAnnotation.textLength);
+			}
+			
+			return result;
+		}
+		
+		return Integer.compare(hashCode(), otherAnnotation.hashCode());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		
+		result = prime * result + startChar;
+		result = prime * result + textLength;
+		
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if(this == obj) {
+			return true;
+		}
+		else if(obj == null || !(obj instanceof TextAnnotation)) {
+			return false;
+		}
+
+		TextAnnotation other = (TextAnnotation)obj;
+		
+		if(startChar != other.startChar) {
+			return false;
+		}
+		
+		return textLength == other.textLength;
+	}
 }
