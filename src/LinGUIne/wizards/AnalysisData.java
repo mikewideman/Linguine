@@ -3,6 +3,7 @@ package LinGUIne.wizards;
 import java.util.LinkedList;
 import java.util.List;
 
+import LinGUIne.model.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 
@@ -14,7 +15,7 @@ import LinGUIne.model.Project;
 public class AnalysisData {
 	private Project chosenProject;
 	private List<IProjectData> chosenProjectData;
-//	private IAnalysis chosenAnalysis;
+	private IAnalysisPlugin chosenAnalysis;
 	
 	/**
 	 * Creates a default empty instance.
@@ -51,5 +52,19 @@ public class AnalysisData {
 	 */
 	public void setChosenProjectData(List<IProjectData> chosenData) {
 		chosenProjectData = chosenData;
-	}	
+	}
+	
+	/**
+	 * Returns the currently chosen AnalysisPlugin.
+	 */
+	public IAnalysisPlugin getChosenAnalysis(){
+		return chosenAnalysis;
+	}
+	
+	/**
+	 * Sets the currently chosen AnalysisPlugin to the given one.
+	 */
+	public void setChosenAnalysis(IAnalysisPlugin analysis){
+		chosenAnalysis = analysis;
+	}
 }

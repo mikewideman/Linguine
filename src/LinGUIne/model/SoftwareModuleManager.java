@@ -94,4 +94,20 @@ public class SoftwareModuleManager {
 		
 		return new TreeSet<IAnalysisPlugin>();
 	}
+	
+	/**
+	 * Returns the named Analysis registered to the given Software Module
+	 * if it exists, otherwise null is returned.
+	 */
+	public IAnalysisPlugin getAnalysisByName(String softwareModule,
+			String analysisName){
+		
+		for(IAnalysisPlugin analysis: getAnalyses(softwareModule)){
+			if(analysis.getName().equals(analysisName)){
+				return analysis;
+			}
+		}
+		
+		return null;
+	}
 }

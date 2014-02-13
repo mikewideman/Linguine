@@ -24,6 +24,7 @@ import LinGUIne.model.ProjectManager;
  * analyses on.
  * 
  * @author Matthew Talbot
+ * @author Kyle Mullins
  */
 
 public class AnalysisWizardSelectFilePage extends WizardPage{
@@ -61,7 +62,7 @@ public class AnalysisWizardSelectFilePage extends WizardPage{
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 	    GridLayout layout = new GridLayout();
-	    layout.numColumns = 1;
+	    layout.numColumns = 2;
 	    container.setLayout(layout);
 	    
 	    Group grpProjects = new Group(container, SWT.NONE);
@@ -87,13 +88,15 @@ public class AnalysisWizardSelectFilePage extends WizardPage{
 	    	 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Project selectedProject = projectMan.getProject(lstProjects.getSelection()[0]);
-				wizardData.setChosenProject(selectedProject);
-				wizardData.setChosenProjectData(new LinkedList<IProjectData>());
-				
-				updateFileList();
-				lstFiles.setEnabled(true);
-				checkIfPageComplete();
+				if(lstProjects.getSelectionCount() > 0){
+					Project selectedProject = projectMan.getProject(lstProjects.getSelection()[0]);
+					wizardData.setChosenProject(selectedProject);
+					wizardData.setChosenProjectData(new LinkedList<IProjectData>());
+					
+					updateFileList();
+					lstFiles.setEnabled(true);
+					checkIfPageComplete();
+				}
 			}
 
 			@Override

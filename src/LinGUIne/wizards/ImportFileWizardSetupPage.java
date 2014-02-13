@@ -64,7 +64,7 @@ public class ImportFileWizardSetupPage extends WizardPage {
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
+		layout.numColumns = 2;
 		container.setLayout(layout);
 		
 		Group grpImporter = new Group(container, SWT.NONE);
