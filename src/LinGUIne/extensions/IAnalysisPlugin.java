@@ -1,4 +1,7 @@
-package LinGUIne.model;
+package LinGUIne.extensions;
+
+import LinGUIne.model.Result;
+
 /**
  * 
  * @author Pete Maresca
