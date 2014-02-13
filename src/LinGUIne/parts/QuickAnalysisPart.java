@@ -1,13 +1,13 @@
 
 package LinGUIne.parts;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -16,17 +16,34 @@ import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
-import LinGUIne.model.MockLibrary;
+import LinGUIne.model.IAnalysisPlugin;
+import LinGUIne.model.SoftwareModuleManager;
 
 public class QuickAnalysisPart {
+	
+	private SoftwareModuleManager softwareModuleMan;
+	
+	private ListViewer lstSoftwareModules;
+	private ListViewer lstAnalyses;
+	private Text txtDescription;
+	private Button btnRunAnalysis;
+	
 	@Inject
-	public QuickAnalysisPart() {
+	public QuickAnalysisPart(MApplication app) {
+		softwareModuleMan = new SoftwareModuleManager();
+		
+		app.getContext().set(SoftwareModuleManager.class, softwareModuleMan);
 	}
 
 	@PostConstruct
@@ -37,137 +54,130 @@ public class QuickAnalysisPart {
 		parent.setLayout(layout);
 
 		Label lblLibraries = new Label(parent, SWT.NONE);
-		lblLibraries.setText("Libraries");
+		lblLibraries.setText("Software Modules");
 
 		Label lblFeatures = new Label(parent, SWT.NONE);
-		lblFeatures.setText("Features");
+		lblFeatures.setText("Analyses");
 
 		Label lblDescription = new Label(parent, SWT.NONE);
 		lblDescription.setText("Description");
 
-		final ListViewer libListViewer = new ListViewer(parent, SWT.BORDER | SWT.V_SCROLL);
+		lstSoftwareModules = new ListViewer(parent, SWT.BORDER | SWT.V_SCROLL);
 
-		libListViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-		libListViewer.setContentProvider(new IStructuredContentProvider(){
+		lstSoftwareModules.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
+		lstSoftwareModules.setContentProvider(new IStructuredContentProvider(){
 
+			private Collection<String> libraryNames;
+			
 			@Override
-			public void dispose() {
-				// TODO Auto-generated method stub
-
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput){
+				if(newInput != null){
+					libraryNames = ((SoftwareModuleManager)newInput).
+							getSoftwareModuleNames();
+				}
 			}
 
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
-				// TODO Auto-generated method stub
-
-			}
+			public void dispose() {}
 
 			@Override
 			public Object[] getElements(Object inputElement) {
-				ArrayList mLibList = (ArrayList) inputElement;
-				return mLibList.toArray();
-
+				return libraryNames.toArray();
 			}
-
 		});
 
-		libListViewer.setLabelProvider(new LabelProvider(){
+		lstSoftwareModules.setLabelProvider(new LabelProvider(){
 			public String getText(Object element){
-				MockLibrary mLib = (MockLibrary) element;
-				return mLib.getLibName();
+				return element.toString();
 			}
+		});
+		
+		lstSoftwareModules.addSelectionChangedListener(new ISelectionChangedListener(){
 
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+				
+				if(selection.size() > 0){
+					String softwareModuleName = selection.getFirstElement().toString();
+					
+					lstAnalyses.setInput(softwareModuleMan.getAnalyses(
+							softwareModuleName));
+					txtDescription.setText("");
+					btnRunAnalysis.setEnabled(false);
+				}
+			}
 		});
 
-		final ListViewer featListViewer = new ListViewer(parent, SWT.BORDER | SWT.V_SCROLL);
+		lstAnalyses = new ListViewer(parent, SWT.BORDER | SWT.V_SCROLL);
 
-		featListViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-		featListViewer.setContentProvider(new IStructuredContentProvider() {
+		lstAnalyses.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
+		lstAnalyses.setContentProvider(new IStructuredContentProvider() {
 
+			private Collection<IAnalysisPlugin> analyses;
+			
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-				// TODO Auto-generated method stub
-
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput){
+				if(newInput != null){
+					analyses = (Collection<IAnalysisPlugin>)newInput;
+				}
 			}
 
 			@Override
-			public void dispose() {
-				// TODO Auto-generated method stub
-
-			}
+			public void dispose() {}
 
 			@Override
 			public Object[] getElements(Object inputElement) {
-				Map<String,String> featsAndDescriptions = (Map<String,String>) inputElement;
-				return featsAndDescriptions.keySet().toArray();
+				return analyses.toArray();
 			}
 		});
 
-		featListViewer.setLabelProvider(new LabelProvider(){
+		lstAnalyses.setLabelProvider(new LabelProvider(){
 			public String getText(Object element){
-				return (String) element;
+				return ((IAnalysisPlugin)element).getName();
+			}
+		});
+		
+		lstAnalyses.addSelectionChangedListener(new ISelectionChangedListener(){
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				
+				if(selection.size() > 0){
+					IAnalysisPlugin analysis = (IAnalysisPlugin)selection.getFirstElement();
+					
+					txtDescription.setText(analysis.getPluginData().toString());
+					btnRunAnalysis.setEnabled(true);
+				}
 			}
 		});
 
-		final ListViewer dListViewer = new ListViewer(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		txtDescription = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
+		txtDescription.setEditable(false);
+		txtDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
+		txtDescription.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 
-		dListViewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-		dListViewer.setContentProvider(new IStructuredContentProvider() {
-
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void dispose() {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public Object[] getElements(Object inputElement) {
-				String description = (String) inputElement;
-				return new String[] {description};
-			}
-		});
-
-		Button btnRunAnalysis = new Button(parent, SWT.NONE);
+		btnRunAnalysis = new Button(parent, SWT.NONE);
 		btnRunAnalysis.setText("Run Analysis");
-
-		final ArrayList<MockLibrary> demoLibs = MockLibrary.generateDemoLibs();
-		libListViewer.setInput(demoLibs);
-		libListViewer.addSelectionChangedListener(new ISelectionChangedListener(){
+		btnRunAnalysis.setEnabled(false);
+		btnRunAnalysis.addSelectionListener(new SelectionListener(){
 
 			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				if (selection.size() > 0){
-					MockLibrary selectedLib = (MockLibrary) selection.getFirstElement();
-					featListViewer.setInput(selectedLib.getFeatureFunctionMap());
-				}
-
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection =
+						(IStructuredSelection)lstAnalyses.getSelection();
+				
+				IAnalysisPlugin analysis = (IAnalysisPlugin)selection.getFirstElement();
+				
+				//TODO: Run analysis
 			}
-
-		});
-
-		featListViewer.addSelectionChangedListener(new ISelectionChangedListener(){
 
 			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				if (selection.size() > 0){
-					String feature = (String) selection.getFirstElement();
-					IStructuredSelection libSelection = (IStructuredSelection) libListViewer.getSelection();
-					MockLibrary selectedLibrary = (MockLibrary) libSelection.getFirstElement();
-					dListViewer.setInput(selectedLibrary.getFeatureFunctionMap().get(feature));
-				}
-
-			}
-
+			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
+
+		lstSoftwareModules.setInput(softwareModuleMan);
 	}
 
 	@Focus
