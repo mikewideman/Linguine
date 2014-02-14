@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import LinGUIne.model.IAnalysisPlugin;
+import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.SoftwareModuleManager;
 
 public class QuickAnalysisPart {

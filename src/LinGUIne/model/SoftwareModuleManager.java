@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 
+import LinGUIne.extensions.IAnalysisPlugin;
+
 /**
  * Container for all plug-ins implementing IAnalysisPlugin to provide quick
  * access to them.

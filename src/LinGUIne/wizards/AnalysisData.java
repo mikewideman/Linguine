@@ -3,7 +3,7 @@ package LinGUIne.wizards;
 import java.util.LinkedList;
 import java.util.List;
 
-import LinGUIne.model.IAnalysisPlugin;
+import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 

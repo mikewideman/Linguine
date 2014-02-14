@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
-import LinGUIne.model.IAnalysisPlugin;
+import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.SoftwareModuleManager;
 
 /**
