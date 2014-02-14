@@ -48,7 +48,7 @@ public class AnalysisWizard extends Wizard {
 
 		addPage(selectFilePage);
 		addPage(selectAnalysisPage);
-		addPage(settingsPage);
+//		addPage(settingsPage);
 	}
 
 	@Override
