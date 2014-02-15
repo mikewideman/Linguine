@@ -28,12 +28,9 @@ public class SoftwareModuleManager {
 		analyses = new HashMap<String, HashSet<IAnalysisPlugin>>();
 		
 		IConfigurationElement[] analysisElements = Platform.getExtensionRegistry().
-				getConfigurationElementsFor("LinGUIne.model.IAnalysisPlugin"); //TODO: Update with actual extension point id
+				getConfigurationElementsFor("LinGUIne.extensions.IAnalysisPlugin");
 		
 		for(IConfigurationElement analysisElement: analysisElements){
-//			String libName = analysisElement.getAttribute("Library");
-//			String analysisName = analysisElement.getAttribute("Name");
-			
 			try {
 				IAnalysisPlugin analysis = (IAnalysisPlugin)analysisElement.
 						createExecutableExtension("class"); //TODO: Update with actual name of this attribute

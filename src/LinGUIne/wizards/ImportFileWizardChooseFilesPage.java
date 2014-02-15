@@ -95,10 +95,12 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 				
 				String chosenFile = openDialog.open();
 				
-				wizardData.addFile(new File(chosenFile));
-				updateFileList();
-				checkListSelection();
-				checkIfPageComplete();
+				if(chosenFile != null){
+					wizardData.addFile(new File(chosenFile));
+					updateFileList();
+					checkListSelection();
+					checkIfPageComplete();
+				}
 			}
 
 			@Override
