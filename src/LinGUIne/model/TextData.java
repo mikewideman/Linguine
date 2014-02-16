@@ -97,7 +97,7 @@ public class TextData implements IProjectData {
 				}
 			}
 				
-			contents = newTextContents;
+			contents = (TextDataContents)newTextContents.copy();
 			
 			return true;
 		}

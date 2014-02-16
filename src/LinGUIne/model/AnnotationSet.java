@@ -85,7 +85,7 @@ public class AnnotationSet implements IProjectData {
 				}
 			}
 				
-			contents = newAnnotationContents;
+			contents = (AnnotationSetContents)newAnnotationContents.copy();
 			
 			return true;
 		}
