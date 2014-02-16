@@ -27,8 +27,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -466,15 +469,38 @@ public class ProjectExplorer {
 	 * 
 	 * @author Kyle Mullins
 	 */
-	class ProjectExplorerLabelProvider extends LabelProvider{
+	class ProjectExplorerLabelProvider extends StyledCellLabelProvider{
 		
 		/**
 		 * Returns a String label for a ProjectExplorerNode based on its name.
 		 */
 		@Override
-		public String getText(Object element){
-			return ((ProjectExplorerNode)element).getName();
+		public void update(ViewerCell cell){
+			ProjectExplorerNode node = (ProjectExplorerNode)cell.getElement();
+			StyledString label = new StyledString(node.getName());
+			
+			if(node instanceof ProjectExplorerDataNode){
+				ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
+				
+				Project parentProject = getRootNode(node).getProject();
+				
+				if(parentProject.isAnnotated(dataNode.getNodeData())){
+					label.append(" (Annotated)", StyledString.COUNTER_STYLER);
+				}
+			}
+			
+			cell.setText(label.toString());
+			cell.setStyleRanges(label.getStyleRanges());
+			
+			super.update(cell);
+		}
+		
+		private ProjectExplorerTree getRootNode(ProjectExplorerNode node){
+			while(node.hasParent()){
+				node = node.getParent();
+			}
+			
+			return (ProjectExplorerTree)node;
 		}
 	}
-
 }
