@@ -14,10 +14,7 @@ import java.util.HashSet;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 
-import LinGUIne.model.annotations.Tag;
 import LinGUIne.utilities.FileUtils;
 
 /**

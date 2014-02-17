@@ -26,6 +26,7 @@ public class TextAnnotation implements IAnnotation {
 	 */
 	public TextAnnotation(Tag tag, int start, int length){
 		ParameterCheck.notNull(tag, "tag");
+		ParameterCheck.notZero(length, "length");
 		
 		myTag = tag;
 		startChar = start;
@@ -44,7 +45,7 @@ public class TextAnnotation implements IAnnotation {
 	
 	/**
 	 * Expands the length of this Annotation by expandAmt, without changing the
-	 * starting postion of the Annotation.
+	 * starting position of the Annotation.
 	 * 
 	 * @param expandAmt	The amount by which to expand the Annotation.
 	 */
