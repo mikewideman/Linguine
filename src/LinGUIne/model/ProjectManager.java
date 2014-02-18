@@ -141,9 +141,10 @@ public class ProjectManager {
 					if(filename.equals(Project.PROJECT_FILE)){
 						Project project = Project.createFromFile(
 								FileUtils.appendPath(dir, filename));
-						
-						project.setParentDirectory(workspace);
-						addProject(project);
+						if(project != null){
+							project.setParentDirectory(workspace);
+							addProject(project);
+					    }
 					}
 				}
 			}
