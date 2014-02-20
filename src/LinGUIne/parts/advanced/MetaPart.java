@@ -1,5 +1,5 @@
  
-package LinGUIne.parts;
+package LinGUIne.parts.advanced;
 
 import java.io.File;
 import java.util.ArrayList;
