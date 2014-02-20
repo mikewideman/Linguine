@@ -169,7 +169,7 @@ public class QuickAnalysisPart {
 						(IStructuredSelection)lstAnalyses.getSelection();
 				
 				IAnalysisPlugin analysis = (IAnalysisPlugin)selection.getFirstElement();
-				
+				analysis.runAnalysis();
 				//TODO: Run analysis
 			}
 

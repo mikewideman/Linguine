@@ -7,7 +7,12 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 
 import LinGUIne.extensions.IAnalysisPlugin;
 
@@ -28,16 +33,14 @@ public class SoftwareModuleManager {
 		analyses = new HashMap<String, HashSet<IAnalysisPlugin>>();
 		
 		IConfigurationElement[] analysisElements = Platform.getExtensionRegistry().
-				getConfigurationElementsFor("LinGUIne.model.IAnalysisPlugin"); //TODO: Update with actual extension point id
-		
+				getConfigurationElementsFor("LinGUIne.LinGUIne.extensions.IAnalysisPlugin"); //TODO: Update with actual extension point id
 		for(IConfigurationElement analysisElement: analysisElements){
-//			String libName = analysisElement.getAttribute("Library");
-//			String analysisName = analysisElement.getAttribute("Name");
+			String libName = analysisElement.getAttribute("Library");
+		    String analysisName = analysisElement.getAttribute("Name");
 			
 			try {
 				IAnalysisPlugin analysis = (IAnalysisPlugin)analysisElement.
-						createExecutableExtension("class"); //TODO: Update with actual name of this attribute
-				
+						createExecutableExtension("NLTKTokenizerAnalysis"); //TODO: Update with actual name of this attribute
 				if(!analyses.containsKey(analysis.getAnalysisLibrary())){
 					analyses.put(analysis.getAnalysisLibrary(),
 							new HashSet<IAnalysisPlugin>());
@@ -51,30 +54,7 @@ public class SoftwareModuleManager {
 			}
 		}
 		
-		//TODO: REMOVE! For demonstrative purposes only
-		analyses.put("NLTK", new HashSet<IAnalysisPlugin>());
-		analyses.get("NLTK").add(new IAnalysisPlugin(){
 
-			@Override
-			public String getName() {
-				return "Tokenization";
-			}
-
-			@Override
-			public String getAnalysisLibrary() {
-				return "NLTK";
-			}
-
-			@Override
-			public Object getPluginData() {
-				return "This is an NLTK Tokenization analysis";
-			}
-
-			@Override
-			public Result runAnalysis() {
-				return null;
-			}
-		});
 	}
 	
 	/**
@@ -112,4 +92,6 @@ public class SoftwareModuleManager {
 		
 		return null;
 	}
+	
+
 }

@@ -55,7 +55,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.core.runtime.IExecutableExtensionFactory"/>
+                  <meta.attribute kind="java" basedOn=":LinGUIne.extensions.IAnalysisPlugin"/>
                </appinfo>
             </annotation>
          </attribute>
