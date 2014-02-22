@@ -1,11 +1,16 @@
  
 package LinGUIne.parts.advanced;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -14,15 +19,19 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import LinGUIne.model.IProjectData;
+import LinGUIne.model.TextData;
+import LinGUIne.parts.advanced.ProjectDataEditorTab.DirtyStateChangedListener;
+
 public class DataEditorPart implements MouseListener, SelectionListener{
+	
+	@Inject
+	private MDirtyable dirtyable;
 	
 	private CTabFolder tabFolder;
 	private Menu contextMenu;
@@ -39,7 +48,41 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	@PostConstruct
 	public void createComposite(Composite parent) {
 		tabFolder = new CTabFolder(parent,SWT.NONE);
+		tabFolder.addSelectionListener(this);
 		createTab();
+		
+		dirtyable.setDirty(false);
+	}
+	
+	@Persist
+	public void save(MDirtyable dirty) throws IOException{
+		if(tabFolder.getSelection() instanceof ProjectDataEditorTab){
+			ProjectDataEditorTab editorTab =
+					(ProjectDataEditorTab)tabFolder.getSelection();
+			
+			editorTab.save();
+			dirty.setDirty(false);
+		}
+	}
+	
+	@Inject
+	@Optional
+	public void fileOpenEvent(@UIEventTopic(ProjectExplorer.PROJECT_EXPLORER_DOUBLE_CLICK)
+			IProjectData projectData){
+		if(projectData instanceof TextData){
+			ProjectDataEditorTab newTab = new TextDataEditorTab(tabFolder, SWT.CLOSE,
+					(TextData)projectData);
+			newTab.addListener(new DirtyStateChangedListener(){
+				@Override
+				public void notify(ProjectDataEditorTab sender) {
+					if(tabFolder.getSelection() == sender){
+						dirtyable.setDirty(sender.isDirty());
+					}
+				}
+			});
+			
+			tabFolder.setSelection(newTab);
+		}
 	}
 	
 	/**
@@ -74,14 +117,10 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	}
 	
 	@Focus
-	public void onFocus() {
-	}
+	public void onFocus() {}
 
 	@Override
-	public void mouseDoubleClick(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseDoubleClick(MouseEvent e) {}
 
 	@Override
 	public void mouseDown(MouseEvent e) {
@@ -105,31 +144,37 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	}
 
 	@Override
-	public void mouseUp(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseUp(MouseEvent e) {}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		if(e.getSource() == newItem){
-			createTab();
+		if(e.getSource() == tabFolder){
+			if(tabFolder.getSelection() instanceof ProjectDataEditorTab){
+				ProjectDataEditorTab editorTab =
+						(ProjectDataEditorTab)tabFolder.getSelection();
+				
+				dirtyable.setDirty(editorTab.isDirty());
+			}
+			else{
+				dirtyable.setDirty(false);
+			}
 		}
-		if(e.getSource() == cutItem){
-			System.out.println("Cut!");
-		}
-		if(e.getSource() == copyItem){
-			System.out.println("Copy!");
-		}
-		if(e.getSource() == pasteItem){
-			System.out.println("Paste!");
+		else{
+			if(e.getSource() == newItem){
+				createTab();
+			}
+			else if(e.getSource() == cutItem){
+				System.out.println("Cut!");
+			}
+			else if(e.getSource() == copyItem){
+				System.out.println("Copy!");
+			}
+			else if(e.getSource() == pasteItem){
+				System.out.println("Paste!");
+			}
 		}
 	}
 
 	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+	public void widgetDefaultSelected(SelectionEvent e) {}
 }
