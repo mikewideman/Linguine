@@ -84,7 +84,7 @@ public class ProjectManager {
 	 * Note: Project names are case insensitive.
 	 */
 	public boolean containsProject(String projectName){
-		return projectSet.containsKey(projectName.toLowerCase());
+		return getProject(projectName) != null;
 	}
 	
 	/**
@@ -104,6 +104,23 @@ public class ProjectManager {
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
 			newProject.addListener(projListener);
 			postEvent(PROJECT_ADDED);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Removes the given Project from this ProjectManager
+	 * 
+	 * @param proj
+	 * @return
+	 */
+	public boolean removeProject(Project proj){
+		if(containsProject(proj.getName())){
+			projectSet.remove(proj.getName().toLowerCase());
+			//TODO: Delete project contents on disk?
 			
 			return true;
 		}

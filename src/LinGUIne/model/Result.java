@@ -4,6 +4,7 @@ import java.io.File;
 
 /**
  * Represents the result of some analysis on some ProjectData.
+ * TODO: Make this class abstract
  * 
  * @author Kyle Mullins
  */
@@ -35,13 +36,13 @@ public class Result implements IProjectData {
 
 	@Override
 	public IProjectDataContents getContents() {
-		// TODO Auto-generated method stub
+		// TODO: Make this function abstract
 		return null;
 	}
 
 	@Override
 	public boolean updateContents(IProjectDataContents newContents) {
-		// TODO Auto-generated method stub
+		// TODO: Make this function abstract
 		return false;
 	}
 }

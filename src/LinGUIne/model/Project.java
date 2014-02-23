@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -306,6 +307,68 @@ public class Project {
 	}
 	
 	/**
+	 * Attempts to remove the given ProjectData from this Project and returns
+	 * whether or not the operation was successful.
+	 * 
+	 * @param projData	The ProjectData to be removed from the Project.
+	 * 
+	 * @return	True iff the ProjectData was removed, false if it doesn't exist.
+	 */
+	public boolean removeProjectData(IProjectData projData){
+		//TODO: Should this function also remove associated Results/Annotations?
+		if(containsProjectData(projData)){
+			projectData.remove(projData);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Removes the given Result from this Project if it exists.
+	 * 
+	 * @param result	The Result to be removed.
+	 * 
+	 * @return	True iff the Result was removed, false if it doesn't exist.
+	 */
+	public boolean removeResult(Result result){
+		if(results.containsKey(result)){
+			results.remove(result);
+			removeProjectData(result);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Removes from this Project the AnnotationSet associated with the given
+	 * ProjectData if there is one.
+	 * 
+	 * @param annotatedData	The annotated ProjectData for which to remove the
+	 * 						AnnotationSet.
+	 * 
+	 * @return	True iff the AnnotationSet was removed, false if the given
+	 * 			ProjectData was not annotated.
+	 */
+	public boolean removeAnnotationFrom(IProjectData annotatedData){
+		if(containsProjectData(annotatedData)){
+			int id = projectData.get(annotatedData);
+			
+			if(annotationSets.containsKey(id)){
+				AnnotationSet removedSet = annotationSets.remove(id);
+				removeProjectData(removedSet);
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Returns whether or not the given ProjectData is in this Project.
 	 */
 	public boolean containsProjectData(IProjectData projData){
@@ -394,6 +457,76 @@ public class Project {
 			int id = projectData.get(projData);
 			
 			return annotationSets.get(id);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns whether or not the given ProjectData has any Results associated
+	 * with it.
+	 * 
+	 * @param projData	The ProjectData for which to search for Results.
+	 * 
+	 * @return	True iff the given ProjectData has Results, false otherwise.
+	 */
+	public boolean hasResults(IProjectData projData){
+		if(containsProjectData(projData)){
+			int id = projectData.get(projData);
+			
+			for(HashSet<Integer> dataIds: results.values()){
+				for(Integer projectDataId: dataIds){
+					if(projectDataId == id){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Returns whether or not there exists the given Result type for the given
+	 * ProjectData.
+	 * 
+	 * @param projData	The ProjectData for which to look up the given Result
+	 * 					type.
+	 * @param clazz		The type of Result for which to search.
+	 * 
+	 * @return	True iff the given ProjectData has a Result of the given type,
+	 * 			false otherwise.
+	 */
+	public <T extends Result> boolean hasResultType(IProjectData projData, Class<T> clazz){
+		return getResultType(projData, clazz) != null;
+	}
+	
+	/**
+	 * Returns the given Result type for the given ProjectData if it exists.
+	 * 
+	 * @param projData	The ProjectData for which to look up the given Result
+	 * 					type.
+	 * @param clazz		The type of Result for which to search.
+	 * 
+	 * @return	A Result of the given type for the given ProjectData, or null
+	 * 			if either the ProjectData does not exist or there was no
+	 * 			matching Result.
+	 */
+	public <T extends Result> Result getResultType(IProjectData projData,
+			Class<T> clazz){
+		
+		if(containsProjectData(projData)){
+			int id = projectData.get(projData);
+			
+			for(Entry<Result, HashSet<Integer>> resultPair: results.entrySet()){
+				if(resultPair.getKey().getClass() == clazz){
+					for(Integer projectDataId: resultPair.getValue()){
+						if(projectDataId == id){
+							return resultPair.getKey();
+						}
+					}
+				}
+			}
 		}
 		
 		return null;
