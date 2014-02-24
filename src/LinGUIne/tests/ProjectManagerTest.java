@@ -2,12 +2,15 @@ package LinGUIne.tests;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.Path;
 import org.junit.Before;
 import org.junit.Test;
 
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
+import LinGUIne.utilities.FileUtils;
 
 public class ProjectManagerTest {
 
@@ -15,13 +18,16 @@ public class ProjectManagerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		projectMan = new ProjectManager(new Path(""));
+		projectMan = new ProjectManager(new Path(""), new MockApplication());
 	}
 
 	@Test
 	public void testAddProject() {
 		Project testProj1 = new Project();
 		Project testProj2 = new Project();
+		
+		testProj1.setParentDirectory(FileUtils.toEclipsePath(new File("")));
+		testProj2.setParentDirectory(FileUtils.toEclipsePath(new File("")));
 		
 		assertFalse("Projects without names cannot be added.",
 				projectMan.addProject(testProj1));
@@ -45,6 +51,7 @@ public class ProjectManagerTest {
 		String projName = "TestProject1";
 		Project testProj = new Project();
 		testProj.setName(projName);
+		testProj.setParentDirectory(FileUtils.toEclipsePath(new File("")));
 		
 		assertFalse("No Projects have been added; ProjectManager should contain no Projects.",
 				projectMan.containsProject(projName));
@@ -66,6 +73,7 @@ public class ProjectManagerTest {
 	public void testGetProject() {
 		Project testProj = new Project();
 		testProj.setName("TestProject");
+		testProj.setParentDirectory(FileUtils.toEclipsePath(new File("")));
 		
 		projectMan.addProject(testProj);
 		
@@ -81,6 +89,7 @@ public class ProjectManagerTest {
 	@Test
 	public void testGetProjects() {
 		Project testProj = new Project();
+		testProj.setParentDirectory(FileUtils.toEclipsePath(new File("")));
 		
 		assertNotNull("Project collection should not be null.",
 				projectMan.getProjects());

@@ -3,6 +3,8 @@ package LinGUIne.model;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.annotation.PreDestroy;
@@ -10,6 +12,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.MApplication;
 
 import LinGUIne.model.Project.ProjectListener;
 import LinGUIne.utilities.FileUtils;
@@ -29,9 +32,12 @@ public class ProjectManager {
 	public static final String PROJECT_REMOVED = "Project/Removed";
 	public static final String PROJECT_MODIFIED = "Project/Modified";
 	
+	private static final String PROJECT_LIST_KEY = "ProjectManager_ProjectList";
+	
 	@Inject
 	private IEventBroker eventBroker;
 	
+	private MApplication application;
 	private TreeMap<String, Project> projectSet;
 	private IPath workspace;
 	
@@ -40,8 +46,9 @@ public class ProjectManager {
 	/**
 	 * Creates a new ProjectManager for the given workspace.
 	 */
-	public ProjectManager(IPath workspacePath){
+	public ProjectManager(IPath workspacePath, MApplication app){
 		workspace = workspacePath;
+		application = app;
 		projectSet = new TreeMap<String, Project>();
 		
 		projListener = new ProjectListener() {
@@ -84,7 +91,7 @@ public class ProjectManager {
 	 * Note: Project names are case insensitive.
 	 */
 	public boolean containsProject(String projectName){
-		return getProject(projectName) != null;
+		return projectSet.containsKey(projectName.toLowerCase());
 	}
 	
 	/**
@@ -104,6 +111,7 @@ public class ProjectManager {
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
 			newProject.addListener(projListener);
 			postEvent(PROJECT_ADDED);
+			updateProjectFilesInPersistedState();
 			
 			return true;
 		}
@@ -112,15 +120,18 @@ public class ProjectManager {
 	}
 	
 	/**
-	 * Removes the given Project from this ProjectManager
+	 * Removes the given Project from this ProjectManager if it exists.
 	 * 
-	 * @param proj
-	 * @return
+	 * @param proj	The Project to be removed.
+	 * 
+	 * @return	True iff the Project was removed, false if it doesn't exist.
 	 */
 	public boolean removeProject(Project proj){
 		if(containsProject(proj.getName())){
 			projectSet.remove(proj.getName().toLowerCase());
-			//TODO: Delete project contents on disk?
+			proj.removeListener(projListener);
+			postEvent(PROJECT_REMOVED);
+			updateProjectFilesInPersistedState();
 			
 			return true;
 		}
@@ -152,6 +163,14 @@ public class ProjectManager {
 	 * and adds them.
 	 */
 	public void loadProjects(){
+		List<File> projectFiles = getProjectFilesFromPersistedState();
+		
+		for(File projectFile: projectFiles){
+			Project newProject = Project.createFromFile(projectFile);
+			newProject.setParentDirectory(workspace);
+			addProject(newProject);
+		}
+		
 		for(File dir: workspace.toFile().listFiles()){
 			if(dir.isDirectory()){
 				for(String filename: dir.list()){
@@ -165,6 +184,43 @@ public class ProjectManager {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Gets and parses the list of Project Files from persisted state and
+	 * returns it.
+	 */
+	private List<File> getProjectFilesFromPersistedState(){
+		//TODO: Fix loading of persisted state
+		
+		LinkedList<File> projectFiles = new LinkedList<File>();
+		String projectList = application.getPersistedState().get(
+				PROJECT_LIST_KEY);
+		
+		if(projectList != null){
+			for(String projectFilePath: projectList.split(";")){
+				if(!projectFilePath.isEmpty()){
+					File projectFile = new File(projectFilePath);
+					
+					projectFiles.add(projectFile);
+				}
+			}
+		}
+		
+		return projectFiles;
+	}
+	
+	/**
+	 * Updates the list of Project Files in persisted state.
+	 */
+	private void updateProjectFilesInPersistedState(){
+		String projectList = "";
+		
+		for(Project project: projectSet.values()){
+			projectList += project.getProjectFile().toString() + ";";
+		}
+		
+		application.getPersistedState().put(PROJECT_LIST_KEY, projectList);
 	}
 	
 	private void postEvent(String eventStr) {

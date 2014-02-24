@@ -84,7 +84,8 @@ public class ProjectExplorer {
 		tree.setLabelProvider(new ProjectExplorerLabelProvider());
 		tree.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		ProjectManager projectMan = new ProjectManager(Platform.getLocation());
+		ProjectManager projectMan = new ProjectManager(Platform.getLocation(),
+				application);
 		projectMan.loadProjects();
 		tree.setInput(projectMan);
 		
