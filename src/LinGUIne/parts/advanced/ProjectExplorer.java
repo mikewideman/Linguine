@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
@@ -54,9 +55,12 @@ import LinGUIne.model.Result;
  */
 public class ProjectExplorer {
 
-	public static final String PROJECT_EXPLORER_DOUBLE_CLICK = "Project_Explorer/Double_Click";
+	public static final String PROJECT_EXPLORER_DOUBLE_CLICK =
+			"Project_Explorer/Double_Click";
 	
 	private TreeViewer tree;
+	
+	@Inject
 	private MApplication application;
 
 	@Inject
@@ -66,9 +70,7 @@ public class ProjectExplorer {
 	private ECommandService commandService;
 	
 	@Inject
-	public ProjectExplorer(MApplication app){
-		application = app;
-	}
+	public ProjectExplorer(){}
 	
 	/**
 	 * Initializes the components of this view.
@@ -109,15 +111,21 @@ public class ProjectExplorer {
 			
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+				IStructuredSelection selection =
+						(IStructuredSelection)event.getSelection();
 				Object selectedNode = selection.getFirstElement();
 				
 				if(selectedNode instanceof ProjectExplorerDataNode){
 					//If user double clicks a file, post an event for the editor
-					ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)selectedNode;
+					ProjectExplorerDataNode dataNode =
+							(ProjectExplorerDataNode)selectedNode;
 					IProjectData data = dataNode.getNodeData();
+					Project containingProject = ((ProjectExplorerTree)
+							dataNode.getRootNode()).getProject();
+					OpenProjectDataEvent openEvent = new OpenProjectDataEvent(
+							data, containingProject.getAnnotation(data));
 					
-					eventBroker.post(PROJECT_EXPLORER_DOUBLE_CLICK, data);
+					eventBroker.post(PROJECT_EXPLORER_DOUBLE_CLICK, openEvent);
 				}
 				else {
 					tree.setExpandedState(selectedNode,
@@ -135,6 +143,7 @@ public class ProjectExplorer {
 			public void keyReleased(KeyEvent e) {
 				if(e.keyCode == SWT.DEL){
 					//TODO: if user presses delete, attempt to delete the selected element
+					//TODO: Call RemoveCommand
 				}
 			}
 		});
@@ -173,7 +182,8 @@ public class ProjectExplorer {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				//TODO: We need to go through and change all these IDs
-				Command newProjectCommand = commandService.getCommand("linguine.command.1");
+				Command newProjectCommand = commandService.getCommand(
+						"linguine.command.1");
 				
 				try {
 					newProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -196,7 +206,8 @@ public class ProjectExplorer {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				//TODO: We need to go through and change all these IDs
-				Command newProjectCommand = commandService.getCommand("linguine.command.3");
+				Command newProjectCommand = commandService.getCommand(
+						"linguine.command.3");
 				
 				try {
 					newProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -400,6 +411,16 @@ public class ProjectExplorer {
 		public String toString(){
 			return nodeName;
 		}
+		
+		public ProjectExplorerNode getRootNode(){
+			ProjectExplorerNode rootNode = this;
+			
+			while(rootNode.hasParent()){
+				rootNode = rootNode.getParent();
+			}
+			
+			return rootNode;
+		}
 	}
 	
 	/**
@@ -482,7 +503,8 @@ public class ProjectExplorer {
 			if(node instanceof ProjectExplorerDataNode){
 				ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
 				
-				Project parentProject = getRootNode(node).getProject();
+				Project parentProject =
+						((ProjectExplorerTree)node.getRootNode()).getProject();
 				
 				if(parentProject.isAnnotated(dataNode.getNodeData())){
 					label.append(" (Annotated)", StyledString.COUNTER_STYLER);
@@ -493,14 +515,6 @@ public class ProjectExplorer {
 			cell.setStyleRanges(label.getStyleRanges());
 			
 			super.update(cell);
-		}
-		
-		private ProjectExplorerTree getRootNode(ProjectExplorerNode node){
-			while(node.hasParent()){
-				node = node.getParent();
-			}
-			
-			return (ProjectExplorerTree)node;
 		}
 	}
 }

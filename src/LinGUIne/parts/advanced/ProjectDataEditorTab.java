@@ -28,6 +28,8 @@ abstract class ProjectDataEditorTab extends CTabItem{
 	
 	public abstract IProjectData getProjectData();
 	public abstract void save();
+	public abstract <T extends IProjectData> boolean canOpenDataType(
+			Class<T> type);
 	protected abstract void updateTextArea();
 	protected abstract ModifyListener getModifyListener();
 	

@@ -17,7 +17,7 @@ class TextDataEditorTab extends ProjectDataEditorTab{
 		super(parent, style);
 		
 		projectData = projData;
-		projectDataContents = (TextDataContents)projectData.getContents();
+		projectDataContents = projectData.getContents();
 		
 		super.createComposite();
 	}
@@ -31,6 +31,11 @@ class TextDataEditorTab extends ProjectDataEditorTab{
 	public void save() {
 		projectData.updateContents(projectDataContents);
 		setDirty(false);
+	}
+	
+	@Override
+	public <T extends IProjectData> boolean canOpenDataType(Class<T> type) {
+		return type == TextData.class;
 	}
 
 	@Override

@@ -70,6 +70,13 @@ public class TextAnnotation implements IAnnotation {
 	}
 	
 	/**
+	 * Returns the length of the text this Annotation represents.
+	 */
+	public int getLength(){
+		return textLength;
+	}
+	
+	/**
 	 * Returns the text that this Annotation references.
 	 * 
 	 * @param data	IProjectDataContents instance from which to get the text of

@@ -2,6 +2,7 @@
 package LinGUIne.parts.advanced;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.TextData;
 import LinGUIne.parts.advanced.ProjectDataEditorTab.DirtyStateChangedListener;
@@ -41,15 +43,13 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	private MenuItem pasteItem;
 	
 	@Inject
-	public DataEditorPart() {
-		
-	}
+	public DataEditorPart() {}
 	
 	@PostConstruct
 	public void createComposite(Composite parent) {
 		tabFolder = new CTabFolder(parent,SWT.NONE);
 		tabFolder.addSelectionListener(this);
-		createTab();
+//		createTab();
 		
 		dirtyable.setDirty(false);
 	}
@@ -68,10 +68,20 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	@Inject
 	@Optional
 	public void fileOpenEvent(@UIEventTopic(ProjectExplorer.PROJECT_EXPLORER_DOUBLE_CLICK)
-			IProjectData projectData){
+			OpenProjectDataEvent openEvent){
+		IProjectData projectData = openEvent.getProjectData();
+		ProjectDataEditorTab newTab;
+		
 		if(projectData instanceof TextData){
-			ProjectDataEditorTab newTab = new TextDataEditorTab(tabFolder, SWT.CLOSE,
+			if(openEvent.hasAnnotation()){
+				newTab = new AnnotatedTextDataEditorTab(tabFolder, SWT.CLOSE,
+						(TextData)projectData, openEvent.getAnnotationSet());
+			}
+			else{
+				newTab = new TextDataEditorTab(tabFolder, SWT.CLOSE,
 					(TextData)projectData);
+			}
+			
 			newTab.addListener(new DirtyStateChangedListener(){
 				@Override
 				public void notify(ProjectDataEditorTab sender) {
