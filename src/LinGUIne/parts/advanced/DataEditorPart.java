@@ -2,16 +2,18 @@
 package LinGUIne.parts.advanced;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -24,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.model.IProjectData;
@@ -68,7 +71,8 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	@Inject
 	@Optional
 	public void fileOpenEvent(@UIEventTopic(ProjectExplorer.PROJECT_EXPLORER_DOUBLE_CLICK)
-			OpenProjectDataEvent openEvent){
+			OpenProjectDataEvent openEvent, @Named(IServiceConstants.ACTIVE_SHELL)
+			Shell shell){
 		IProjectData projectData = openEvent.getProjectData();
 		ProjectDataEditorTab newTab;
 		
@@ -92,6 +96,10 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 			});
 			
 			tabFolder.setSelection(newTab);
+		}
+		else{
+			MessageDialog.openError(shell, "Error", "Could not open " +
+					projectData.getName() + ", there is no associated editor.");
 		}
 	}
 	

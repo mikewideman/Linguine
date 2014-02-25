@@ -11,7 +11,12 @@ import org.eclipse.swt.widgets.Display;
 
 import LinGUIne.model.IProjectData;
 
-abstract class ProjectDataEditorTab extends CTabItem{
+/**
+ * Abstract superclass for all editors of ProjectData.
+ * 
+ * @author Kyle Mullins
+ */
+public abstract class ProjectDataEditorTab extends CTabItem{
 
 	private boolean isDirty;
 	private String tabName;
@@ -26,13 +31,39 @@ abstract class ProjectDataEditorTab extends CTabItem{
 		listeners = new HashSet<ProjectDataEditorTab.DirtyStateChangedListener>();
 	}
 	
+	/**
+	 * Returns the ProjectData being edited.
+	 */
 	public abstract IProjectData getProjectData();
+	
+	/**
+	 * Updates the ProjectData with the new content edits and sets the diry
+	 * state to false.
+	 */
 	public abstract void save();
+	
+	/**
+	 * Returns whether or not this ProjectData editor handles the given type of
+	 * ProjectData.
+	 */
 	public abstract <T extends IProjectData> boolean canOpenDataType(
 			Class<T> type);
+	
+	/**
+	 * Updates the primary text area to reflect the current contents of the
+	 * ProjectData being edited.
+	 */
 	protected abstract void updateTextArea();
+	
+	/**
+	 * Returns a ModifyListener that will get called whenever the contents of
+	 * the editor are changed.
+	 */
 	protected abstract ModifyListener getModifyListener();
 	
+	/**
+	 * Places and configures the UI elements for this editor.
+	 */
 	protected void createComposite(){
 		tabName = getProjectData().getName();
 		setText(tabName);
@@ -47,10 +78,17 @@ abstract class ProjectDataEditorTab extends CTabItem{
 		setControl(textArea);
 	}
 
+	/**
+	 * Returns whether or not the editor's state is dirty.
+	 */
 	public boolean isDirty() {
 		return isDirty;
 	}
 	
+	/**
+	 * Sets the dirty state of the editor and updates the tab name to reflect
+	 * the new dirty state.
+	 */
 	public void setDirty(boolean dirty){
 		final CTabItem me = this;
 		

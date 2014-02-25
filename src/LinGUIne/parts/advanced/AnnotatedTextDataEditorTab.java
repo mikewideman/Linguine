@@ -12,9 +12,15 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
 import LinGUIne.model.annotations.IAnnotation;
+import LinGUIne.model.annotations.MetaAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
+/**
+ * Editor for displaying and making changes to TextData with Annotations.
+ * 
+ * @author Kyle Mullins
+ */
 public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 
 	private TextData projectData;
@@ -42,7 +48,9 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 
 	@Override
 	public void save() {
-		
+		projectData.updateContents(projectDataContents);
+		annotationSet.updateContents(annotationSetContents);
+		setDirty(false);
 	}
 
 	@Override
@@ -64,9 +72,12 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 					StyleRange style = new StyleRange(
 							textAnnotation.getStartIndex(),
 							textAnnotation.getLength(),
-							tag.getColor(), textArea.getBackground());
+							tag.getColor(), textArea.getBackground(), SWT.BOLD);
 					
 					textArea.setStyleRange(style);
+				}
+				else if(annotation instanceof MetaAnnotation){
+					//TODO: Handle annotations of other annotations
 				}
 			}
 		}
@@ -77,7 +88,7 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 		return new ModifyListener(){
 			@Override
 			public void modifyText(ModifyEvent e) {
-				
+				//TODO: Intelligently adjust annotations while editing
 			}
 		};
 	}

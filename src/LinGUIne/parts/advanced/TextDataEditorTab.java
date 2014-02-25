@@ -8,6 +8,11 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
 
+/**
+ * Editor for displaying and making changes to TextData.
+ * 
+ * @author Kyle Mullins
+ */
 class TextDataEditorTab extends ProjectDataEditorTab{
 
 	private TextData projectData;
