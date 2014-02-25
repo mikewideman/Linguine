@@ -12,7 +12,7 @@ import java.nio.file.Files;
  * 
  * @author Kyle Mullins
  */
-public class AnnotationSet implements IProjectData {
+public class AnnotationSet implements ITypedProjectData<AnnotationSetContents> {
 	
 	private File annotationFile;
 	private AnnotationSetContents contents;
@@ -32,7 +32,7 @@ public class AnnotationSet implements IProjectData {
 	}
 	
 	@Override
-	public IProjectDataContents getContents() {
+	public AnnotationSetContents getContents() {
 		if(contents == null){
 			try(BufferedReader reader = Files.newBufferedReader(
 					annotationFile.toPath(), Charset.defaultCharset())){
@@ -58,7 +58,7 @@ public class AnnotationSet implements IProjectData {
 			}
 		}
 		
-		return contents.copy();
+		return (AnnotationSetContents)contents.copy();
 	}
 
 	@Override

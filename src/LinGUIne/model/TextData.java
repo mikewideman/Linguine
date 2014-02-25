@@ -14,7 +14,7 @@ import LinGUIne.utilities.ParameterCheck;
  * 
  * @author Kyle Mullins
  */
-public class TextData implements IProjectData {
+public class TextData implements ITypedProjectData<TextDataContents> {
 
 	private File dataFile;
 	private TextDataContents contents;
@@ -49,7 +49,7 @@ public class TextData implements IProjectData {
 	 * 			if the file could not be read.
 	 */
 	@Override
-	public IProjectDataContents getContents() {
+	public TextDataContents getContents() {
 		if(contents == null){
 			try(BufferedReader reader = Files.newBufferedReader(dataFile.toPath(),
 					Charset.defaultCharset())){
@@ -68,7 +68,7 @@ public class TextData implements IProjectData {
 			}
 		}
 		
-		return contents.copy();
+		return (TextDataContents)contents.copy();
 	}
 
 	/**

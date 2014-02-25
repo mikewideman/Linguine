@@ -78,8 +78,8 @@ public class TextDataTest {
 			fail("Could not find or read from sourceFile.");
 		}
 		
-		TextDataContents contents = (TextDataContents)data.getContents();
-		TextDataContents contents2 = (TextDataContents)data.getContents();
+		TextDataContents contents = data.getContents();
+		TextDataContents contents2 = data.getContents();
 		
 		assertNotNull("Could not find or read from contents File.", contents);
 		assertEquals("Returned text should be equal to the source File's text.",
@@ -105,7 +105,7 @@ public class TextDataTest {
 		TextDataContents newContents = new TextDataContents("New contents.");
 		
 		data.updateContents(newContents);
-		TextDataContents updatedContents = (TextDataContents)data.getContents();
+		TextDataContents updatedContents = data.getContents();
 		
 		assertFalse("Contents should have been updated and should no longer match the original contents.",
 				updatedContents.compareTo(new TextDataContents(sourceText)) == 0);
@@ -137,7 +137,7 @@ public class TextDataTest {
 		
 		TextDataContents sourceContents = new TextDataContents(sourceText);
 		TextDataContents otherContents = new TextDataContents("Other contents.");
-		TextDataContents actualContents = (TextDataContents)data.getContents();
+		TextDataContents actualContents = data.getContents();
 		
 		assertTrue("Two TextDataContents with the same text should be equal.",
 				actualContents.compareTo(sourceContents) == 0);
