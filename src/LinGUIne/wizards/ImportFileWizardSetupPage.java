@@ -196,6 +196,7 @@ public class ImportFileWizardSetupPage extends WizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				lstProjects.setEnabled(false);
 				wizardData.setCreateNewProject(true);
+				wizardData.setProject(null);
 				
 				checkIfPageComplete();
 			}

@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import LinGUIne.events.OpenProjectDataEvent;
+import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
@@ -152,7 +153,8 @@ public class ProjectExplorer {
 	@Inject
 	@Optional
 	public void projectEvent(@UIEventTopic(ProjectManager.ALL_PROJECT_EVENTS)
-			ProjectManager projectMan){
+			ProjectEvent projectEvent){
+		ProjectManager projectMan = projectEvent.getProjectManager();
 		
 		tree.getContentProvider().inputChanged(tree, null, projectMan);
 		tree.refresh();

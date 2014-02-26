@@ -3,6 +3,11 @@ package LinGUIne.events;
 import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.IProjectData;
 
+/**
+ * Container for data related to ProjectData open events.
+ * 
+ * @author Kyle Mullins
+ */
 public class OpenProjectDataEvent {
 	
 	private IProjectData projectData;

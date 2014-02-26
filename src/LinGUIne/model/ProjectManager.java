@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 
+import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.Project.ProjectListener;
 import LinGUIne.utilities.FileUtils;
 
@@ -55,7 +56,7 @@ public class ProjectManager {
 			
 			@Override
 			public void notify(Project modifiedProj) {
-				postEvent(PROJECT_MODIFIED);
+				postEvent(PROJECT_MODIFIED, modifiedProj);
 			}
 		};
 	}
@@ -110,7 +111,7 @@ public class ProjectManager {
 		else if(!containsProject(newProject.getName())){
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
 			newProject.addListener(projListener);
-			postEvent(PROJECT_ADDED);
+			postEvent(PROJECT_ADDED, newProject);
 			updateProjectFilesInPersistedState();
 			
 			return true;
@@ -130,7 +131,7 @@ public class ProjectManager {
 		if(containsProject(proj.getName())){
 			projectSet.remove(proj.getName().toLowerCase());
 			proj.removeListener(projListener);
-			postEvent(PROJECT_REMOVED);
+			postEvent(PROJECT_REMOVED, proj);
 			updateProjectFilesInPersistedState();
 			
 			return true;
@@ -223,9 +224,9 @@ public class ProjectManager {
 		application.getPersistedState().put(PROJECT_LIST_KEY, projectList);
 	}
 	
-	private void postEvent(String eventStr) {
+	private void postEvent(String eventStr, Project affectedProject) {
 		if(eventBroker != null){
-			eventBroker.post(eventStr, this);
+			eventBroker.post(eventStr, new ProjectEvent(this, affectedProject));
 		}
 	}
 }
