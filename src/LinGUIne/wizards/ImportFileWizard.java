@@ -69,7 +69,7 @@ public class ImportFileWizard extends Wizard {
 	public boolean performFinish() {
 		if(wizardData.shouldCreateNewProject()){
 			Command newProjectCommand = commandService.getCommand(
-					"linguine.command.1");
+					"linguine.command.newProject");
 			
 			try(Monitor theMonitor = newProjectMonitor.enter()){
 				IStatus status = (IStatus)newProjectCommand.executeWithChecks(

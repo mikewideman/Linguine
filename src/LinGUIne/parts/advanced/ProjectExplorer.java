@@ -143,8 +143,17 @@ public class ProjectExplorer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(e.keyCode == SWT.DEL){
-					//TODO: if user presses delete, attempt to delete the selected element
-					//TODO: Call RemoveCommand
+					Command removeProjectCommand = commandService.getCommand(
+							"linguine.command.removeProject");
+					
+					try {
+						removeProjectCommand.executeWithChecks(new ExecutionEvent());
+					}
+					catch(ExecutionException | NotDefinedException
+							| NotEnabledException | NotHandledException e1) {
+						//TODO: Oh no the command is not defined!
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -183,9 +192,8 @@ public class ProjectExplorer {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: We need to go through and change all these IDs
 				Command newProjectCommand = commandService.getCommand(
-						"linguine.command.1");
+						"linguine.command.newProject");
 				
 				try {
 					newProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -207,12 +215,11 @@ public class ProjectExplorer {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: We need to go through and change all these IDs
-				Command newProjectCommand = commandService.getCommand(
-						"linguine.command.3");
+				Command refreshCommand = commandService.getCommand(
+						"linguine.command.refresh");
 				
 				try {
-					newProjectCommand.executeWithChecks(new ExecutionEvent());
+					refreshCommand.executeWithChecks(new ExecutionEvent());
 				}
 				catch(ExecutionException | NotDefinedException
 						| NotEnabledException | NotHandledException e1) {
@@ -221,6 +228,29 @@ public class ProjectExplorer {
 				}
 			}
 
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		MenuItem removeProject = new MenuItem(contextMenu, SWT.NONE);
+		removeProject.setText("Remove Project");
+		removeProject.addSelectionListener(new SelectionListener(){
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Command removeProjectCommand = commandService.getCommand(
+						"linguine.command.removeProject");
+				
+				try {
+					removeProjectCommand.executeWithChecks(new ExecutionEvent());
+				}
+				catch(ExecutionException | NotDefinedException
+						| NotEnabledException | NotHandledException e1) {
+					//TODO: Oh no the command is not defined!
+					e1.printStackTrace();
+				}
+			}
+			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
