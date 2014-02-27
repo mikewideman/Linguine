@@ -2,12 +2,17 @@
 package LinGUIne.parts.advanced;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,23 +30,35 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.extensions.IAnalysisPlugin;
+import LinGUIne.model.IProjectData;
+import LinGUIne.model.Project;
+import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
+import LinGUIne.wizards.SafeAnalysis;
 
 public class QuickAnalysisPart {
 	
-	private SoftwareModuleManager softwareModuleMan;
+	@Inject
+	private ProjectManager projectMan;
 	
+	private SoftwareModuleManager softwareModuleMan;
+	private ProjectExplorerSelection projectSelection;
+	
+	private Composite myParent;
 	private ListViewer lstSoftwareModules;
 	private ListViewer lstAnalyses;
 	private Text txtDescription;
 	private Button btnRunAnalysis;
 	
+	
 	@Inject
 	public QuickAnalysisPart(MApplication app) {
 		softwareModuleMan = new SoftwareModuleManager();
+		projectSelection = new ProjectExplorerSelection();
 		
 		app.getContext().set(SoftwareModuleManager.class, softwareModuleMan);
 	}
@@ -49,6 +66,8 @@ public class QuickAnalysisPart {
 	@PostConstruct
 	public void createComposite(Composite parent){
 
+		myParent = parent;
+		
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 3;
 		parent.setLayout(layout);
@@ -170,7 +189,7 @@ public class QuickAnalysisPart {
 				
 				IAnalysisPlugin analysis = (IAnalysisPlugin)selection.getFirstElement();
 				
-				//TODO: Run analysis
+				runAnalysis(analysis);
 			}
 
 			@Override
@@ -182,4 +201,50 @@ public class QuickAnalysisPart {
 
 	@Focus
 	public void onFocus() {}
+	
+	@Inject
+	public void setProjectDataSelection(@Optional
+			@Named(IServiceConstants.ACTIVE_SELECTION)
+			ProjectExplorerSelection selection){
+		
+		if(selection != null){
+			projectSelection = selection;
+			btnRunAnalysis.setEnabled(!projectSelection.isEmpty());
+		}
+	}
+	
+	private void runAnalysis(IAnalysisPlugin analysis){
+		Shell theShell = myParent.getShell();
+		LinkedList<SafeAnalysis> safeAnalyses = new LinkedList<SafeAnalysis>();
+		
+		//Compose all valid SafeAnalysis objects that we can
+		for(String projectName: projectSelection.getSelectedProjects()){
+			Project destProject = projectMan.getProject(projectName);
+			LinkedList<IProjectData> sourceData = new LinkedList<IProjectData>();
+			
+			for(String dataName: projectSelection.getSelectedOriginalData(
+					projectName)){
+				//TODO: Check if all of this ProjectData has the proper Results
+				sourceData.add(destProject.getProjectData(dataName));
+			}
+			
+			//Only run the analysis if there was some selected original
+			//ProjectData for this Project that was valid for the analysis
+			if(!sourceData.isEmpty()){
+				SafeAnalysis safeAnalysis = new SafeAnalysis(theShell, analysis,
+						sourceData, destProject);
+				
+				safeAnalyses.add(safeAnalysis);
+			}
+		}
+		
+		if(safeAnalyses.isEmpty()){
+			//TODO: warn the user that none of the selections were valid
+		}
+		else{
+			for(SafeAnalysis safeAnalysis: safeAnalyses){
+				SafeRunner.run(safeAnalysis);
+			}
+		}
+	}
 }

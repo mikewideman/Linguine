@@ -617,6 +617,10 @@ public class Project {
 		return getName();
 	}
 	
+	public int hashCode(){
+		return getName().hashCode();
+	}
+	
 	/**
 	 * Registers the given listener which will get notified whenever this
 	 * Project is modified.

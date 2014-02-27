@@ -1,6 +1,8 @@
 package LinGUIne.parts.advanced;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,6 +22,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -59,6 +62,7 @@ public class ProjectExplorer {
 	public static final String PROJECT_EXPLORER_DOUBLE_CLICK =
 			"Project_Explorer/Double_Click";
 	
+	private ProjectExplorerSelection projectSelection;
 	private TreeViewer tree;
 	
 	@Inject
@@ -70,8 +74,12 @@ public class ProjectExplorer {
 	@Inject
 	private ECommandService commandService;
 	
+	@Inject ESelectionService selectionService;
+	
 	@Inject
-	public ProjectExplorer(){}
+	public ProjectExplorer(){
+		projectSelection = new ProjectExplorerSelection();
+	}
 	
 	/**
 	 * Initializes the components of this view.
@@ -104,7 +112,14 @@ public class ProjectExplorer {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				//TODO
+				projectSelection.clearSelection();
+				
+				IStructuredSelection selection = (IStructuredSelection)
+						tree.getSelection();
+				
+				buildProjectExplorerSelection(selection);
+				
+				selectionService.setSelection(projectSelection);
 			}
 		});
 		
@@ -258,6 +273,43 @@ public class ProjectExplorer {
 		tree.getTree().setMenu(contextMenu);
 	}
 
+	private void buildProjectExplorerSelection(IStructuredSelection selection){
+		for(Object selected: selection.toList()){
+			//If the node is a root node, add it's Project
+			if(selected instanceof ProjectExplorerTree){
+				Project selectedProject =
+						((ProjectExplorerTree)selected).getProject();
+				
+				projectSelection.addToSelection(selectedProject);
+			}
+			else{
+				ProjectExplorerNode selectedNode =
+						(ProjectExplorerNode)selected;
+				Project selectedProject = ((ProjectExplorerTree)
+						selectedNode.getRootNode()).getProject();
+				List<IProjectData> selectedData = new LinkedList<IProjectData>();
+				
+				//If the node has children, add all of them
+				if(selectedNode.hasChildren()){
+					for(ProjectExplorerNode childNode:
+						selectedNode.getChildren()){
+						
+						selectedData.add(((ProjectExplorerDataNode)
+								childNode).getNodeData());
+					}
+				}
+				//Otherwise just add the node's ProjectData
+				else{
+					selectedData.add(((ProjectExplorerDataNode)selectedNode).
+							getNodeData());
+				}
+				
+				projectSelection.addToSelection(selectedProject,
+						selectedData);
+			}
+		}
+	}
+	
 	/**
 	 * Builds up a tree of all the Projects so that they can be displayed in
 	 * the TreeViewer.
