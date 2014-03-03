@@ -13,17 +13,17 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Listener;
+import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -33,10 +33,13 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.TextData;
 import LinGUIne.parts.advanced.ProjectDataEditorTab.DirtyStateChangedListener;
 
-public class DataEditorPart implements MouseListener, SelectionListener{
+public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 	
 	@Inject
 	private MDirtyable dirtyable;
+	
+	@Inject
+	private ESelectionService selectionService;
 	
 	private CTabFolder tabFolder;
 	private Menu contextMenu;
@@ -52,11 +55,17 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	public void createComposite(Composite parent) {
 		tabFolder = new CTabFolder(parent,SWT.NONE);
 		tabFolder.addSelectionListener(this);
-//		createTab();
+		tabFolder.addCTabFolder2Listener(this);
+		
+		createContextMenu();
 		
 		dirtyable.setDirty(false);
 	}
 	
+	/**
+	 * Called when the user requests that the contents of an EditorTab be
+	 * saved.
+	 */
 	@Persist
 	public void save(MDirtyable dirty) throws IOException{
 		if(tabFolder.getSelection() instanceof ProjectDataEditorTab){
@@ -68,6 +77,12 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 		}
 	}
 	
+	/**
+	 * Called when a user double-clicks on a file in the ProjectExplorer.
+	 * 
+	 * @param openEvent
+	 * @param shell
+	 */
 	@Inject
 	@Optional
 	public void fileOpenEvent(@UIEventTopic(ProjectExplorer.PROJECT_EXPLORER_DOUBLE_CLICK)
@@ -95,7 +110,10 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 				}
 			});
 			
+			newTab.getControl().setMenu(contextMenu);
 			tabFolder.setSelection(newTab);
+			
+			selectionService.setPostSelection(newTab);
 		}
 		else{
 			MessageDialog.openError(shell, "Error", "Could not open " +
@@ -109,11 +127,14 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	public void createTab(){
 		CTabItem newTab = new CTabItem(tabFolder,SWT.CLOSE);
 		newTab.setText("New File");
-		tabFolder.setSelection(newTab);
+		
 		StyledText textArea = new StyledText(tabFolder,SWT.V_SCROLL|SWT.H_SCROLL);
-		textArea.addMouseListener(this);
 		textArea.setAlwaysShowScrollBars(true);
+		textArea.setMenu(contextMenu);
+		
 		newTab.setControl(textArea);
+		
+		tabFolder.setSelection(newTab);
 	}
 	
 	/**
@@ -124,52 +145,32 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 	public void createTab(String fileName, String[] contents){
 		CTabItem newTab = new CTabItem(tabFolder,SWT.CLOSE);
 		newTab.setText(fileName);
-		tabFolder.setSelection(newTab);
+		
 		StyledText textArea = new StyledText(tabFolder,SWT.V_SCROLL|SWT.H_SCROLL);
-		textArea.addMouseListener(this);
 		textArea.setAlwaysShowScrollBars(true);
+		textArea.setMenu(contextMenu);
 		newTab.setControl(textArea);
+		
 		for(int i = 0; i < contents.length; i++){
 			textArea.append(contents[i]);
 		}
+		
+
+		tabFolder.setSelection(newTab);
 	}
 	
 	@Focus
 	public void onFocus() {}
 
 	@Override
-	public void mouseDoubleClick(MouseEvent e) {}
-
-	@Override
-	public void mouseDown(MouseEvent e) {
-		if(e.button == 3){
-			Control c = (Control)e.getSource();
-			contextMenu = new Menu(c);
-			newItem = new MenuItem(contextMenu,SWT.NONE);
-			newItem.setText("New");
-			newItem.addSelectionListener(this);
-			cutItem = new MenuItem(contextMenu,SWT.NONE);
-			cutItem.setText("Cut");
-			cutItem.addSelectionListener(this);
-			copyItem = new MenuItem(contextMenu,SWT.NONE);
-			copyItem.setText("Copy");
-			copyItem.addSelectionListener(this);
-			pasteItem = new MenuItem(contextMenu,SWT.NONE);
-			pasteItem.setText("Paste");
-			pasteItem.addSelectionListener(this);
-			c.setMenu(contextMenu);
-		}
-	}
-
-	@Override
-	public void mouseUp(MouseEvent e) {}
-
-	@Override
 	public void widgetSelected(SelectionEvent e) {
 		if(e.getSource() == tabFolder){
-			if(tabFolder.getSelection() instanceof ProjectDataEditorTab){
-				ProjectDataEditorTab editorTab =
-						(ProjectDataEditorTab)tabFolder.getSelection();
+			CTabItem tab = tabFolder.getSelection();
+			
+			selectionService.setSelection(tab);
+			
+			if(tab instanceof ProjectDataEditorTab){
+				ProjectDataEditorTab editorTab = (ProjectDataEditorTab)tab;
 				
 				dirtyable.setDirty(editorTab.isDirty());
 			}
@@ -177,22 +178,88 @@ public class DataEditorPart implements MouseListener, SelectionListener{
 				dirtyable.setDirty(false);
 			}
 		}
-		else{
-			if(e.getSource() == newItem){
-				createTab();
-			}
-			else if(e.getSource() == cutItem){
-				System.out.println("Cut!");
-			}
-			else if(e.getSource() == copyItem){
-				System.out.println("Copy!");
-			}
-			else if(e.getSource() == pasteItem){
-				System.out.println("Paste!");
-			}
-		}
 	}
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {}
+	
+	/**
+	 * Creates the context menu for the editor
+	 */
+	private void createContextMenu(){
+		contextMenu = new Menu(tabFolder);
+		
+		newItem = new MenuItem(contextMenu,SWT.NONE);
+		newItem.setText("New");
+		newItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: Change to run the NewFile command
+				createTab();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		cutItem = new MenuItem(contextMenu,SWT.NONE);
+		cutItem.setText("Cut");
+		cutItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: Change to run built-in command
+				System.out.println("Cut!");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		copyItem = new MenuItem(contextMenu,SWT.NONE);
+		copyItem.setText("Copy");
+		copyItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: Change to run built-in command
+				System.out.println("Copy!");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		pasteItem = new MenuItem(contextMenu,SWT.NONE);
+		pasteItem.setText("Paste");
+		pasteItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: Change to run built-in command
+				System.out.println("Paste!");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		tabFolder.setMenu(contextMenu);
+	}
+
+	@Override
+	public void close(CTabFolderEvent event) {
+		if(tabFolder.getSelection() == null){
+			selectionService.setSelection(null);
+		}
+	}
+
+	@Override
+	public void minimize(CTabFolderEvent event) {}
+
+	@Override
+	public void maximize(CTabFolderEvent event) {}
+
+	@Override
+	public void restore(CTabFolderEvent event) {}
+
+	@Override
+	public void showList(CTabFolderEvent event) {}
 }
