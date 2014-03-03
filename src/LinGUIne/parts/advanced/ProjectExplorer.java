@@ -74,7 +74,8 @@ public class ProjectExplorer {
 	@Inject
 	private ECommandService commandService;
 	
-	@Inject ESelectionService selectionService;
+	@Inject
+	ESelectionService selectionService;
 	
 	@Inject
 	public ProjectExplorer(){
@@ -112,7 +113,7 @@ public class ProjectExplorer {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				projectSelection.clearSelection();
+				projectSelection = new ProjectExplorerSelection();
 				
 				IStructuredSelection selection = (IStructuredSelection)
 						tree.getSelection();
@@ -299,7 +300,7 @@ public class ProjectExplorer {
 					}
 				}
 				//Otherwise just add the node's ProjectData
-				else{
+				else if(selectedNode instanceof ProjectExplorerDataNode){
 					selectedData.add(((ProjectExplorerDataNode)selectedNode).
 							getNodeData());
 				}

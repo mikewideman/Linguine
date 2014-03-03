@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import LinGUIne.model.ProjectManager;
+
 /**
  * Part that shows metadata about the current selection.
  * 
@@ -33,6 +35,9 @@ import org.eclipse.swt.widgets.TableColumn;
  */
 public class MetaPart {
 
+	@Inject
+	private ProjectManager projectMan;
+	
 	private TableViewer viewer;
 
 	@PostConstruct
@@ -68,7 +73,22 @@ public class MetaPart {
 			@Named(IServiceConstants.ACTIVE_SELECTION)
 			ProjectExplorerSelection selection){
 
-		//TODO: Show some metadata about the currently selected ProjectData
+		if(selection != null){
+			ArrayList<File> selectedFiles = new ArrayList<File>();
+
+			if(!selection.isEmpty()){	
+				for(String projectName: selection.getSelectedProjects()){
+					for(String dataName: selection.getSelectedOriginalData(
+						projectName)){
+						
+						selectedFiles.add(projectMan.getProject(projectName).
+								getProjectData(dataName).getFile());
+					}
+				}
+			}
+			
+			viewer.setInput(selectedFiles);
+		}
 	}
 
 	/**

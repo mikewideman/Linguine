@@ -40,6 +40,12 @@ import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.wizards.SafeAnalysis;
 
+/**
+ * Part to provide the user with quick access to all of the available analyses.
+ * 
+ * @author Pete Maresca
+ * @author Kyle Mullins
+ */
 public class QuickAnalysisPart {
 	
 	@Inject
@@ -53,7 +59,6 @@ public class QuickAnalysisPart {
 	private ListViewer lstAnalyses;
 	private Text txtDescription;
 	private Button btnRunAnalysis;
-	
 	
 	@Inject
 	public QuickAnalysisPart(MApplication app) {
