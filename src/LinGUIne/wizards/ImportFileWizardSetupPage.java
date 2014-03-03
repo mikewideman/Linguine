@@ -99,28 +99,30 @@ public class ImportFileWizardSetupPage extends WizardPage {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String selectedFileType = lstImporters.getSelection()[0];
-				IFileImporter importer = null;
-				
-				if(importerConfigs.containsKey(selectedFileType)){
-					IConfigurationElement importerConfig =
-							importerConfigs.get(selectedFileType);
+				if(lstImporters.getSelectionCount() != 0){
+					String selectedFileType = lstImporters.getSelection()[0];
+					IFileImporter importer = null;
 					
-					try {
-						importer = (IFileImporter)importerConfig.
-								createExecutableExtension("class");
+					if(importerConfigs.containsKey(selectedFileType)){
+						IConfigurationElement importerConfig =
+								importerConfigs.get(selectedFileType);
+						
+						try {
+							importer = (IFileImporter)importerConfig.
+									createExecutableExtension("class");
+						}
+						catch (CoreException e1) {
+							e1.printStackTrace();
+						}
 					}
-					catch (CoreException e1) {
-						e1.printStackTrace();
+					else{
+						importer = new PlaintextImporter();
 					}
+					
+					wizardData.setImporter(importer);
+					
+					checkIfPageComplete();
 				}
-				else{
-					importer = new PlaintextImporter();
-				}
-				
-				wizardData.setImporter(importer);
-				
-				checkIfPageComplete();
 			}
 
 			@Override
@@ -149,11 +151,12 @@ public class ImportFileWizardSetupPage extends WizardPage {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
-				Project selected = projectMan.getProject(lstProjects.getSelection()[0]);
-				wizardData.setProject(selected);
-				
-				checkIfPageComplete();
+				if(lstProjects.getSelectionCount() != 0){
+					Project selected = projectMan.getProject(lstProjects.getSelection()[0]);
+					wizardData.setProject(selected);
+					
+					checkIfPageComplete();
+				}
 			}
 
 			@Override
