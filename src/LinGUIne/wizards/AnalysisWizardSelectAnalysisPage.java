@@ -113,7 +113,7 @@ public class AnalysisWizardSelectAnalysisPage extends WizardPage {
 					
 					if(analysis != null){
 						wizardData.setChosenAnalysis(analysis);
-						lblDescription.setText(analysis.getPluginData().toString());
+						lblDescription.setText(analysis.getAnalysisDescription());
 						lblDescription.update();
 						
 						setPageComplete(true);

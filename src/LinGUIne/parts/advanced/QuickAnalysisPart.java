@@ -37,6 +37,7 @@ import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
+import LinGUIne.model.Result;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.wizards.SafeAnalysis;
 
@@ -171,7 +172,7 @@ public class QuickAnalysisPart {
 				if(selection.size() > 0){
 					IAnalysisPlugin analysis = (IAnalysisPlugin)selection.getFirstElement();
 					
-					txtDescription.setText(analysis.getPluginData().toString());
+					txtDescription.setText(analysis.getAnalysisDescription());
 					btnRunAnalysis.setEnabled(true);
 				}
 			}
@@ -221,6 +222,10 @@ public class QuickAnalysisPart {
 	private void runAnalysis(IAnalysisPlugin analysis){
 		Shell theShell = myParent.getShell();
 		LinkedList<SafeAnalysis> safeAnalyses = new LinkedList<SafeAnalysis>();
+		Collection<Class<? extends Result>> requiredResultTypes =
+				analysis.getRequiredResultTypes();
+		Collection<Class<? extends IProjectData>> supportedSourceDataTypes = 
+				analysis.getSupportedSourceDataTypes();
 		
 		//Compose all valid SafeAnalysis objects that we can
 		for(String projectName: projectSelection.getSelectedProjects()){
@@ -229,8 +234,35 @@ public class QuickAnalysisPart {
 			
 			for(String dataName: projectSelection.getSelectedOriginalData(
 					projectName)){
-				//TODO: Check if all of this ProjectData has the proper Results
-				sourceData.add(destProject.getProjectData(dataName));
+				IProjectData projData = destProject.getProjectData(dataName);
+				
+				//Check if all of this ProjectData has the proper Results
+				//And is of the proper type for the chosen analysis
+				if(supportedSourceDataTypes.contains(projData.getClass())){
+					boolean hasAllResults = true;
+					LinkedList<Result> results = new LinkedList<Result>();
+					
+					for(Class<? extends Result> resultType: requiredResultTypes){
+						if(destProject.hasResultType(projData, resultType)){
+							//All good, carry on
+							results.add(destProject.getResultType(projData,
+									resultType));
+						}
+						else{
+							//Missing required result type
+							//Either run something else first or leave this out
+							hasAllResults = false;
+						}
+					}
+					
+					if(hasAllResults){
+						sourceData.add(projData);
+						sourceData.addAll(results);
+					}
+				}
+				else{
+					//Unsupported source type for this analysis
+				}
 			}
 			
 			//Only run the analysis if there was some selected original

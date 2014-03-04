@@ -59,11 +59,8 @@ public class SafeAnalysis implements ISafeRunnable {
 	 */
 	@Override
 	public void run() throws Exception {
-		//TODO: IAnalysisPlugin.runAnalysis should take a Collection<IProjectData> parameter and return a Collection<Result>
-		//User may want to analyze more than one file at a time and an analysis may want to return more than one result
 		Collection<Result> results = new LinkedList<Result>();
-//		results.addAll(analysisPlugin.runAnalysis(sourceData));
-		results.add(analysisPlugin.runAnalysis());
+		results.addAll(analysisPlugin.runAnalysis(sourceData));
 		
 		for(Result result: results){
 			destProject.addResult(result, sourceData);
