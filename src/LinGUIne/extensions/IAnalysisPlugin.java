@@ -1,28 +1,67 @@
 package LinGUIne.extensions;
 
+import java.util.Collection;
+
+import LinGUIne.model.IProjectData;
 import LinGUIne.model.Result;
 
 /**
+ * Interface defining methods for all AnalysisPlugins.
+ * This package will have to be imported to any AnalysisPlugin projects.
  * 
  * @author Pete Maresca
- * Interface defining methods for all analysis plugins
- * This package will have to be imported to any analysis plugin projects
- * 
+ * @author Kyle Mullins
  */
 public interface IAnalysisPlugin {
 	
-	//Return the plugin name
+	/**
+	 * Returns the name of the plugin.
+	 */
 	String getName();
 	
-	//Return the associated Binary Library
+	/**
+	 * Returns the name of the associated Binary Software Module.
+	 */
 	String getAnalysisLibrary();
 	
-	//Returns more detailed data about the plugin- Not sure if necessary may be able to 
-	//leverage Eclipse Runtime
+	/**
+	 * Returns a text description of this AnalysisPlugin.
+	 */
+	String getAnalysisDescription();
+	
+	/**
+	 * Returns more detailed data about this AnalysisPlugin if necessary.
+	 */
 	Object getPluginData();
 	
-	//The Analysis this plugin is responsible for executing
-	Result runAnalysis();
+	/**
+	 * Runs the analysis this AnalysisPlugin is responsible for executing.
+	 * 
+	 * @param sourceData
+	 * 
+	 * @return
+	 */
+	Collection<Result> runAnalysis(Collection<IProjectData> sourceData);
 	
+	/**
+	 * Returns a collection of all of the original (i.e. non-Result) ProjectData
+	 * Types that this AnalysisPlugin can be run with.
+	 * Note: The Types returned should be as specific as possible.
+	 */
+	Collection<Class<? extends IProjectData>> getSupportedSourceDataTypes();
+
+	/**
+	 * Returns a collection of all of the Result object Types that are required
+	 * in order to run this AnalysisPlugin or an empty collection if no prior
+	 * Results are needed.
+	 * Note: The Types returned should be as specific as possible.
+	 */
+	Collection<Class<? extends Result>> getRequiredResultTypes();
 	
+	/**
+	 * Returns the Type of Result object that is returned by running this
+	 * AnalysisPlugin.
+	 * Note: The Type returned should be as specific as possible.
+	 */
+	Class<? extends Result> getReturnedResultType();
 }
