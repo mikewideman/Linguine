@@ -8,6 +8,7 @@ import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
+import LinGUIne.utilities.SafeAnalysis;
 
 /**
  * Analysis Wizard object; pieces the Wizard Pages together into

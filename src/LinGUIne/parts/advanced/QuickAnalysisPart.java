@@ -39,7 +39,7 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 import LinGUIne.model.SoftwareModuleManager;
-import LinGUIne.wizards.SafeAnalysis;
+import LinGUIne.utilities.SafeAnalysis;
 
 /**
  * Part to provide the user with quick access to all of the available analyses.

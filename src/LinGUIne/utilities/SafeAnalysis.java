@@ -1,4 +1,4 @@
-package LinGUIne.wizards;
+package LinGUIne.utilities;
 
 import java.util.Collection;
 import java.util.LinkedList;

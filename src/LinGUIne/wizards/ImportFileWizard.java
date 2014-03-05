@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.utilities.Monitor;
+import LinGUIne.utilities.SafeImporter;
 
 /**
  * Wizard for importing one or more Files into a Project.
