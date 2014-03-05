@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.IProjectData;
@@ -59,9 +60,6 @@ import LinGUIne.model.Result;
  */
 public class ProjectExplorer {
 
-	public static final String PROJECT_EXPLORER_DOUBLE_CLICK =
-			"Project_Explorer/Double_Click";
-	
 	private ProjectExplorerSelection projectSelection;
 	private TreeViewer tree;
 	
@@ -142,7 +140,7 @@ public class ProjectExplorer {
 					OpenProjectDataEvent openEvent = new OpenProjectDataEvent(
 							data, containingProject.getAnnotation(data));
 					
-					eventBroker.post(PROJECT_EXPLORER_DOUBLE_CLICK, openEvent);
+					eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA, openEvent);
 				}
 				else {
 					tree.setExpandedState(selectedNode,
@@ -177,7 +175,7 @@ public class ProjectExplorer {
 	
 	@Inject
 	@Optional
-	public void projectEvent(@UIEventTopic(ProjectManager.ALL_PROJECT_EVENTS)
+	public void projectEvent(@UIEventTopic(LinGUIneEvents.Project.ALL_EVENTS)
 			ProjectEvent projectEvent){
 		ProjectManager projectMan = projectEvent.getProjectManager();
 		

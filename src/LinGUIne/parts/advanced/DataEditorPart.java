@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.TextData;
@@ -78,14 +79,11 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 	}
 	
 	/**
-	 * Called when a user double-clicks on a file in the ProjectExplorer.
-	 * 
-	 * @param openEvent
-	 * @param shell
+	 * Called when a user attempts to open a File.
 	 */
 	@Inject
 	@Optional
-	public void fileOpenEvent(@UIEventTopic(ProjectExplorer.PROJECT_EXPLORER_DOUBLE_CLICK)
+	public void fileOpenEvent(@UIEventTopic(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA)
 			OpenProjectDataEvent openEvent, @Named(IServiceConstants.ACTIVE_SHELL)
 			Shell shell){
 		IProjectData projectData = openEvent.getProjectData();

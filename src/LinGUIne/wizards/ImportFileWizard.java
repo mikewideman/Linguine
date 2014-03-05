@@ -17,6 +17,7 @@ import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.utilities.Monitor;
@@ -110,7 +111,7 @@ public class ImportFileWizard extends Wizard {
 	
 	@Inject
 	@Optional
-	public void projectEvent(@EventTopic(ProjectManager.PROJECT_ADDED)
+	public void projectEvent(@EventTopic(LinGUIneEvents.Project.ADDED)
 			ProjectEvent projectEvent){
 		try(Monitor theMonitor = newProjectMonitor.enter()){
 			wizardData.setProject(projectEvent.getAffectedProject());

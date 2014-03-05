@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.Project.ProjectListener;
 import LinGUIne.utilities.FileUtils;
@@ -25,14 +26,6 @@ import LinGUIne.utilities.FileUtils;
  */
 public class ProjectManager {
 
-	/**
-	 * Event strings used to subscribe to project-related events.
-	 */
-	public static final String ALL_PROJECT_EVENTS = "Project/*";
-	public static final String PROJECT_ADDED = "Project/Added";
-	public static final String PROJECT_REMOVED = "Project/Removed";
-	public static final String PROJECT_MODIFIED = "Project/Modified";
-	
 	private static final String PROJECT_LIST_KEY = "ProjectManager_ProjectList";
 	
 	@Inject
@@ -56,7 +49,7 @@ public class ProjectManager {
 			
 			@Override
 			public void notify(Project modifiedProj) {
-				postEvent(PROJECT_MODIFIED, modifiedProj);
+				postEvent(LinGUIneEvents.Project.MODIFIED, modifiedProj);
 			}
 		};
 	}
@@ -111,7 +104,7 @@ public class ProjectManager {
 		else if(!containsProject(newProject.getName())){
 			projectSet.put(newProject.getName().toLowerCase(), newProject);
 			newProject.addListener(projListener);
-			postEvent(PROJECT_ADDED, newProject);
+			postEvent(LinGUIneEvents.Project.ADDED, newProject);
 			updateProjectFilesInPersistedState();
 			
 			return true;
@@ -131,7 +124,7 @@ public class ProjectManager {
 		if(containsProject(proj.getName())){
 			projectSet.remove(proj.getName().toLowerCase());
 			proj.removeListener(projListener);
-			postEvent(PROJECT_REMOVED, proj);
+			postEvent(LinGUIneEvents.Project.REMOVED, proj);
 			updateProjectFilesInPersistedState();
 			
 			return true;
