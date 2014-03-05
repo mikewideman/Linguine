@@ -487,6 +487,35 @@ public class Project {
 	}
 	
 	/**
+	 * Returns all of the Results which are associated with the given
+	 * ProjectData.
+	 * 
+	 * @param projData	The ProjectData for which to look up Results.
+	 * 
+	 * @return	A collection of Results associated with projData or an empty
+	 * 			collection if there are none or it does not exist in this
+	 * 			Project.
+	 */
+	public Collection<Result> getResults(IProjectData projData){
+		ArrayList<Result> dataResults = new ArrayList<Result>();
+		
+		if(containsProjectData(projData)){
+			int id = projectData.get(projData);
+			
+			for(Entry<Result, HashSet<Integer>> resultPair: results.entrySet()){
+				for(int projectDataId: resultPair.getValue()){
+					if(projectDataId == id){
+						dataResults.add(resultPair.getKey());
+						break;
+					}
+				}
+			}
+		}
+		
+		return dataResults;
+	}
+	
+	/**
 	 * Returns whether or not there exists the given Result type for the given
 	 * ProjectData.
 	 * 
@@ -520,7 +549,7 @@ public class Project {
 			
 			for(Entry<Result, HashSet<Integer>> resultPair: results.entrySet()){
 				if(resultPair.getKey().getClass() == clazz){
-					for(Integer projectDataId: resultPair.getValue()){
+					for(int projectDataId: resultPair.getValue()){
 						if(projectDataId == id){
 							return resultPair.getKey();
 						}

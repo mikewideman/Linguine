@@ -225,7 +225,8 @@ public class QuickAnalysisPart {
 		
 		if(selection != null){
 			projectSelection = selection;
-			btnRunAnalysis.setEnabled(!projectSelection.isEmpty());
+			btnRunAnalysis.setEnabled(btnRunAnalysis.getEnabled() &&
+					!projectSelection.isEmpty());
 			
 			int numProjects = 0;
 			int numFiles = 0;
