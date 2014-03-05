@@ -1,7 +1,7 @@
 package LinGUIne.utilities;
 
+import java.io.File;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
+import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.Project;
 import LinGUIne.model.Result;
 
@@ -54,16 +55,34 @@ public class SafeAnalysis implements ISafeRunnable {
 	}
 
 	/**
-	 * Runs analysisPlugin over sourceData and places the result(s) into
+	 * Runs analysisPlugin over sourceData and places the Result(s) into
 	 * destProject.
 	 */
 	@Override
 	public void run() throws Exception {
-		Collection<Result> results = new LinkedList<Result>();
-		results.addAll(analysisPlugin.runAnalysis(sourceData));
+		Class<? extends Result> returnedResult =
+				analysisPlugin.getReturnedResultType();
+		Collection<IProjectDataContents> resultContents;
 		
-		for(Result result: results){
+		resultContents = analysisPlugin.runAnalysis(sourceData);
+		
+		int contentsCount = 1;
+		
+		for(IProjectDataContents contents: resultContents){
+			String resultFileName = returnedResult.getSimpleName();
+			
+			if(contentsCount > 1){
+				resultFileName += " (" + contentsCount + ")";
+			}
+
+			//TODO: Properly generate File names and File extensions
+			File resultFile = new File(resultFileName + ".result");
+			Result result = Result.createResult(returnedResult, resultFile);
+			
+			result.updateContents(contents);
 			destProject.addResult(result, sourceData);
+			
+			contentsCount++;
 		}
 		
 		//TODO: Error handling/liveness

@@ -3,7 +3,6 @@ package LinGUIne.model;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
@@ -74,9 +73,9 @@ public class SoftwareModuleManager {
 			}
 
 			@Override
-			public Collection<Result> runAnalysis(
+			public Collection<IProjectDataContents> runAnalysis(
 					Collection<IProjectData> sourceData) {
-				return new HashSet<Result>();
+				return new HashSet<IProjectDataContents>();
 			}
 
 			@Override

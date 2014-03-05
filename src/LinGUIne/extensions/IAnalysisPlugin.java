@@ -3,6 +3,7 @@ package LinGUIne.extensions;
 import java.util.Collection;
 
 import LinGUIne.model.IProjectData;
+import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.Result;
 
 /**
@@ -36,12 +37,8 @@ public interface IAnalysisPlugin {
 	
 	/**
 	 * Runs the analysis this AnalysisPlugin is responsible for executing.
-	 * 
-	 * @param sourceData
-	 * 
-	 * @return
 	 */
-	Collection<Result> runAnalysis(Collection<IProjectData> sourceData);
+	Collection<IProjectDataContents> runAnalysis(Collection<IProjectData> sourceData);
 	
 	/**
 	 * Returns a collection of all of the original (i.e. non-Result) ProjectData
