@@ -38,6 +38,19 @@ public class ProjectExplorerSelection {
 	}
 	
 	/**
+	 * Returns the total number of selected non-Result ProjectData.
+	 */
+	public int getSelectedOriginalDataCount(){
+		int numFiles = 0;
+		
+		for(HashSet<String> selectedDataSet: selectedOriginalData.values()){
+			numFiles += selectedDataSet.size();
+		}
+		
+		return numFiles;
+	}
+	
+	/**
 	 * Returns a list of the names of Projects with current selections.
 	 */
 	public Collection<String> getSelectedProjects(){

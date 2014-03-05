@@ -60,6 +60,8 @@ public class QuickAnalysisPart {
 	private ListViewer lstAnalyses;
 	private Text txtDescription;
 	private Button btnRunAnalysis;
+	private Label lblNumFiles;
+	private Label lblNumJobs;
 	
 	@Inject
 	public QuickAnalysisPart(MApplication app) {
@@ -202,6 +204,14 @@ public class QuickAnalysisPart {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
+		lblNumFiles = new Label(parent, SWT.NONE);
+		lblNumFiles.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lblNumFiles.setText("Selected files: 0");
+		
+		lblNumJobs = new Label(parent, SWT.NONE);
+		lblNumJobs.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lblNumJobs.setText("Analysis jobs: 0");
+		
 		lstSoftwareModules.setInput(softwareModuleMan);
 	}
 
@@ -216,6 +226,22 @@ public class QuickAnalysisPart {
 		if(selection != null){
 			projectSelection = selection;
 			btnRunAnalysis.setEnabled(!projectSelection.isEmpty());
+			
+			int numProjects = 0;
+			int numFiles = 0;
+			
+			for(String projectName: projectSelection.getSelectedProjects()){
+				Collection<String> selectedOGData = projectSelection.
+						getSelectedOriginalData(projectName);
+				
+				if(!selectedOGData.isEmpty()){
+					numProjects++;
+					numFiles += selectedOGData.size();
+				}
+			}
+			
+			lblNumFiles.setText("Selected files: " + numFiles);
+			lblNumJobs.setText("Analysis jobs: " + numProjects);
 		}
 	}
 	
