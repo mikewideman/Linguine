@@ -1,5 +1,8 @@
 package LinGUIne.wizards;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -12,6 +15,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 import LinGUIne.extensions.IAnalysisPlugin;
+import LinGUIne.model.IProjectData;
+import LinGUIne.model.Project;
+import LinGUIne.model.Result;
 import LinGUIne.model.SoftwareModuleManager;
 
 /**
@@ -33,6 +39,8 @@ public class AnalysisWizardSelectAnalysisPage extends WizardPage {
 	private Label lblAnalyses;
 	private List lstAnalyses;
 	private Label lblDescription;
+	
+	private HashMap<String, String> errorMessages;
 
 	public AnalysisWizardSelectAnalysisPage(AnalysisData data,
 			SoftwareModuleManager softwareModules) {
@@ -108,6 +116,8 @@ public class AnalysisWizardSelectAnalysisPage extends WizardPage {
 					String analysisName = lstAnalyses.getSelection()[0];
 					String selectedModule = lstSoftwareModules.getSelection()[0];
 	
+					updateErrorMessage(errorMessages.get(analysisName));
+					
 					IAnalysisPlugin analysis = softwareModuleMan.getAnalysisByName(
 							selectedModule, analysisName);
 					
@@ -134,15 +144,54 @@ public class AnalysisWizardSelectAnalysisPage extends WizardPage {
 	}
 	
 	private void updateAnalysisList(String selectedSoftwareModule){
-		lstAnalyses.deselectAll();
+		errorMessages = new HashMap<String, String>();
 		lstAnalyses.removeAll();
 		
 		for(IAnalysisPlugin analysis: softwareModuleMan.getAnalyses(
 				selectedSoftwareModule)){
 			lstAnalyses.add(analysis.getName());
+			
+			Project chosenProject = wizardData.getChosenProject();
+			Collection<IProjectData> selectedProjectData =
+					wizardData.getChosenProjectData();
+			Collection<Class<? extends IProjectData>> supportedSourceDataTypes =
+					analysis.getSupportedSourceDataTypes();
+			Collection<Class<? extends Result>> requiredResultTypes =
+					analysis.getRequiredResultTypes();
+			boolean hasError = false;
+			
+			//Check if all of this ProjectData has the proper Results
+			//And is of the proper type for the chosen analysis
+			for(IProjectData projData: selectedProjectData){
+				if(hasError){
+					break;
+				}
+				else if(supportedSourceDataTypes.contains(projData.getClass())){
+					for(Class<? extends Result> resultType: requiredResultTypes){
+						if(!chosenProject.hasResultType(projData, resultType)){
+							//TODO: Determine what analyses should be run
+							errorMessages.put(analysis.getName(),
+									"Cannot run this Analysis: missing required"
+									+ " result type.");
+							hasError = true;
+							break;
+						}
+					}
+				}
+				else{
+					errorMessages.put(analysis.getName(), "Cannot run this "
+							+ "Analysis: incorrect type of input data chosen.");
+					hasError = true;
+				}
+			}
 		}
 		
 		lstAnalyses.update();
+	}
+	
+	private void updateErrorMessage(String errorMsg){
+		setErrorMessage(errorMsg);
+		setPageComplete(isPageComplete() && errorMsg != null);
 	}
 }
 

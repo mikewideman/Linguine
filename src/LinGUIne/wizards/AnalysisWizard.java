@@ -21,7 +21,7 @@ public class AnalysisWizard extends Wizard {
 
 	private AnalysisWizardSelectFilePage selectFilePage;
 	private AnalysisWizardSelectAnalysisPage selectAnalysisPage;
-	private AnalysisWizardSelectSettingsPage settingsPage;
+//	private AnalysisWizardSelectSettingsPage settingsPage;
 
 	@Inject
 	private ProjectManager projectMan;

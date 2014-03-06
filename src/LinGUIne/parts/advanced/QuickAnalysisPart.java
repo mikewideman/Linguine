@@ -272,6 +272,7 @@ public class QuickAnalysisPart {
 					for(Class<? extends Result> resultType: requiredResultTypes){
 						if(destProject.hasResultType(projData, resultType)){
 							//All good, carry on
+							//TODO: Prevent duplicate results from being added here
 							results.add(destProject.getResultType(projData,
 									resultType));
 						}
