@@ -8,6 +8,13 @@ package LinGUIne.extensions;
 public interface IVisualization {
 	
 	/**
+	 * Returns this visualization's name.
+	 * 
+	 * @return The name of this visualization
+	 */
+	String getName();
+	
+	/**
 	 * Returns the description for the visualization
 	 * 
 	 * @return The description of the visualization
