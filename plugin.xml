@@ -2,6 +2,7 @@
 <plugin>
    <extension-point id="LinGUIne.extensions.IFileImporter" name="IFileImporter" schema="schema/LinGUIne.extensions.IFileImporter.exsd"/>
    <extension-point id="LinGUIne.extensions.IAnalysisPlugin" name="IAnalysisPlugin" schema="schema/LinGUIne.extensions.IAnalysisPlugin.exsd"/>
+   <extension-point id="LinGUIne.extensions.IVisualizationPlugin" name="IVisualizationPlugin" schema="schema/LinGUIne.extensions.IVisualizationPlugin.exsd"/>
 
    <extension
          id="product"
