@@ -2,9 +2,6 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_5qnu8DdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ide.application" bindingContexts="_5qnu-TdzEeOR8_lurf-ldg">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_5qnu8TdzEeOR8_lurf-ldg" label="LinGUIne" x="250" y="250" width="1280" height="720">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_5qnvEDdzEeOR8_lurf-ldg">
-      <children xsi:type="advanced:Perspective" xmi:id="_IX9I8JqDEeOg0pqaYsMAUA" elementId="linguine.perspective.Basic.basicPerspective" label="Basic Perspective">
-        <children xsi:type="basic:Part" xmi:id="_ScjaYJqDEeOg0pqaYsMAUA" elementId="linguine.part.basic.BasicMainPart" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.basic.BasicMainPart" label="Basic Main Part"/>
-      </children>
       <children xsi:type="advanced:Perspective" xmi:id="_5qnvETdzEeOR8_lurf-ldg" elementId="linguine.perspective.AdvancedPerspective" label="Advanced Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_5qnvEjdzEeOR8_lurf-ldg" elementId="partstashcontainer.MainPartStash" containerData="">
           <children xsi:type="basic:PartSashContainer" xmi:id="_zzDjwD0HEeO2ApE61zFgiA" elementId="linguine.partsashcontainer.upperPartStash" containerData="7000" horizontal="true">
@@ -23,6 +20,9 @@
             <children xsi:type="basic:Part" xmi:id="_el07kD0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.MetaPart" containerData="7000" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.MetaPart" label="Meta Data Part"/>
           </children>
         </children>
+      </children>
+      <children xsi:type="advanced:Perspective" xmi:id="_IX9I8JqDEeOg0pqaYsMAUA" elementId="linguine.perspective.Basic.basicPerspective" label="Basic Perspective">
+        <children xsi:type="basic:Part" xmi:id="_ScjaYJqDEeOg0pqaYsMAUA" elementId="linguine.part.basic.BasicMainPart" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.basic.BasicMainPart" label="Basic Main Part"/>
       </children>
     </children>
     <mainMenu xmi:id="_5qnvCTdzEeOR8_lurf-ldg" elementId="menu:org.eclipse.ui.main.menu">

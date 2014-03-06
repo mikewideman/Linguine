@@ -47,7 +47,7 @@ public class ProjectTest {
 	
 	@Test
 	public void testAddResult() {
-		Result result = new Result(new File("someresult.result"));
+		Result result = new MockResult(new File("someresult.result"));
 		ArrayList<IProjectData> affectedData = new ArrayList<IProjectData>();
 		
 		assertFalse("Cannot add a Result with a null ProjectData list.",
@@ -92,7 +92,7 @@ public class ProjectTest {
 //		assertFalse("Project cannot contain null ProjectData.",
 //				project.containsProjectData(null));
 		assertFalse("Project does not contain the given ProjectData.",
-				project.containsProjectData(new Result(new File("someResult"))));
+				project.containsProjectData(new MockResult(new File("someResult"))));
 		assertTrue("Project should contain ProjectData that has been added to it.",
 				project.containsProjectData(textData2));
 	}
@@ -108,7 +108,7 @@ public class ProjectTest {
 		assertEquals("ProjectData collection should have 3 elements.",
 				project.getProjectData().size(), 3);
 		
-		project.addProjectData(new Result(new File("somefile.txt")));
+		project.addProjectData(new MockResult(new File("somefile.txt")));
 		
 		assertEquals("ProjectData collection should now have 4 elements.",
 				project.getProjectData().size(), 4);
@@ -116,7 +116,7 @@ public class ProjectTest {
 
 	@Test
 	public void testGetResults() {
-		Result result = new Result(new File("someresult"));
+		Result result = new MockResult(new File("someresult"));
 		ArrayList<IProjectData> affectedFiles = new ArrayList<IProjectData>();
 		affectedFiles.add(textData3);
 		
