@@ -24,6 +24,15 @@ public interface IVisualizationPlugin {
 	String[] getVisualizations();
 	
 	/**
+	 * Returns the description for the requested visualization
+	 * 
+	 * @param visualizationName The name of the visualization as provided by
+	 * the method getVisualizations.
+	 * @return The description of the visualization provided by the library
+	 */
+	String getVisualizationDescription(String visualizationName);
+	
+	/**
 	 * Runs the specified visualization. The name of the visualization comes
 	 * from the provider by using the getVisualizations method.
 	 * 
