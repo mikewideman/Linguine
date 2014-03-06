@@ -330,7 +330,6 @@ public class ProjectExplorer {
 		 * Rebuilds the TreeViewer's content based on the Projects in the
 		 * given ProjectManager.
 		 */
-		@Inject
 		public void inputChanged(ProjectManager projectMan){
 			projectTrees = new ArrayList<ProjectExplorerTree>();
 			
@@ -360,7 +359,11 @@ public class ProjectExplorer {
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if(newInput != null){
+				Object[] expandedElements = tree.getExpandedElements();
+				
 				inputChanged((ProjectManager)newInput);
+				
+				tree.setExpandedElements(expandedElements);
 			}
 		}
 
@@ -495,6 +498,13 @@ public class ProjectExplorer {
 			return nodeName;
 		}
 		
+		/**
+		 * Traces through this node's parents (if any) until the root node is
+		 * found for the tree this node belongs to.
+		 * 
+		 * @return	The root node of this node's tree, or this node if it is the
+		 * 			root of the tree.
+		 */
 		public ProjectExplorerNode getRootNode(){
 			ProjectExplorerNode rootNode = this;
 			
@@ -503,6 +513,50 @@ public class ProjectExplorer {
 			}
 			
 			return rootNode;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+
+			result = prime * result
+					+ ((nodeName == null) ? 0 : nodeName.hashCode());
+			result = prime * result
+					+ ((parentNode == null) ? 0 : parentNode.hashCode());
+			
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(obj == null || !(obj instanceof ProjectExplorerNode)) {
+				return false;
+			}
+
+			ProjectExplorerNode other = (ProjectExplorerNode)obj;
+			
+			if(nodeName == null) {
+				if(other.nodeName != null) {
+					return false;
+				}
+			}
+			if(!nodeName.equals(other.nodeName)) {
+				return false;
+			}
+			else if(parentNode == null) {
+				if(other.parentNode != null) {
+					return false;
+				}
+			}
+			else if(!parentNode.equals(other.parentNode)) {
+				return false;
+			}
+			
+			return true;
 		}
 	}
 	
@@ -532,6 +586,40 @@ public class ProjectExplorer {
 		 */
 		public Project getProject(){
 			return project;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			
+			result = prime * result
+					+ ((project == null) ? 0 : project.hashCode());
+			
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerTree)) {
+				return false;
+			}
+			
+			ProjectExplorerTree other = (ProjectExplorerTree)obj;
+			
+			if(project == null) {
+				if(other.project != null) {
+					return false;
+				}
+			}
+			else if(!project.equals(other.project)) {
+				return false;
+			}
+			
+			return true;
 		}
 	}
 	
@@ -564,6 +652,40 @@ public class ProjectExplorer {
 		 */
 		public IProjectData getNodeData(){
 			return nodeData;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			
+			result = prime * result
+					+ ((nodeData == null) ? 0 : nodeData.hashCode());
+
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerDataNode)){
+				return false;
+			}
+			
+			ProjectExplorerDataNode other = (ProjectExplorerDataNode)obj;
+
+			if(nodeData == null) {
+				if(other.nodeData != null) {
+					return false;
+				}
+			}
+			else if(!nodeData.equals(other.nodeData)) {
+				return false;
+			}
+			
+			return true;
 		}
 	}
 	
