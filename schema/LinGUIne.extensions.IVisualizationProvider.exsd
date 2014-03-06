@@ -3,7 +3,7 @@
 <schema targetNamespace="LinGUIne" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="LinGUIne" id="LinGUIne.extensions.IVisualizationPlugin" name="IVisualizationPlugin"/>
+         <meta.schema plugin="LinGUIne" id="LinGUIne.extensions.IVisualizationProvider" name="IVisualizationProvider"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -52,14 +52,14 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":LinGUIne.extensions.IVisualizationPlugin"/>
+                  <meta.attribute kind="java" basedOn=":LinGUIne.extensions.IVisualizationProvider"/>
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="provider_name" type="string" use="required">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  The name of the provider of the visualizations. For example, &quot;Eclipse BIRT&quot;
+                  The name of the provider of the visualizations. For example, &quot;Eclipse BIRT&quot; or &quot;JFreeChart&quot;
                </documentation>
             </annotation>
          </attribute>
