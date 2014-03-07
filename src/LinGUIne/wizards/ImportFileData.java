@@ -146,7 +146,8 @@ public class ImportFileData {
 	 * 			has been chosen, and a Project has been chosen.
 	 */
 	public boolean isComplete(){
-		return chosenImporter != null && !chosenFiles.isEmpty() &&
-				chosenProject != null;
+//		return chosenImporter != null && !chosenFiles.isEmpty() &&
+//				chosenProject != null;
+		return isReadyForFiles() && !chosenFiles.isEmpty();
 	}
 }

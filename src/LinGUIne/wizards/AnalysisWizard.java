@@ -8,6 +8,7 @@ import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
+import LinGUIne.utilities.SafeAnalysis;
 
 /**
  * Analysis Wizard object; pieces the Wizard Pages together into
@@ -20,7 +21,7 @@ public class AnalysisWizard extends Wizard {
 
 	private AnalysisWizardSelectFilePage selectFilePage;
 	private AnalysisWizardSelectAnalysisPage selectAnalysisPage;
-	private AnalysisWizardSelectSettingsPage settingsPage;
+//	private AnalysisWizardSelectSettingsPage settingsPage;
 
 	@Inject
 	private ProjectManager projectMan;

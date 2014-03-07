@@ -1,6 +1,7 @@
 package LinGUIne.utilities;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -29,5 +30,25 @@ public class FileUtils {
 	 */
 	public static File appendPath(File basePath, String newPath){
 		return toEclipsePath(basePath).append(newPath).toFile();
+	}
+	
+	/**
+	 * Returns whether or not the given fileName is valid for the current OS.
+	 * 
+	 * @param fileName	The file name to be validated.
+	 * 
+	 * @return	True iff the file name can be canonicalized, false otherwise.
+	 */
+	public static boolean isValidFileName(String fileName){
+		File potentialFile = new File(fileName);
+		
+		try{
+			//This should throw an exception if the fileName or path is invalid
+			potentialFile.getCanonicalPath();
+			return true;
+		}
+		catch(IOException ioe){
+			return false;
+		}
 	}
 }
