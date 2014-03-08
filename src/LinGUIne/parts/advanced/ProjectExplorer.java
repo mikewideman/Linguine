@@ -64,8 +64,8 @@ public class ProjectExplorer {
 	private TreeViewer tree;
 	
 	@Inject
-	private MApplication application;
-
+	ProjectManager projectMan;
+	
 	@Inject
 	private IEventBroker eventBroker;
 	
@@ -94,13 +94,7 @@ public class ProjectExplorer {
 		tree.setLabelProvider(new ProjectExplorerLabelProvider());
 		tree.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		ProjectManager projectMan = new ProjectManager(Platform.getLocation(),
-				application);
-		projectMan.loadProjects();
 		tree.setInput(projectMan);
-		
-		application.getContext().set(ProjectManager.class, projectMan);
-		ContextInjectionFactory.inject(projectMan, application.getContext());
 		
 		createContextMenu();
 		

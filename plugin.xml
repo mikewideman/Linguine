@@ -23,6 +23,10 @@
                name="appName"
                value="LinGUIne">
          </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://LinGUIne/LinGUIne.lifecycle.LifeCycleManager">
+         </property>
       </product>
    </extension>
 
