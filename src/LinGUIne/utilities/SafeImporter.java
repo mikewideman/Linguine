@@ -1,4 +1,4 @@
-package LinGUIne.wizards;
+package LinGUIne.utilities;
 
 import java.io.File;
 import java.util.Collection;

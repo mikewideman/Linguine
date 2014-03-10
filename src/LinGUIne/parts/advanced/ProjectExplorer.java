@@ -1,6 +1,8 @@
 package LinGUIne.parts.advanced;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,15 +22,18 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -40,6 +45,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import LinGUIne.events.LinGUIneEvents;
+import LinGUIne.events.OpenProjectDataEvent;
+import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
@@ -52,9 +60,10 @@ import LinGUIne.model.Result;
  */
 public class ProjectExplorer {
 
-	public static final String PROJECT_EXPLORER_DOUBLE_CLICK = "Project_Explorer/Double_Click";
-	
+	private ProjectExplorerSelection projectSelection;
 	private TreeViewer tree;
+	
+	@Inject
 	private MApplication application;
 
 	@Inject
@@ -64,8 +73,11 @@ public class ProjectExplorer {
 	private ECommandService commandService;
 	
 	@Inject
-	public ProjectExplorer(MApplication app){
-		application = app;
+	ESelectionService selectionService;
+	
+	@Inject
+	public ProjectExplorer(){
+		projectSelection = new ProjectExplorerSelection();
 	}
 	
 	/**
@@ -82,7 +94,8 @@ public class ProjectExplorer {
 		tree.setLabelProvider(new ProjectExplorerLabelProvider());
 		tree.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		ProjectManager projectMan = new ProjectManager(Platform.getLocation());
+		ProjectManager projectMan = new ProjectManager(Platform.getLocation(),
+				application);
 		projectMan.loadProjects();
 		tree.setInput(projectMan);
 		
@@ -98,7 +111,14 @@ public class ProjectExplorer {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				//TODO
+				projectSelection = new ProjectExplorerSelection();
+				
+				IStructuredSelection selection = (IStructuredSelection)
+						tree.getSelection();
+				
+				buildProjectExplorerSelection(selection);
+				
+				selectionService.setSelection(projectSelection);
 			}
 		});
 		
@@ -106,15 +126,21 @@ public class ProjectExplorer {
 			
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+				IStructuredSelection selection =
+						(IStructuredSelection)event.getSelection();
 				Object selectedNode = selection.getFirstElement();
 				
 				if(selectedNode instanceof ProjectExplorerDataNode){
 					//If user double clicks a file, post an event for the editor
-					ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)selectedNode;
+					ProjectExplorerDataNode dataNode =
+							(ProjectExplorerDataNode)selectedNode;
 					IProjectData data = dataNode.getNodeData();
+					Project containingProject = ((ProjectExplorerTree)
+							dataNode.getRootNode()).getProject();
+					OpenProjectDataEvent openEvent = new OpenProjectDataEvent(
+							data, containingProject.getAnnotation(data));
 					
-					eventBroker.post(PROJECT_EXPLORER_DOUBLE_CLICK, data);
+					eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA, openEvent);
 				}
 				else {
 					tree.setExpandedState(selectedNode,
@@ -131,7 +157,17 @@ public class ProjectExplorer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(e.keyCode == SWT.DEL){
-					//TODO: if user presses delete, attempt to delete the selected element
+					Command removeProjectCommand = commandService.getCommand(
+							"linguine.command.removeProject");
+					
+					try {
+						removeProjectCommand.executeWithChecks(new ExecutionEvent());
+					}
+					catch(ExecutionException | NotDefinedException
+							| NotEnabledException | NotHandledException e1) {
+						//TODO: Oh no the command is not defined!
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -139,8 +175,9 @@ public class ProjectExplorer {
 	
 	@Inject
 	@Optional
-	public void projectEvent(@UIEventTopic(ProjectManager.ALL_PROJECT_EVENTS)
-			ProjectManager projectMan){
+	public void projectEvent(@UIEventTopic(LinGUIneEvents.Project.ALL_EVENTS)
+			ProjectEvent projectEvent){
+		ProjectManager projectMan = projectEvent.getProjectManager();
 		
 		tree.getContentProvider().inputChanged(tree, null, projectMan);
 		tree.refresh();
@@ -169,8 +206,8 @@ public class ProjectExplorer {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: We need to go through and change all these IDs
-				Command newProjectCommand = commandService.getCommand("linguine.command.1");
+				Command newProjectCommand = commandService.getCommand(
+						"linguine.command.newProject");
 				
 				try {
 					newProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -192,11 +229,11 @@ public class ProjectExplorer {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: We need to go through and change all these IDs
-				Command newProjectCommand = commandService.getCommand("linguine.command.3");
+				Command refreshCommand = commandService.getCommand(
+						"linguine.command.refresh");
 				
 				try {
-					newProjectCommand.executeWithChecks(new ExecutionEvent());
+					refreshCommand.executeWithChecks(new ExecutionEvent());
 				}
 				catch(ExecutionException | NotDefinedException
 						| NotEnabledException | NotHandledException e1) {
@@ -209,9 +246,69 @@ public class ProjectExplorer {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		MenuItem removeProject = new MenuItem(contextMenu, SWT.NONE);
+		removeProject.setText("Remove Project");
+		removeProject.addSelectionListener(new SelectionListener(){
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Command removeProjectCommand = commandService.getCommand(
+						"linguine.command.removeProject");
+				
+				try {
+					removeProjectCommand.executeWithChecks(new ExecutionEvent());
+				}
+				catch(ExecutionException | NotDefinedException
+						| NotEnabledException | NotHandledException e1) {
+					//TODO: Oh no the command is not defined!
+					e1.printStackTrace();
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
 		tree.getTree().setMenu(contextMenu);
 	}
 
+	private void buildProjectExplorerSelection(IStructuredSelection selection){
+		for(Object selected: selection.toList()){
+			//If the node is a root node, add it's Project
+			if(selected instanceof ProjectExplorerTree){
+				Project selectedProject =
+						((ProjectExplorerTree)selected).getProject();
+				
+				projectSelection.addToSelection(selectedProject);
+			}
+			else{
+				ProjectExplorerNode selectedNode =
+						(ProjectExplorerNode)selected;
+				Project selectedProject = ((ProjectExplorerTree)
+						selectedNode.getRootNode()).getProject();
+				List<IProjectData> selectedData = new LinkedList<IProjectData>();
+				
+				//If the node has children, add all of them
+				if(selectedNode.hasChildren()){
+					for(ProjectExplorerNode childNode:
+						selectedNode.getChildren()){
+						
+						selectedData.add(((ProjectExplorerDataNode)
+								childNode).getNodeData());
+					}
+				}
+				//Otherwise just add the node's ProjectData
+				else if(selectedNode instanceof ProjectExplorerDataNode){
+					selectedData.add(((ProjectExplorerDataNode)selectedNode).
+							getNodeData());
+				}
+				
+				projectSelection.addToSelection(selectedProject,
+						selectedData);
+			}
+		}
+	}
+	
 	/**
 	 * Builds up a tree of all the Projects so that they can be displayed in
 	 * the TreeViewer.
@@ -233,7 +330,6 @@ public class ProjectExplorer {
 		 * Rebuilds the TreeViewer's content based on the Projects in the
 		 * given ProjectManager.
 		 */
-		@Inject
 		public void inputChanged(ProjectManager projectMan){
 			projectTrees = new ArrayList<ProjectExplorerTree>();
 			
@@ -263,7 +359,11 @@ public class ProjectExplorer {
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if(newInput != null){
+				Object[] expandedElements = tree.getExpandedElements();
+				
 				inputChanged((ProjectManager)newInput);
+				
+				tree.setExpandedElements(expandedElements);
 			}
 		}
 
@@ -397,6 +497,67 @@ public class ProjectExplorer {
 		public String toString(){
 			return nodeName;
 		}
+		
+		/**
+		 * Traces through this node's parents (if any) until the root node is
+		 * found for the tree this node belongs to.
+		 * 
+		 * @return	The root node of this node's tree, or this node if it is the
+		 * 			root of the tree.
+		 */
+		public ProjectExplorerNode getRootNode(){
+			ProjectExplorerNode rootNode = this;
+			
+			while(rootNode.hasParent()){
+				rootNode = rootNode.getParent();
+			}
+			
+			return rootNode;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+
+			result = prime * result
+					+ ((nodeName == null) ? 0 : nodeName.hashCode());
+			result = prime * result
+					+ ((parentNode == null) ? 0 : parentNode.hashCode());
+			
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(obj == null || !(obj instanceof ProjectExplorerNode)) {
+				return false;
+			}
+
+			ProjectExplorerNode other = (ProjectExplorerNode)obj;
+			
+			if(nodeName == null) {
+				if(other.nodeName != null) {
+					return false;
+				}
+			}
+			if(!nodeName.equals(other.nodeName)) {
+				return false;
+			}
+			else if(parentNode == null) {
+				if(other.parentNode != null) {
+					return false;
+				}
+			}
+			else if(!parentNode.equals(other.parentNode)) {
+				return false;
+			}
+			
+			return true;
+		}
 	}
 	
 	/**
@@ -425,6 +586,40 @@ public class ProjectExplorer {
 		 */
 		public Project getProject(){
 			return project;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			
+			result = prime * result
+					+ ((project == null) ? 0 : project.hashCode());
+			
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerTree)) {
+				return false;
+			}
+			
+			ProjectExplorerTree other = (ProjectExplorerTree)obj;
+			
+			if(project == null) {
+				if(other.project != null) {
+					return false;
+				}
+			}
+			else if(!project.equals(other.project)) {
+				return false;
+			}
+			
+			return true;
 		}
 	}
 	
@@ -458,6 +653,40 @@ public class ProjectExplorer {
 		public IProjectData getNodeData(){
 			return nodeData;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			
+			result = prime * result
+					+ ((nodeData == null) ? 0 : nodeData.hashCode());
+
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerDataNode)){
+				return false;
+			}
+			
+			ProjectExplorerDataNode other = (ProjectExplorerDataNode)obj;
+
+			if(nodeData == null) {
+				if(other.nodeData != null) {
+					return false;
+				}
+			}
+			else if(!nodeData.equals(other.nodeData)) {
+				return false;
+			}
+			
+			return true;
+		}
 	}
 	
 	/**
@@ -466,15 +695,31 @@ public class ProjectExplorer {
 	 * 
 	 * @author Kyle Mullins
 	 */
-	class ProjectExplorerLabelProvider extends LabelProvider{
+	class ProjectExplorerLabelProvider extends StyledCellLabelProvider{
 		
 		/**
 		 * Returns a String label for a ProjectExplorerNode based on its name.
 		 */
 		@Override
-		public String getText(Object element){
-			return ((ProjectExplorerNode)element).getName();
+		public void update(ViewerCell cell){
+			ProjectExplorerNode node = (ProjectExplorerNode)cell.getElement();
+			StyledString label = new StyledString(node.getName());
+			
+			if(node instanceof ProjectExplorerDataNode){
+				ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
+				
+				Project parentProject =
+						((ProjectExplorerTree)node.getRootNode()).getProject();
+				
+				if(parentProject.isAnnotated(dataNode.getNodeData())){
+					label.append(" (Annotated)", StyledString.COUNTER_STYLER);
+				}
+			}
+			
+			cell.setText(label.toString());
+			cell.setStyleRanges(label.getStyleRanges());
+			
+			super.update(cell);
 		}
 	}
-
 }

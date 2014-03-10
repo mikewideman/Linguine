@@ -3,8 +3,11 @@ package LinGUIne.parts.advanced;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -47,5 +50,16 @@ public class SettingsPart {
 		//TODO Your code here
 	}
 	
-	
+	@Inject
+	public void showSettings(@Optional @Named(IServiceConstants.ACTIVE_SELECTION)
+			ProjectDataEditorTab editorTab){
+		
+		if(editorTab != null){
+			//TODO: Find the settings page contributed by the EditorTab and display it
+			System.out.println(editorTab.getText());
+		}
+		else{
+			System.out.println("Editor empty");
+		}
+	}
 }

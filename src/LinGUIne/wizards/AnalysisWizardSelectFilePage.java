@@ -101,7 +101,6 @@ public class AnalysisWizardSelectFilePage extends WizardPage{
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
-	    	
 	    });
 	    
 	    Group grpFiles = new Group(container, SWT.NONE);

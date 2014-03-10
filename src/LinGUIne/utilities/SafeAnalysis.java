@@ -1,7 +1,7 @@
-package LinGUIne.wizards;
+package LinGUIne.utilities;
 
+import java.io.File;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -10,9 +10,15 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
+import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.Project;
 import LinGUIne.model.Result;
 
+/**
+ * Runnable which wraps the execution of an IAnalysisPlugin in a safe fashion.
+ * 
+ * @author Kyle Mullins
+ */
 public class SafeAnalysis implements ISafeRunnable {
 
 	private Shell shell;
@@ -21,7 +27,8 @@ public class SafeAnalysis implements ISafeRunnable {
 	private Project destProject;
 	
 	/**
-	 * 
+	 * Creates a new SafeAnalysis which runs the given analysis over the given
+	 * ProjectData sources and places the Results in the given Project.
 	 * 
 	 * @param theShell	The current Shell; used to display error dialogs.
 	 * @param analysis	The IAnalysisPlugin to be used for the analysis job.
@@ -47,16 +54,35 @@ public class SafeAnalysis implements ISafeRunnable {
 				"An error occurred while performing analysis.", SWT.NONE);
 	}
 
+	/**
+	 * Runs analysisPlugin over sourceData and places the Result(s) into
+	 * destProject.
+	 */
 	@Override
 	public void run() throws Exception {
-		//TODO: IAnalysisPlugin.runAnalysis should take a Collection<IProjectData> parameter and return a Collection<Result>
-		//User may want to analyze more than one file at a time and an analysis may want to return more than one result
-		Collection<Result> results = new LinkedList<Result>();
-//		results.addAll(analysisPlugin.runAnalysis(sourceData));
-		results.add(analysisPlugin.runAnalysis());
+		Class<? extends Result> returnedResult =
+				analysisPlugin.getReturnedResultType();
+		Collection<IProjectDataContents> resultContents;
 		
-		for(Result result: results){
+		resultContents = analysisPlugin.runAnalysis(sourceData);
+		
+		int contentsCount = 1;
+		
+		for(IProjectDataContents contents: resultContents){
+			String resultFileName = returnedResult.getSimpleName();
+			
+			if(contentsCount > 1){
+				resultFileName += " (" + contentsCount + ")";
+			}
+
+			//TODO: Properly generate File names and File extensions
+			File resultFile = new File(resultFileName + ".result");
+			Result result = Result.createResult(returnedResult, resultFile);
+			
+			result.updateContents(contents);
 			destProject.addResult(result, sourceData);
+			
+			contentsCount++;
 		}
 		
 		//TODO: Error handling/liveness

@@ -19,6 +19,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MContribution;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -53,8 +54,8 @@ public class SaveHandler {
 				pmContext.set(IProgressMonitor.class.getName(), monitor);
 				if (contribution != null) {
 					Object clientObject = contribution.getObject();
-//					ContextInjectionFactory.invoke(clientObject, Persist.class, //$NON-NLS-1$
-//							pmContext, null);
+					ContextInjectionFactory.invoke(clientObject, Persist.class,
+							pmContext, null);
 				}
 			}
 		});

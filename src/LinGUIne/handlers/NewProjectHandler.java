@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -34,7 +36,7 @@ public class NewProjectHandler {
 	 * @param shell	The currently active Shell.
 	 */
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
+	public IStatus execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		
 		NewProjectWizard projectWizard = new NewProjectWizard(projectMan);
 		WizardDialog wizardDialog = new WizardDialog(shell, projectWizard);
@@ -48,11 +50,15 @@ public class NewProjectHandler {
 			try {
 				newProj.createProjectFiles();
 				projectMan.addProject(newProj);
+				
+				return Status.OK_STATUS;
 			}
 			catch(IOException ioe) {
 				MessageDialog.openError(shell, "Error", "Could not create "
 						+ "Project directory: " + ioe.getMessage());
 			}
 		}
+		
+		return Status.CANCEL_STATUS;
 	}
 }

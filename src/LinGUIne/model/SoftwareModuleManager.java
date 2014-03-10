@@ -28,12 +28,9 @@ public class SoftwareModuleManager {
 		analyses = new HashMap<String, HashSet<IAnalysisPlugin>>();
 		
 		IConfigurationElement[] analysisElements = Platform.getExtensionRegistry().
-				getConfigurationElementsFor("LinGUIne.model.IAnalysisPlugin"); //TODO: Update with actual extension point id
+				getConfigurationElementsFor("LinGUIne.extensions.IAnalysisPlugin");
 		
 		for(IConfigurationElement analysisElement: analysisElements){
-//			String libName = analysisElement.getAttribute("Library");
-//			String analysisName = analysisElement.getAttribute("Name");
-			
 			try {
 				IAnalysisPlugin analysis = (IAnalysisPlugin)analysisElement.
 						createExecutableExtension("class"); //TODO: Update with actual name of this attribute
@@ -67,12 +64,38 @@ public class SoftwareModuleManager {
 
 			@Override
 			public Object getPluginData() {
+				return null;
+			}
+
+			@Override
+			public String getAnalysisDescription() {
 				return "This is an NLTK Tokenization analysis";
 			}
 
 			@Override
-			public Result runAnalysis() {
-				return null;
+			public Collection<IProjectDataContents> runAnalysis(
+					Collection<IProjectData> sourceData) {
+				return new HashSet<IProjectDataContents>();
+			}
+
+			@Override
+			public Collection<Class<? extends IProjectData>> getSupportedSourceDataTypes() {
+				HashSet<Class<? extends IProjectData>> supportedSourceTypes =
+						new HashSet<Class<? extends IProjectData>>();
+				
+				supportedSourceTypes.add(TextData.class);
+				
+				return supportedSourceTypes;
+			}
+
+			@Override
+			public Collection<Class<? extends Result>> getRequiredResultTypes() {
+				return new HashSet<Class<? extends Result>>();
+			}
+
+			@Override
+			public Class<? extends Result> getReturnedResultType() {
+				return Result.class;//Don't *ever* do this
 			}
 		});
 	}
@@ -111,5 +134,28 @@ public class SoftwareModuleManager {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Returns all Analysis plug-ins which return the given Result Type or an
+	 * empty collection if there are none.
+	 * 
+	 * @param type	The Type of Result providers for which we are looking.
+	 * 
+	 * @return	A collection of Analysis plug-ins which return the given Type.
+	 */
+	public Collection<IAnalysisPlugin> getProvidersForType(
+			Class<? extends Result> type){
+		HashSet<IAnalysisPlugin> providers = new HashSet<IAnalysisPlugin>();
+		
+		for(HashSet<IAnalysisPlugin> analysisSet: analyses.values()){
+			for(IAnalysisPlugin analysis: analysisSet){
+				if(analysis.getReturnedResultType().equals(type)){
+					providers.add(analysis);
+				}
+			}
+		}
+		
+		return providers;
 	}
 }
