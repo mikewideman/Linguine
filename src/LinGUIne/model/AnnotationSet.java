@@ -94,6 +94,12 @@ public class AnnotationSet implements ITypedProjectData<AnnotationSetContents> {
 	}
 	
 	@Override
+	public void deleteContentsOnDisk() throws IOException{
+		Files.deleteIfExists(annotationFile.toPath());
+		contents = null;
+	}
+	
+	@Override
 	public int compareTo(IProjectData projData) {
 		if(projData == null){
 			return 1;

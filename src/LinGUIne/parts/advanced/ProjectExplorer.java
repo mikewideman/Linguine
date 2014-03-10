@@ -1,6 +1,7 @@
 package LinGUIne.parts.advanced;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,9 +14,11 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -71,6 +74,9 @@ public class ProjectExplorer {
 	
 	@Inject
 	private ECommandService commandService;
+	
+	@Inject
+	private EHandlerService handlerService;
 	
 	@Inject
 	ESelectionService selectionService;
@@ -246,17 +252,20 @@ public class ProjectExplorer {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				//TODO: Make this more robust and only enable command when a Project is selected
+				String selectedProjectName = projectSelection.
+						getSelectedProjects().iterator().next();
+				
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("linguine.command.removeProject.parameter."
+						+ "projectForRemoval", selectedProjectName);
+				
 				Command removeProjectCommand = commandService.getCommand(
 						"linguine.command.removeProject");
+				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
+						generateCommand(removeProjectCommand, params);
 				
-				try {
-					removeProjectCommand.executeWithChecks(new ExecutionEvent());
-				}
-				catch(ExecutionException | NotDefinedException
-						| NotEnabledException | NotHandledException e1) {
-					//TODO: Oh no the command is not defined!
-					e1.printStackTrace();
-				}
+				handlerService.executeHandler(parameterizedCmd);
 			}
 			
 			@Override

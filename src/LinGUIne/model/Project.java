@@ -21,6 +21,9 @@ import LinGUIne.utilities.FileUtils;
 /**
  * Represents a LinGUIne Project with a name, a file system location, and
  * containing Project Data.
+ * Note: A Project for which hasProjectFiles returns false is NOT complete and
+ * ready to be used; createProjectFiles must be called first.
+ * TODO: Add checks for hasProjectFiles to avoid errors if there are none.
  * 
  * @author Kyle Mullins
  */
@@ -43,19 +46,33 @@ public class Project {
 	
 	private IPath parentDirectory;
 	private String projectName;
+	
+	/*
+	 * Maps ProjectData to its assigned id
+	 */
 	private TreeMap<IProjectData, Integer> projectData;
+	
+	/*
+	 * Maps a Result to the set of ids for the associated ProjectData
+	 */
 	private TreeMap<Result, HashSet<Integer>> results;
+	
+	/*
+	 * Maps a Project Data id to its associated AnnotationSet
+	 */
 	private HashMap<Integer, AnnotationSet> annotationSets;
 	
+	private boolean hasProjectFiles;
 	private int lastId;
 	private HashSet<ProjectListener> listeners;
 	
 	/**
 	 * Creates a new Project without a name or any Project Data of any kind.
-	 * Note: a Project created with this constructor is NOT complete; it must
+	 * Note: A Project created with this constructor is NOT complete; it must
 	 * be given a name.
 	 */
 	public Project(){
+		hasProjectFiles = false;
 		lastId = 0;
 		listeners = new HashSet<ProjectListener>();
 		
@@ -132,7 +149,18 @@ public class Project {
 			return null;
 		}
 		
+		newProj.hasProjectFiles = true;
+		
 		return newProj;
+	}
+	
+	/**
+	 * Returns whether or not this Project has the file structure on disk needed
+	 * in order for it to be usable. Instances for which this function returns
+	 * false are not usable until createProjectFiles has been called.
+	 */
+	public boolean hasProjectFiles(){
+		return hasProjectFiles;
 	}
 	
 	/**
@@ -589,7 +617,35 @@ public class Project {
 		//Create project file
 		updateProjectFile();
 		
+		hasProjectFiles = true;
+		
 		return true;
+	}
+	
+	/**
+	 * Deletes all ProjectData from disk as well as the Project file and all
+	 * Project directories.
+	 * 
+	 * @return	True iff all ProjectData, files, and directories were deleted
+	 * 			successfully, false if the Project had no Project files.
+	 * 
+	 * @throws IOException	If any of the Project's files could not be deleted
+	 * 						from disk for any reason.
+	 */
+	public boolean deleteProjectContentsOnDisk() throws IOException{
+		if(hasProjectFiles)
+		{
+			for(IProjectData projData: projectData.keySet()){
+				projData.deleteContentsOnDisk();
+			}
+			
+			deleteProjectFiles();
+			
+			hasProjectFiles = false;
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -677,6 +733,28 @@ public class Project {
 		for(ProjectListener listener: listeners){
 			listener.notify(this);
 		}
+	}
+	
+	/**
+	 * Deletes the Project file and all Project sub-directories, followed by the
+	 * Project directory itself.
+	 * 
+	 * @throws IOException	If any of the files/directories could not be deleted
+	 * 						for any reason.
+	 */
+	private void deleteProjectFiles() throws IOException{
+		IPath projectDir = getProjectDirectory();
+		
+		//Delete project file
+		Files.delete(getProjectFile().toFile().toPath());
+		
+		//Delete sub-directories
+		Files.delete(getSubdirectory(Subdirectory.Data).toFile().toPath());
+		Files.delete(getSubdirectory(Subdirectory.Results).toFile().toPath());
+		Files.delete(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
+		
+		//Delete root project directory
+		Files.delete(projectDir.toFile().toPath());
 	}
 	
 	private int getNextId(){

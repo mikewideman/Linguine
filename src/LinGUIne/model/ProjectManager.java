@@ -114,18 +114,30 @@ public class ProjectManager {
 	}
 	
 	/**
-	 * Removes the given Project from this ProjectManager if it exists.
+	 * Removes the given Project from this ProjectManager if it exists. Will
+	 * delete the Project's contents on disk according to the value of the
+	 * shouldDelete parameter.
 	 * 
-	 * @param proj	The Project to be removed.
+	 * @param proj			The Project to be removed.
+	 * @param shouldDelete	Whether or not the Project's contents on disk should
+	 * 						be deleted.
 	 * 
 	 * @return	True iff the Project was removed, false if it doesn't exist.
+	 * 
+	 * @throws IOException	If the Project's contents on disk could not be
+	 * 						deleted.
 	 */
-	public boolean removeProject(Project proj){
+	public boolean removeProject(Project proj, boolean shouldDelete)
+			throws IOException{
 		if(containsProject(proj.getName())){
 			projectSet.remove(proj.getName().toLowerCase());
 			proj.removeListener(projListener);
 			postEvent(LinGUIneEvents.Project.REMOVED, proj);
 			updateProjectFilesInPersistedState();
+			
+			if(shouldDelete){
+				proj.deleteProjectContentsOnDisk();
+			}
 			
 			return true;
 		}
