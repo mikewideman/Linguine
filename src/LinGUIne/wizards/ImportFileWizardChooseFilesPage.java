@@ -59,7 +59,7 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		lblFiles = new Label(container, SWT.NONE);
 		lblFiles.setText("Add the files that you wish to import:");
 		
-		lstFiles = new List(container, SWT.BORDER | SWT.V_SCROLL);
+		lstFiles = new List(container, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
 		lstFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		lstFiles.addSelectionListener(new SelectionListener(){
@@ -89,14 +89,19 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog openDialog = new FileDialog(finalParent.getShell(), SWT.OPEN);
+				FileDialog openDialog = new FileDialog(finalParent.getShell(),
+						SWT.OPEN | SWT.MULTI);
 				openDialog.setFilterExtensions(new String[]{
 						wizardData.getChosenImporter().getFileMask()});
 				
-				String chosenFile = openDialog.open();
+				String dialogResult = openDialog.open();
 				
-				if(chosenFile != null){
-					wizardData.addFile(new File(chosenFile));
+				if(dialogResult != null){
+					for(String chosenFile: openDialog.getFileNames()){
+						wizardData.addFile(new File(openDialog.getFilterPath(),
+								chosenFile));
+					}
+					
 					updateFileList();
 					checkListSelection();
 					checkIfPageComplete();
@@ -119,7 +124,10 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				String[] selection = lstFiles.getSelection();
 				
-				wizardData.removeFile(new File(selection[0]));
+				for(String fileToRemove: selection){
+					wizardData.removeFile(new File(fileToRemove));
+				}
+				
 				updateFileList();
 				checkListSelection();
 				checkIfPageComplete();

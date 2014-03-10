@@ -1,26 +1,16 @@
 package LinGUIne.wizards;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
-import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.core.di.extensions.EventTopic;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.jface.wizard.WizardDialog;
 
-import LinGUIne.events.LinGUIneEvents;
-import LinGUIne.events.ProjectEvent;
+import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
-import LinGUIne.utilities.Monitor;
 import LinGUIne.utilities.SafeImporter;
 
 /**
@@ -33,14 +23,9 @@ public class ImportFileWizard extends Wizard {
 	@Inject
 	private ProjectManager projectMan;
 	
-	@Inject
-	private ECommandService commandService;
-	
 	private ImportFileData wizardData;
 	private ImportFileWizardSetupPage setupPage;
 	private ImportFileWizardChooseFilesPage chooseFilesPage;
-	
-	private Monitor newProjectMonitor;
 	
 	/**
 	 * Creates a new ImportFileWizard.
@@ -49,7 +34,6 @@ public class ImportFileWizard extends Wizard {
 		super();
 		
 		wizardData = new ImportFileData();
-		newProjectMonitor = new Monitor();
 	}
 	
 	/**
@@ -70,29 +54,25 @@ public class ImportFileWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		if(wizardData.shouldCreateNewProject()){
-			Command newProjectCommand = commandService.getCommand(
-					"linguine.command.newProject");
+			//Launch NewProjectWizard and capture the created Project
+			NewProjectWizard projectWizard = new NewProjectWizard(projectMan);
+			WizardDialog wizardDialog = new WizardDialog(getShell(), projectWizard);
 			
-			try(Monitor theMonitor = newProjectMonitor.enter()){
-				IStatus status = (IStatus)newProjectCommand.executeWithChecks(
-						new ExecutionEvent());
+			int retval = wizardDialog.open();
+			
+			if(retval == WizardDialog.OK) {
+				Project newProj = projectWizard.getProject();
+				newProj.setParentDirectory(projectMan.getWorkspace());
 				
-				if(status.isOK()){
-					while(wizardData.getChosenProject() == null){
-						//Processes any waiting events
-						Display.getCurrent().readAndDispatch();
-						newProjectMonitor.await();
-					}
+				try {
+					newProj.createProjectFiles();
+					projectMan.addProject(newProj);
+					wizardData.setProject(newProj);
 				}
-			}
-			catch(InterruptedException ie){
-				//Monitor was interrupted
-				ie.printStackTrace();
-			}
-			catch(ExecutionException | NotDefinedException
-					| NotEnabledException | NotHandledException e1) {
-				//TODO: Oh no the command is not defined!
-				e1.printStackTrace();
+				catch(IOException ioe) {
+					MessageDialog.openError(getShell(), "Error", "Could not create "
+							+ "Project directory: " + ioe.getMessage());
+				}
 			}
 		}
 		
@@ -107,16 +87,5 @@ public class ImportFileWizard extends Wizard {
 		}
 		
 		return false;
-	}
-	
-	@Inject
-	@Optional
-	public void projectEvent(@EventTopic(LinGUIneEvents.Project.ADDED)
-			ProjectEvent projectEvent){
-		try(Monitor theMonitor = newProjectMonitor.enter()){
-			wizardData.setProject(projectEvent.getAffectedProject());
-
-			newProjectMonitor.signal();
-		}
 	}
 }
