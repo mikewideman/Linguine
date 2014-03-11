@@ -1,5 +1,7 @@
 package LinGUIne.parts.basic;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +11,7 @@ import javax.inject.Named;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -28,16 +31,41 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
 
+
+
+
+
+
+
+
+
+import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
+import LinGUIne.model.Result;
+import LinGUIne.model.SoftwareModuleManager;
+import LinGUIne.wizards.AnalysisData;
 
 public class BasicMainPart {
 	
 	private CTabFolder tabFolder;
 	private Text txtName;
 	private ProjectManager basicProjectMan;
+	private SoftwareModuleManager softwareModuleMan;
 	private Project newProject;
+	private Label lblProjects;
+	private List lstProjects;
+	private Label lblFiles;
+	private List lstFiles;
+	private Label lblSoftwareModules;
+	private List lstSoftwareModules;
+	private AnalysisData analysisData;
+	private Label lblAnalyses;
+	private List lstAnalyses;
+	
+	@Inject
+	private MApplication application;
 	
 	private CTabItem tab1;
 	private CTabItem tab2;
@@ -50,10 +78,14 @@ public class BasicMainPart {
 	
 	@PostConstruct
 	public void createComposite(Composite parent){
-		basicProjectMan = new ProjectManager(Platform.getLocation());
+		basicProjectMan = new ProjectManager(Platform.getLocation(),application);
 		basicProjectMan.loadProjects();
 		tabFolder = new CTabFolder(parent,SWT.NONE);
 		tabFolder.setTabHeight(10);
+		analysisData = new AnalysisData();
+		softwareModuleMan = new SoftwareModuleManager();
+
+		
 //		CTabItem newTab = new CTabItem(tabFolder,SWT.NONE);
 //		newTab.setText("Select A Project");
 //		tabFolder.setSelection(newTab);
@@ -77,9 +109,39 @@ public class BasicMainPart {
 		txtName.setText("");
 		Label existingProjLabel = new Label(tabComp, SWT.NONE);
 		existingProjLabel.setText("Select from list of existing projects");
+		 Group grpProjects = new Group(tabComp, SWT.NONE);
+		    grpProjects.setLayout(new GridLayout(1, false));
+		    grpProjects.setLayoutData(new GridData(GridData.FILL_BOTH));
+		    grpProjects.setText("Project");
+		    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL);
+		    lstProjects.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
+		    for(Project project: basicProjectMan.getProjects()){
+		    	lstProjects.add(project.getName());
+		    }
+		    
+		    lstProjects.addSelectionListener(new SelectionListener(){
+
+		    	/**
+		    	 * Sets which Project is currently selected and populates the 
+		    	 * List of Project Data in the Project.
+		    	 */
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if(lstProjects.getSelectionCount() > 0){
+						Project selectedProject = basicProjectMan.getProject(lstProjects.getSelection()[0]);
+						analysisData.setChosenProject(selectedProject);
+						analysisData.setChosenProjectData(new LinkedList<IProjectData>());
+					}
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+		    });
+		    
+
 		
-		final Button nButton = new Button(tabComp, SWT.PUSH);
+		    final Button nButton = new Button(tabComp, SWT.PUSH);
 	    nButton.setText("Next");
 	    GridData buttonData = new GridData(SWT.CENTER, SWT.BOTTOM, false, false, 1, 1);
 	    buttonData.verticalIndent = 50;
@@ -145,7 +207,7 @@ public class BasicMainPart {
 	public void openSelectFileTab(){
 		if(tab2 == null){
 			Label lblFiles;
-			final List lstFiles;
+			
 			CTabItem selectFileTab = new CTabItem(tabFolder, SWT.NONE);
 			selectFileTab.setText("Select a File ->");
 			Composite container = new Composite(tabFolder, SWT.NONE);
@@ -156,7 +218,7 @@ public class BasicMainPart {
 			    
 			    Group grpFiles = new Group(container, SWT.NONE);
 			    grpFiles.setLayout(new GridLayout(1, false));
-			    grpFiles.setLayoutData(new GridData(800, 300));
+			    grpFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
 			    grpFiles.setText("Files");
 			    
 			    lblFiles = new Label(grpFiles, SWT.NONE);
@@ -164,7 +226,7 @@ public class BasicMainPart {
 			    
 			    lstFiles = new List(grpFiles, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
 			    lstFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
-			    lstFiles.setEnabled(false);
+			    lstFiles.setEnabled(true);
 			    lstFiles.addSelectionListener(new SelectionListener(){
 
 			    	/**
@@ -176,18 +238,17 @@ public class BasicMainPart {
 								new LinkedList<IProjectData>();
 						
 						for(String dataName: lstFiles.getSelection()){
-							//Can't show files yet
-//							selectedProjectData.add(wizardData.getChosenProject().
-//									getProjectData(dataName));
+							selectedProjectData.add(analysisData.getChosenProject().getProjectData(dataName));
 						}
-						
-//						wizardData.setChosenProjectData(selectedProjectData);
-//						checkIfPageComplete();
 					}
 
 					@Override
-					public void widgetDefaultSelected(SelectionEvent e) {}
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
 			    });
+			    updateFileList();
 			selectFileTab.setControl(container);
 			Button nButtonFile = new Button(container, SWT.NONE);
 			nButtonFile.setText("Next");
@@ -215,6 +276,44 @@ public class BasicMainPart {
 			CTabItem basicAnalysis = new CTabItem(innerFolder, SWT.NONE);
 			basicAnalysis.setText("Basic Analysis Set");
 			CTabItem advancedAnalysis = new CTabItem(innerFolder,SWT.NONE);
+			Composite basicContainer = new Composite(innerFolder, SWT.NONE);
+			
+			Group grpAnalyses = new Group(basicContainer, SWT.NONE);
+			grpAnalyses.setLayout(new GridLayout(1, false));
+		    grpAnalyses.setLayoutData(new GridData(GridData.FILL_BOTH));
+		    grpAnalyses.setText("Analyses");
+			
+			lblAnalyses = new Label(grpAnalyses, SWT.NONE);
+			lblAnalyses.setText("Select an Analysis to use:");
+			
+			lstAnalyses = new List(grpAnalyses, SWT.BORDER | SWT.V_SCROLL);
+			lstAnalyses.setLayoutData(new GridData(GridData.FILL_BOTH));
+			lstAnalyses.setEnabled(true);
+			
+			lstAnalyses.addSelectionListener(new SelectionListener(){
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if(lstAnalyses.getSelectionCount() > 0){
+						String analysisName = lstAnalyses.getSelection()[0];
+						String selectedModule = lstSoftwareModules.getSelection()[0];
+		
+						
+						IAnalysisPlugin analysis = softwareModuleMan.getAnalysisByName(
+								selectedModule, analysisName);
+						
+						if(analysis != null){
+							analysisData.setChosenAnalysis(analysis);
+						}
+					}
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			updateAnalysisList();
+
+			
 			advancedAnalysis.setText("Advanced Analysis Set");
 			analysisTab.setControl(container);
 			tab3 = analysisTab;
@@ -242,6 +341,41 @@ public class BasicMainPart {
 		}
 		tabFolder.setSelection(tab4);
 	}
+	
+	/**
+	 * Updates the contents of lstFiles.
+	 */
+	private void updateFileList(){
+		lstFiles.deselectAll();
+		lstFiles.removeAll();
+		
+		for(IProjectData projData: analysisData.getChosenProject().getOriginalData()){
+			lstFiles.add(projData.getName());
+		}
+		
+		lstFiles.update();
+	}
+	
+	private void updateAnalysisList(){
+		lstAnalyses.removeAll();
+		
+		
+		IAnalysisPlugin tokenization;
+		for( String name : softwareModuleMan.getSoftwareModuleNames()){
+			System.out.println(name);
+			for( IAnalysisPlugin plug : softwareModuleMan.getAnalyses(name)){
+				System.out.println(plug.getName());
+			}
+		}
+		tokenization = softwareModuleMan.getAnalysisByName("NLTK", "Tokenization");
+		lstAnalyses.add(tokenization.getName());
+		
+		lstAnalyses.update();
+	}
+	
+
+	
+	
 	
 	
  
