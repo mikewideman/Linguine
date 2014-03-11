@@ -1,6 +1,3 @@
-/**
- * 
- */
 package LinGUIne.wizards;
 
 import java.util.Collection;
@@ -52,7 +49,7 @@ public class VisualizationData {
 	 * 
 	 * @return The list of results associated with this object.
 	 */
-	public Collection<Result> getChosenProjectResults() {
+	public Collection<Result> getChosenResults() {
 		return chosenProjectResults;
 	}
 
@@ -78,7 +75,7 @@ public class VisualizationData {
 	 * @param chosenResults
 	 *            The results to associate with this object.
 	 */
-	public void setChosenProjectResults(Collection<Result> chosenResults) {
+	public void setChosenResults(Collection<Result> chosenResults) {
 		chosenProjectResults = chosenResults;
 	}
 

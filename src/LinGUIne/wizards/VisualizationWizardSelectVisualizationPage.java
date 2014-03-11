@@ -2,7 +2,6 @@ package LinGUIne.wizards;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -22,7 +21,9 @@ import LinGUIne.model.Result;
 import LinGUIne.model.VisualizationPluginManager;
 
 /**
- * 
+ * This page is used to select a visualization from the visualization plugins
+ * currently loaded into the application. Visualizations will only be listed if
+ * they meet the user's selected result types.
  * 
  * @author Peter Dimou
  */
@@ -35,8 +36,17 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 	private List lstVisualizations;
 	private Label lblDescription;
 
-	private HashMap<String, String> errorMessages;
-
+	/**
+	 * Constructs the page with the correct title and description. This is
+	 * currently the second page of the VisualizationWizard and the description
+	 * reflects that.
+	 * 
+	 * @param data
+	 *            The data to be carried to/from each page in the wizard.
+	 * @param visualizationPluginMan
+	 *            Where to get the listing of all visualizations currently in
+	 *            the application.
+	 */
 	public VisualizationWizardSelectVisualizationPage(
 			VisualizationData wizardData,
 			VisualizationPluginManager visualizationPluginMan) {
@@ -48,6 +58,12 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 		this.visualizationPluginMan = visualizationPluginMan;
 	}
 
+	/**
+	 * Populates the wizard page with content.
+	 * 
+	 * @param parent
+	 *            The current content pane
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
@@ -66,16 +82,16 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 				| SWT.V_SCROLL);
 		lstVisualizations.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		
 		// TODO: FOR DEMONSTRATION PURPOSES ONLY! Remove in the final version!
 		Collection<Result> testResults = new LinkedList<Result>();
 		KeyValueResult testKVResult = new KeyValueResult(new File(""));
 		testResults.add(testKVResult);
-		wizardData.setChosenProjectResults(testResults);
-		
+		wizardData.setChosenResults(testResults);
+
 		// Populate the list of visualizations based on result types
 		for (IVisualization visualization : visualizationPluginMan
-				.getVisualizationsBySupportedResultTypeSet(wizardData.getChosenResultTypes())) {
+				.getVisualizationsBySupportedResultTypeSet(wizardData
+						.getChosenResultTypes())) {
 			lstVisualizations.add(visualization.getName());
 		}
 
@@ -105,6 +121,7 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 			}
 		});
 
+		// Create the group that displays a visualization's description.
 		Group grpDescription = new Group(container, SWT.None);
 		grpDescription.setLayout(new GridLayout(1, false));
 		grpDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
