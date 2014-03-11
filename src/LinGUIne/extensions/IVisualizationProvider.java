@@ -1,5 +1,7 @@
 package LinGUIne.extensions;
 
+import java.util.Collection;
+
 /**
  * A VisualizationProvider is usually a library or software module (such as
  * JFreeChart or BIRT) and the visualizations that the provider can produce
@@ -21,5 +23,5 @@ public interface IVisualizationProvider {
 	 * 
 	 * @return The list of all visualizations that this plugin provides.
 	 */
-	IVisualization[] getVisualizations();
+	Collection<? extends IVisualization> getVisualizations();
 }
