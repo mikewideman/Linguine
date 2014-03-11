@@ -149,7 +149,7 @@ public class VisualizationPluginManager {
 					}
 
 					@Override
-					public Collection<? extends IVisualization> getVisualizations() {
+					public Collection<IVisualization> getVisualizations() {
 
 						Collection<IVisualization> retVal = new LinkedList<IVisualization>();
 						retVal.add(vis1);

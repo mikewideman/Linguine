@@ -23,5 +23,5 @@ public interface IVisualizationProvider {
 	 * 
 	 * @return The list of all visualizations that this plugin provides.
 	 */
-	Collection<? extends IVisualization> getVisualizations();
+	Collection<IVisualization> getVisualizations();
 }
