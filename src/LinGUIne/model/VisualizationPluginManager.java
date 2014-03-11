@@ -9,10 +9,13 @@ import java.util.TreeSet;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.widgets.Composite;
 
 import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.extensions.IVisualization;
 import LinGUIne.extensions.IVisualizationProvider;
+import LinGUIne.extensions.VisualizationView;
+import LinGUIne.extensions.VisualizationWizard;
 
 /**
  * Container for all visualization plugins currently loaded in order to easily
@@ -33,7 +36,14 @@ public class VisualizationPluginManager {
 		initializeProviders();
 		initializeVisualizations();
 
-		// TODO: REMOVE! For demonstrative purposes only
+		setupMockVisualizations();
+	}
+
+	/**
+	 * Internal test function that provides mock visualizations for UI testing
+	 * purposes. This function should be removed before release.
+	 */
+	private void setupMockVisualizations() {
 		final IVisualization vis1 = new IVisualization() {
 			@Override
 			public String getName() {
@@ -46,7 +56,15 @@ public class VisualizationPluginManager {
 			}
 
 			@Override
-			public void runVisualization() {
+			public VisualizationView runVisualization() {
+				return new VisualizationView() {
+
+					@Override
+					public void createComposite(Composite parent) {
+						// TODO Auto-generated method stub
+					}
+
+				};
 			}
 
 			@Override
@@ -54,6 +72,16 @@ public class VisualizationPluginManager {
 				Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
 				retVal.add(KeyValueResult.class);
 				return retVal;
+			}
+
+			@Override
+			public boolean hasWizard() {
+				return false;
+			}
+
+			@Override
+			public VisualizationWizard getWizard() {
+				return null;
 			}
 		};
 
@@ -69,14 +97,31 @@ public class VisualizationPluginManager {
 			}
 
 			@Override
-			public void runVisualization() {
+			public VisualizationView runVisualization() {
+				return new VisualizationView() {
+
+					@Override
+					public void createComposite(Composite parent) {
+						// TODO Auto-generated method stub
+					}
+
+				};
 			}
 
 			@Override
 			public Collection<Class<? extends Result>> getSupportedResultTypes() {
 				Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
-				retVal.add(KeyValueResult.class);
 				return retVal;
+			}
+
+			@Override
+			public boolean hasWizard() {
+				return false;
+			}
+
+			@Override
+			public VisualizationWizard getWizard() {
+				return null;
 			}
 		};
 
@@ -212,19 +257,23 @@ public class VisualizationPluginManager {
 	}
 
 	/**
-	 * Returns a list of visualizations that support a given result type.
+	 * Returns a list of visualizations that support a given result type set.
+	 * Duplicates are allowed and encouraged to add additional specificity to
+	 * the visualization requirements.
 	 * 
-	 * @param resultType
-	 *            The result type to query the visualizations for
+	 * @param resultTypeSet
+	 *            The result types to query the visualizations for
 	 * @return A collection of visualizations that support the given result type
 	 */
-	public Collection<IVisualization> getVisualizationsBySupportedResultType(
-			Result resultType) {
+	public Collection<IVisualization> getVisualizationsBySupportedResultTypeSet(
+			Collection<Class<? extends Result>> resultTypeSet) {
 		Collection<IVisualization> retVal = new LinkedList<IVisualization>();
 
 		for (IVisualization visualization : visualizations.keySet()) {
-			boolean isSupported = visualization.getSupportedResultTypes()
-					.contains(resultType);
+			Collection<Class<? extends Result>> supportedTypes = visualization
+					.getSupportedResultTypes();
+			boolean isSupported = supportedTypes.containsAll(resultTypeSet)
+					&& resultTypeSet.containsAll(supportedTypes);
 			if (isSupported) {
 				retVal.add(visualization);
 			}

@@ -25,9 +25,11 @@ public interface IVisualization {
 	String getVisualizationDescription();
 
 	/**
-	 * Runs the specified visualization.
+	 * Runs the specified visualization and gets the view.
+	 * 
+	 * @return The view to be displayed to the user.
 	 */
-	void runVisualization();
+	VisualizationView runVisualization();
 
 	/**
 	 * Returns the Result types that this visualization supports.
@@ -37,4 +39,19 @@ public interface IVisualization {
 	 */
 	Collection<Class<? extends Result>> getSupportedResultTypes();
 
+	/**
+	 * Returns whether this visualization has a wizard.
+	 * 
+	 * @return True if this visualization can provide a wizard to run, false
+	 *         otherwise
+	 */
+	boolean hasWizard();
+
+	/**
+	 * Returns the wizard this visualization provides. If no wizard is
+	 * available, (hasWizard is false) then this method should return null.
+	 * 
+	 * @return The wizard this visualization provides
+	 */
+	VisualizationWizard getWizard();
 }
