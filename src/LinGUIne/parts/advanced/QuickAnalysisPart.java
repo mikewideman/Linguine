@@ -72,8 +72,7 @@ public class QuickAnalysisPart {
 	public void createComposite(Composite parent){
 		myParent = parent;
 		
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 3;
+		GridLayout layout = new GridLayout(3, true);
 		parent.setLayout(layout);
 
 		Label lblLibraries = new Label(parent, SWT.NONE);
@@ -179,7 +178,7 @@ public class QuickAnalysisPart {
 		txtDescription = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
 		txtDescription.setEditable(false);
 		txtDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txtDescription.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+		txtDescription.setBackground(lstAnalyses.getControl().getBackground());
 
 		btnRunAnalysis = new Button(parent, SWT.NONE);
 		btnRunAnalysis.setText("Run Analysis");
