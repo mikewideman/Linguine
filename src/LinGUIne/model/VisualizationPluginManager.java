@@ -23,12 +23,89 @@ import LinGUIne.extensions.IVisualizationProvider;
 public class VisualizationPluginManager {
 
 	HashMap<String, IVisualizationProvider> visualizationProviders;
-	LinkedList<IVisualization> visualizations;
+	HashMap<IVisualization, String> visualizations;
 
 	/**
 	 * Creates a new instance and populates it using the ExtensionRegistry.
 	 */
 	public VisualizationPluginManager() {
+
+		initializeProviders();
+		initializeVisualizations();
+
+		// TODO: REMOVE! For demonstrative purposes only
+		final IVisualization vis1 = new IVisualization() {
+			@Override
+			public String getName() {
+				return "Test Visualization 1";
+			}
+
+			@Override
+			public String getVisualizationDescription() {
+				return "This is a test for visualization 1";
+			}
+
+			@Override
+			public void runVisualization() {
+			}
+
+			@Override
+			public Collection<Class<? extends Result>> getSupportedResultTypes() {
+				Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
+				retVal.add(KeyValueResult.class);
+				return retVal;
+			}
+		};
+
+		final IVisualization vis2 = new IVisualization() {
+			@Override
+			public String getName() {
+				return "Test Visualization 2";
+			}
+
+			@Override
+			public String getVisualizationDescription() {
+				return "This is a test for visualization 2";
+			}
+
+			@Override
+			public void runVisualization() {
+			}
+
+			@Override
+			public Collection<Class<? extends Result>> getSupportedResultTypes() {
+				Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
+				retVal.add(KeyValueResult.class);
+				return retVal;
+			}
+		};
+
+		visualizations.put(vis1, "Description of Visualization 1");
+		visualizations.put(vis2, "Description of Visualization 2");
+
+		visualizationProviders.put("Test Provider",
+				new IVisualizationProvider() {
+					@Override
+					public String getName() {
+						return "Test Provider";
+					}
+
+					@Override
+					public Collection<? extends IVisualization> getVisualizations() {
+
+						Collection<IVisualization> retVal = new LinkedList<IVisualization>();
+						retVal.add(vis1);
+						retVal.add(vis2);
+						return retVal;
+					}
+				});
+	}
+
+	/**
+	 * Build the internal list of visualization providers from the extension
+	 * point schema definition
+	 */
+	private void initializeProviders() {
 		visualizationProviders = new HashMap<String, IVisualizationProvider>();
 
 		IConfigurationElement[] visualizationProviderElements = Platform
@@ -44,76 +121,41 @@ public class VisualizationPluginManager {
 						.createExecutableExtension("class");
 
 				visualizationProviders.put(providerName, provider);
-				visualizations.addAll(provider.getVisualizations());
 
 			} catch (CoreException e) {
 				// TODO: Error handling
 				e.printStackTrace();
 			}
 		}
+	}
 
-		// TODO: REMOVE! For demonstrative purposes only
-		visualizationProviders.put("Test Provider",
-				new IVisualizationProvider() {
-					@Override
-					public String getName() {
-						return "Test Provider";
-					}
+	/**
+	 * Builds the internal list of visualizations from the extension point
+	 * schema definition
+	 */
+	private void initializeVisualizations() {
+		visualizations = new HashMap<IVisualization, String>();
 
-					@Override
-					public Collection<? extends IVisualization> getVisualizations() {
-						IVisualization vis1 = new IVisualization() {
-							@Override
-							public String getName() {
-								return "Test Visualization 1";
-							}
+		IConfigurationElement[] visualizationElements = Platform
+				.getExtensionRegistry().getConfigurationElementsFor(
+						"LinGUIne.extensions.IVisualization");
 
-							@Override
-							public String getVisualizationDescription() {
-								return "This is a test for visualization 1";
-							}
+		// Iterate over the visualizations
+		for (IConfigurationElement visualizationElement : visualizationElements) {
+			String description = visualizationElement
+					.getAttribute("description");
 
-							@Override
-							public void runVisualization() {
-							}
+			try {
+				IVisualization visualization = (IVisualization) visualizationElement
+						.createExecutableExtension("class");
 
-							@Override
-							public Collection<Class<? extends Result>> getSupportedResultTypes() {
-								Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
-								retVal.add(KeyValueResult.class);
-								return retVal;
-							}
-						};
+				visualizations.put(visualization, description);
+			} catch (CoreException e) {
+				// TODO: Error handling
+				e.printStackTrace();
+			}
+		}
 
-						IVisualization vis2 = new IVisualization() {
-							@Override
-							public String getName() {
-								return "Test Visualization 2";
-							}
-
-							@Override
-							public String getVisualizationDescription() {
-								return "This is a test for visualization 2";
-							}
-
-							@Override
-							public void runVisualization() {
-							}
-
-							@Override
-							public Collection<Class<? extends Result>> getSupportedResultTypes() {
-								Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
-								retVal.add(KeyValueResult.class);
-								return retVal;
-							}
-						};
-
-						Collection<IVisualization> retVal = new LinkedList<IVisualization>();
-						retVal.add(vis1);
-						retVal.add(vis2);
-						return retVal;
-					}
-				});
 	}
 
 	/**
@@ -151,7 +193,7 @@ public class VisualizationPluginManager {
 	 * @return A collection visualizations currently loaded into the application
 	 */
 	public Collection<IVisualization> getVisualizations() {
-		return visualizations;
+		return visualizations.keySet();
 	}
 
 	/**
@@ -163,7 +205,7 @@ public class VisualizationPluginManager {
 	public Collection<String> getVisualizationNames() {
 		Collection<String> retVal = new LinkedList<String>();
 
-		for (IVisualization visualization : visualizations) {
+		for (IVisualization visualization : visualizations.keySet()) {
 			retVal.add(visualization.getName());
 		}
 		return retVal;
@@ -180,7 +222,7 @@ public class VisualizationPluginManager {
 			Result resultType) {
 		Collection<IVisualization> retVal = new LinkedList<IVisualization>();
 
-		for (IVisualization visualization : visualizations) {
+		for (IVisualization visualization : visualizations.keySet()) {
 			boolean isSupported = visualization.getSupportedResultTypes()
 					.contains(resultType);
 			if (isSupported) {
@@ -199,9 +241,28 @@ public class VisualizationPluginManager {
 	 * @return The visualization provider
 	 */
 	public IVisualization getVisualizationByName(String name) {
-		for (IVisualization visualization : visualizations) {
+		for (IVisualization visualization : visualizations.keySet()) {
 			if (visualization.getName().equals(name)) {
 				return visualization;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the description of a visualization (as specified in the extension
+	 * point schema definition) by the visualization's name. If the name is
+	 * incorrect, null is returned.
+	 * 
+	 * @param name
+	 *            The name of the visualization
+	 * @return The description of the visualization as specified in the
+	 *         extension point schema definition
+	 */
+	public String getVisualizationDescriptionByName(String name) {
+		for (IVisualization visualization : visualizations.keySet()) {
+			if (visualization.getName().equals(name)) {
+				return visualizations.get(visualization);
 			}
 		}
 		return null;
