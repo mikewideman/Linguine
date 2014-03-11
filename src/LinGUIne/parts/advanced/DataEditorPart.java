@@ -49,6 +49,8 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 	private MenuItem copyItem;
 	private MenuItem pasteItem;
 	
+	private DirtyStateChangedListener dirtyListener;
+	
 	@Inject
 	public DataEditorPart() {}
 	
@@ -61,6 +63,15 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 		createContextMenu();
 		
 		dirtyable.setDirty(false);
+		
+		dirtyListener = new DirtyStateChangedListener(){
+			@Override
+			public void notify(ProjectDataEditorTab sender) {
+				if(tabFolder.getSelection() == sender){
+					dirtyable.setDirty(sender.isDirty());
+				}
+			}
+		};
 	}
 	
 	/**
@@ -86,6 +97,7 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 	public void fileOpenEvent(@UIEventTopic(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA)
 			OpenProjectDataEvent openEvent, @Named(IServiceConstants.ACTIVE_SHELL)
 			Shell shell){
+		
 		IProjectData projectData = openEvent.getProjectData();
 		ProjectDataEditorTab newTab;
 		
@@ -99,24 +111,19 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 					(TextData)projectData);
 			}
 			
-			newTab.addListener(new DirtyStateChangedListener(){
-				@Override
-				public void notify(ProjectDataEditorTab sender) {
-					if(tabFolder.getSelection() == sender){
-						dirtyable.setDirty(sender.isDirty());
-					}
-				}
-			});
+			newTab.addListener(dirtyListener);
 			
 			newTab.getControl().setMenu(contextMenu);
 			tabFolder.setSelection(newTab);
 			
-			selectionService.setPostSelection(newTab);
+			selectionService.setSelection(newTab);
 		}
 		else{
 			MessageDialog.openError(shell, "Error", "Could not open " +
 					projectData.getName() + ", there is no associated editor.");
 		}
+		
+		tabFolder.setFocus();
 	}
 	
 	/**
@@ -244,7 +251,14 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 
 	@Override
 	public void close(CTabFolderEvent event) {
-		if(tabFolder.getSelection() == null){
+		CTabItem tab = tabFolder.getSelection();
+		
+		if(tab instanceof ProjectDataEditorTab){
+			ProjectDataEditorTab editorTab = (ProjectDataEditorTab)tab;
+			editorTab.removeListener(dirtyListener);
+		}
+		
+		if(tabFolder.getItemCount() == 1){
 			selectionService.setSelection(null);
 		}
 	}

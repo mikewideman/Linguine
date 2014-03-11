@@ -3,11 +3,11 @@ package LinGUIne.parts.advanced;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -21,8 +21,10 @@ public class SettingsPart {
 	private ExpandBar settingsExpandBar;
 	
 	@Inject
-	public SettingsPart() {
-		//TODO Your code here
+	public SettingsPart(ESelectionService selectionService) {
+		selectionService.addSelectionListener(
+				"linguine.part.advanced.dataExplorerPart",
+				new DataEditorSelectionListener());
 	}
 	
 	@PostConstruct
@@ -46,20 +48,23 @@ public class SettingsPart {
 	}
 	
 	@Focus
-	public void onFocus() {
-		//TODO Your code here
-	}
+	public void onFocus() {}
 	
-	@Inject
-	public void showSettings(@Optional @Named(IServiceConstants.ACTIVE_SELECTION)
-			ProjectDataEditorTab editorTab){
-		
-		if(editorTab != null){
-			//TODO: Find the settings page contributed by the EditorTab and display it
-			System.out.println(editorTab.getText());
-		}
-		else{
-			System.out.println("Editor empty");
+	class DataEditorSelectionListener implements ISelectionListener{
+		@Override
+		public void selectionChanged(MPart part, Object selection) {
+			if(selection != null){
+				if(selection instanceof ProjectDataEditorTab){
+					ProjectDataEditorTab editorTab =
+							(ProjectDataEditorTab)selection;
+					
+					//TODO: Ask editorTab for its SettingsPage instance and display it
+					System.out.println(editorTab.getText());
+				}
+			}
+			else{
+				System.out.println("Editor empty");
+			}
 		}
 	}
 }

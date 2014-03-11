@@ -28,10 +28,6 @@ public class RemoveProjectHandler {
 		Project project = projectMan.getProject(projectForRemoval);
 		
 		if(project != null){
-			//TODO: Also ask user if they want to delete Project contents on disk
-//			boolean confirmed = MessageDialog.openConfirm(shell, "Remove Project",
-//					"Are you sure you want to remove the Project?");
-			
 			ConfirmWithOptionDialog dialog = new ConfirmWithOptionDialog(shell,
 					"Remove Project",
 					"Are you sure you want to remove the Project?",
