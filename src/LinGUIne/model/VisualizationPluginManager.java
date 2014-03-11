@@ -60,8 +60,15 @@ public class VisualizationPluginManager {
 				return new VisualizationView() {
 
 					@Override
-					public void createComposite(Composite parent) {
+					public void createPartControl(Composite parent) {
 						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void setFocus() {
+						// TODO Auto-generated method stub
+						
 					}
 
 				};
@@ -99,10 +106,16 @@ public class VisualizationPluginManager {
 			@Override
 			public VisualizationView runVisualization() {
 				return new VisualizationView() {
+					@Override
+					public void createPartControl(Composite parent) {
+						// TODO Auto-generated method stub
+						
+					}
 
 					@Override
-					public void createComposite(Composite parent) {
+					public void setFocus() {
 						// TODO Auto-generated method stub
+						
 					}
 
 				};
