@@ -106,6 +106,12 @@ public class TextData implements ITypedProjectData<TextDataContents> {
 	}
 	
 	@Override
+	public void deleteContentsOnDisk() throws IOException{
+		Files.deleteIfExists(dataFile.toPath());
+		contents = null;
+	}
+	
+	@Override
 	public int compareTo(IProjectData projData) {
 		if(projData == null){
 			return 1;

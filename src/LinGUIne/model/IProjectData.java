@@ -1,6 +1,7 @@
 package LinGUIne.model;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Interface to which all ProjectData must conform.
@@ -41,4 +42,11 @@ public interface IProjectData extends Comparable<IProjectData> {
 	 * 			successful, false otherwise.
 	 */
 	boolean updateContents(IProjectDataContents newContents);
+	
+	/**
+	 * Deletes this Project Data's file from disk.
+	 * 
+	 * @throws IOException	If the contents could not be deleted for any reason.
+	 */
+	void deleteContentsOnDisk() throws IOException;
 }

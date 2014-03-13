@@ -11,7 +11,6 @@ import javax.inject.Named;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -52,7 +51,9 @@ public class QuickAnalysisPart {
 	@Inject
 	private ProjectManager projectMan;
 	
+	@Inject
 	private SoftwareModuleManager softwareModuleMan;
+	
 	private ProjectExplorerSelection projectSelection;
 	
 	private Composite myParent;
@@ -63,21 +64,15 @@ public class QuickAnalysisPart {
 	private Label lblNumFiles;
 	private Label lblNumJobs;
 	
-	@Inject
-	public QuickAnalysisPart(MApplication app) {
-		softwareModuleMan = new SoftwareModuleManager();
+	public QuickAnalysisPart() {
 		projectSelection = new ProjectExplorerSelection();
-		
-		app.getContext().set(SoftwareModuleManager.class, softwareModuleMan);
 	}
 
 	@PostConstruct
 	public void createComposite(Composite parent){
-
 		myParent = parent;
 		
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 3;
+		GridLayout layout = new GridLayout(3, true);
 		parent.setLayout(layout);
 
 		Label lblLibraries = new Label(parent, SWT.NONE);
@@ -183,7 +178,7 @@ public class QuickAnalysisPart {
 		txtDescription = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
 		txtDescription.setEditable(false);
 		txtDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txtDescription.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+		txtDescription.setBackground(lstAnalyses.getControl().getBackground());
 
 		btnRunAnalysis = new Button(parent, SWT.NONE);
 		btnRunAnalysis.setText("Run Analysis");

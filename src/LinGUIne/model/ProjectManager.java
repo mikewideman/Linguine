@@ -17,7 +17,6 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.Project.ProjectListener;
-import LinGUIne.utilities.FileUtils;
 
 /**
  * Encapsulates all Projects within some workspace and controls access to them.
@@ -26,7 +25,8 @@ import LinGUIne.utilities.FileUtils;
  */
 public class ProjectManager {
 
-	private static final String PROJECT_LIST_KEY = "ProjectManager_ProjectList";
+	//Persisted State key for ProjectManager's list of Projects
+	public static final String PROJECT_LIST_KEY = "ProjectManager_ProjectList";
 	
 	@Inject
 	private IEventBroker eventBroker;
@@ -114,18 +114,30 @@ public class ProjectManager {
 	}
 	
 	/**
-	 * Removes the given Project from this ProjectManager if it exists.
+	 * Removes the given Project from this ProjectManager if it exists. Will
+	 * delete the Project's contents on disk according to the value of the
+	 * shouldDelete parameter.
 	 * 
-	 * @param proj	The Project to be removed.
+	 * @param proj			The Project to be removed.
+	 * @param shouldDelete	Whether or not the Project's contents on disk should
+	 * 						be deleted.
 	 * 
 	 * @return	True iff the Project was removed, false if it doesn't exist.
+	 * 
+	 * @throws IOException	If the Project's contents on disk could not be
+	 * 						deleted.
 	 */
-	public boolean removeProject(Project proj){
+	public boolean removeProject(Project proj, boolean shouldDelete)
+			throws IOException{
 		if(containsProject(proj.getName())){
 			projectSet.remove(proj.getName().toLowerCase());
 			proj.removeListener(projListener);
 			postEvent(LinGUIneEvents.Project.REMOVED, proj);
 			updateProjectFilesInPersistedState();
+			
+			if(shouldDelete){
+				proj.deleteProjectContentsOnDisk();
+			}
 			
 			return true;
 		}
@@ -164,21 +176,6 @@ public class ProjectManager {
 			newProject.setParentDirectory(workspace);
 			addProject(newProject);
 		}
-		
-		for(File dir: workspace.toFile().listFiles()){
-			if(dir.isDirectory()){
-				for(String filename: dir.list()){
-					if(filename.equals(Project.PROJECT_FILE)){
-						Project project = Project.createFromFile(
-								FileUtils.appendPath(dir, filename));
-						if(project != null){
-							project.setParentDirectory(workspace);
-							addProject(project);
-					    }
-					}
-				}
-			}
-		}
 	}
 	
 	/**
@@ -186,8 +183,6 @@ public class ProjectManager {
 	 * returns it.
 	 */
 	private List<File> getProjectFilesFromPersistedState(){
-		//TODO: Fix loading of persisted state
-		
 		LinkedList<File> projectFiles = new LinkedList<File>();
 		String projectList = application.getPersistedState().get(
 				PROJECT_LIST_KEY);

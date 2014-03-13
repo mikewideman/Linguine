@@ -1,7 +1,9 @@
 package LinGUIne.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 
 /**
  * Represents the Result of some analysis on some ProjectData.
@@ -33,6 +35,12 @@ public abstract class Result implements IProjectData {
 	@Override
 	public String getName() {
 		return resultFile.getName();
+	}
+	
+	@Override
+	public void deleteContentsOnDisk() throws IOException{
+		Files.deleteIfExists(resultFile.toPath());
+		updateContents(null);
 	}
 	
 	@Override

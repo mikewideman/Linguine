@@ -82,7 +82,9 @@
   <commands xmi:id="_ZNb70DxeEeOsebD9DszETw" elementId="linguine.command.refresh" commandName="refreshCommand"/>
   <commands xmi:id="_73x6AEA6EeODy_z0LLz00g" elementId="linguine.command.analysis" commandName="analysisCommand"/>
   <commands xmi:id="_d6y2kJ8pEeOA0_QUQheDyA" elementId="linguine.command.switchPerspective" commandName="switchPerspectiveCommand"/>
-  <commands xmi:id="_j2Z5YJ8pEeOA0_QUQheDyA" elementId="linguine.command.removeProject" commandName="removeProjectCommand"/>
+  <commands xmi:id="_j2Z5YJ8pEeOA0_QUQheDyA" elementId="linguine.command.removeProject" commandName="removeProjectCommand">
+    <parameters xmi:id="_pf6r0KfKEeOMR-0rpH044Q" elementId="linguine.command.removeProject.parameter.projectForRemoval" name="projectForRemoval" optional="false"/>
+  </commands>
   <commands xmi:id="_rcpSAJ8pEeOA0_QUQheDyA" elementId="linguine.command.newVisualization" commandName="newVisualizationCommand"/>
   <commands xmi:id="_BLZoAJ8rEeOA0_QUQheDyA" elementId="linguine.command.newFile" commandName="newFileCommand"/>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
