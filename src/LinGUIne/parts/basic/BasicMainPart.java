@@ -41,13 +41,19 @@ import org.eclipse.swt.widgets.Text;
 
 
 
+
+
+
 import LinGUIne.extensions.IAnalysisPlugin;
+import LinGUIne.extensions.IVisualization;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 import LinGUIne.model.SoftwareModuleManager;
+import LinGUIne.model.VisualizationPluginManager;
 import LinGUIne.wizards.AnalysisData;
+import LinGUIne.wizards.VisualizationData;
 
 public class BasicMainPart {
 	
@@ -62,6 +68,7 @@ public class BasicMainPart {
 	private List lstFiles;
 	private HashMap<String,String> softModMap;
 	private AnalysisData analysisData;
+	private VisualizationData visualizationData;
 	private Label lblAnalyses;
 	private List lstAnalyses;
 	
@@ -74,10 +81,13 @@ public class BasicMainPart {
 	@Inject
 	private SoftwareModuleManager softwareModuleMan;
 	
+	@Inject
+	private VisualizationPluginManager visualizationPluginMan;
+	
 	private CTabItem projectTab;
 	private CTabItem fileTab;
 	private CTabItem analysisTab;
-	private CTabItem visualizationTab;
+	private CTabItem visualTab;
 	
 
 	
@@ -89,6 +99,7 @@ public class BasicMainPart {
 		tabFolder = new CTabFolder(parent,SWT.NONE);
 		tabFolder.setTabHeight(10);
 		analysisData = new AnalysisData();
+		visualizationData = new VisualizationData();
 	    newProject = new Project();
 	    
 	    CTabItem projTabItem = new CTabItem(tabFolder, SWT.NONE);
@@ -339,12 +350,39 @@ public class BasicMainPart {
 	}
 	
 	public void openVisualizationTab(){
-		if(visualizationTab == null){
-			CTabItem visualizationSelection = new CTabItem(tabFolder, SWT.NONE);
-			visualizationSelection.setText("Select Visualization");
-			visualizationTab = visualizationSelection;
+		if(visualTab == null){
+			CTabItem visualizationTabItem = new CTabItem(tabFolder, SWT.NONE);
+			visualizationTabItem.setText("Select Visualization");
+			Composite container = new Composite(tabFolder, SWT.NONE);
+			GridLayout layout = new GridLayout();
+			layout.numColumns = 1;
+			container.setLayout(layout);
+			Group grpVisualizations = new Group(container, SWT.NONE);
+			grpVisualizations.setLayout(new GridLayout(1, false));
+			grpVisualizations.setLayoutData(new GridData(GridData.FILL_BOTH));
+			grpVisualizations.setText("Visualizations");
+
+			Label lblVisualizations = new Label(grpVisualizations, SWT.NONE);
+			lblVisualizations.setText("Select a Visualization for your data:");
+
+			List lstVisualizations = new List(grpVisualizations, SWT.BORDER
+					| SWT.V_SCROLL);
+			lstVisualizations.setLayoutData(new GridData(400,400));
+			
+			for (String visualization : visualizationPluginMan.getVisualizationNames()) {
+				lstVisualizations.add(visualization);
+			}
+			lstVisualizations.update();
+			visualizationPluginMan.getVisualizationNames();
+			Button fButton = new Button(container, SWT.NONE);
+			fButton.setText("Generate Visual");
+			visualizationTabItem.setControl(container);
+			visualTab = visualizationTabItem;
+			
+			
+			
 		}
-		tabFolder.setSelection(visualizationTab);
+		tabFolder.setSelection(visualTab);
 	}
 	
 	/**

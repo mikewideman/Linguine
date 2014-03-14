@@ -16,6 +16,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
+import LinGUIne.model.VisualizationPluginManager;
 
 /**
  * Hooks into the Eclipse life cycle to perform operations at startup.
@@ -90,8 +91,11 @@ public class LifeCycleManager {
 				application);
 		projectMan.loadProjects();
 		
+		VisualizationPluginManager visualisationPluginMan = new VisualizationPluginManager();
+		
 		context.set(SoftwareModuleManager.class, softwareModuleMan);
 		context.set(ProjectManager.class, projectMan);
+		context.set(VisualizationPluginManager.class, visualisationPluginMan);
 		
 		ContextInjectionFactory.inject(projectMan, context);
 	}
