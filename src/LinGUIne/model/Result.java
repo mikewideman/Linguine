@@ -51,7 +51,7 @@ public abstract class Result implements IProjectData {
 		
 		return resultFile.compareTo(projData.getFile());
 	}
-	
+
 	/**
 	 * Creates a new Result of the given subclass and passes it the given
 	 * resultFile.
