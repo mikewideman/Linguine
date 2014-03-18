@@ -183,6 +183,9 @@ class AnnotationSetTranslator {
 				}
 			}
 		}
+		else{
+			return null;
+		}
 		
 		return newContents;
 	}
