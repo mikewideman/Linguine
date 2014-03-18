@@ -1,0 +1,36 @@
+Shell {
+  background-color: brown orange white brown orange 60% 60% 60% 60%;
+  font-family : "Arial";
+}
+
+.MPartStack {
+  font-size: 8px;
+  color:orange;
+}  
+
+.MPart:selected {
+   visible:gone;
+   background-color:black;
+}
+
+.MPartStack {
+border-visible:false;
+}
+
+CTabFolder {
+   swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering'); 
+   swt-tab-outline: #F000000;
+   swt-shadow-visible: false;
+}
+
+#basicFolder {
+   swt-tab-height: 15px;
+}
+
+#projExplorerPart {
+   swt-selected-tabs-background: black;
+}
+
+#basicProjTab {
+   font-family : "Arial";
+}

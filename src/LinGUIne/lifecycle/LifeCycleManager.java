@@ -13,6 +13,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
+import org.eclipse.swt.widgets.Display;
 
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
@@ -96,7 +97,6 @@ public class LifeCycleManager {
 		context.set(SoftwareModuleManager.class, softwareModuleMan);
 		context.set(ProjectManager.class, projectMan);
 		context.set(VisualizationPluginManager.class, visualisationPluginMan);
-		
 		ContextInjectionFactory.inject(projectMan, context);
 	}
 	
@@ -108,4 +108,12 @@ public class LifeCycleManager {
 	 */
 	@PreSave
 	public void preSave(MApplication application){}
+	
+	public static Display getDisplay() {
+		Display display = Display.getCurrent();
+		//may be null if outside the UI thread
+		if (display == null)
+			display = Display.getDefault();
+		    return display;		
+		}
 }

@@ -71,6 +71,10 @@ public class BasicMainPart {
 	private VisualizationData visualizationData;
 	private Label lblAnalyses;
 	private List lstAnalyses;
+	private final String PROJECT_TAB = "Select Project ->";
+	private final String FILE_TAB = "Select File ->";
+	private final String ANALYSIS_TAB = "Select Analysis ->";
+	private final String VISUAL_TAB = "Select Visualization";
 	
 	@Inject
 	private MApplication application;
@@ -97,7 +101,21 @@ public class BasicMainPart {
 	public void createComposite(Composite parent){
 		projectMan.loadProjects();
 		tabFolder = new CTabFolder(parent,SWT.NONE);
-		tabFolder.setTabHeight(10);
+		tabFolder.setData("org.eclipse.e4.ui.css.id", "basicFolder");
+		tabFolder.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e){
+				if(tabFolder.getSelectionIndex() >= 0){
+					tabSelectionChanged(tabFolder.getSelection().getText());
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		analysisData = new AnalysisData();
 		visualizationData = new VisualizationData();
 	    newProject = new Project();
@@ -111,16 +129,22 @@ public class BasicMainPart {
 		tabComp.setLayout(layout);
 	    Label projLabel = new Label(tabComp, SWT.NONE);
 	    projLabel.setText("Enter name for New Project");
+	    projLabel.setData("org.eclipse.e4.ui.css.id", "basicProjectLabel");
 		txtName = new Text(tabComp, SWT.BORDER | SWT.SINGLE);
 		txtName.setText("");
-		Label existingProjLabel = new Label(tabComp, SWT.NONE);
-		existingProjLabel.setText("Select from list of existing projects");
+		GridData txtData = new GridData();
+		txtData.horizontalSpan = 2;
+		txtName.setLayoutData(txtData);
 		 Group grpProjects = new Group(tabComp, SWT.NONE);
 		    grpProjects.setLayout(new GridLayout(1, false));
-		    grpProjects.setLayoutData(new GridData(GridData.FILL_BOTH));
+		   GridData projData = new GridData(400,400);
+		    projData.horizontalIndent = 2;
+		    grpProjects.setLayoutData(projData);
 		    grpProjects.setText("Project");
+			Label existingProjLabel = new Label(grpProjects, SWT.NONE);
+			existingProjLabel.setText("Select from list of existing projects");
 		    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL);
-		    lstProjects.setLayoutData(new GridData(400,400));
+		    lstProjects.setLayoutData(grpProjects.getLayoutData());
 		
 		    for(Project project: projectMan.getProjects()){
 		    	lstProjects.add(project.getName());
@@ -146,12 +170,9 @@ public class BasicMainPart {
 		    });
 		    
 
-		
-		    final Button nButton = new Button(tabComp, SWT.PUSH);
+
+		    final Button nButton = new Button(tabComp, SWT.NONE);
 	    nButton.setText("Next");
-	    GridData buttonData = new GridData(SWT.CENTER, SWT.BOTTOM, false, false, 1, 1);
-	    buttonData.verticalIndent = 50;
-	    nButton.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false, 1, 1));
 	    nButton.addSelectionListener(new SelectionAdapter() {
 	        @Override
 	        public void widgetSelected(SelectionEvent e) {
@@ -178,6 +199,7 @@ public class BasicMainPart {
 		});
 		GridData grid = new GridData(800, 25);
 		txtName.setLayoutData(grid);
+		tabComp.setData("org.eclipse.e4.ui.css.id", "basicProjTab");
 	    projTabItem.setControl(tabComp);
 	    projectTab = projTabItem;
 	    tabFolder.setSelection(projectTab);
@@ -223,13 +245,15 @@ public class BasicMainPart {
 			selectFileTab.setText("Select File ->");
 			Composite container = new Composite(tabFolder, SWT.NONE);
 			 GridLayout layout = new GridLayout();
-			    layout.numColumns = 1;
+			    layout.numColumns = 2;
 			    layout.marginHeight = 15;
 			    container.setLayout(layout);
 			    
 			    Group grpFiles = new Group(container, SWT.NONE);
 			    grpFiles.setLayout(new GridLayout(1, false));
-			    grpFiles.setLayoutData(new GridData(400,400));
+			    GridData gData = new GridData(400,400);
+			    gData.horizontalSpan = 2;
+			    grpFiles.setLayoutData(gData);
 			    grpFiles.setText("Files");
 			    
 			    lblFiles = new Label(grpFiles, SWT.NONE);
@@ -263,6 +287,8 @@ public class BasicMainPart {
 			selectFileTab.setControl(container);
 //			Button importFileButton = new Button(container, SWT.NONE);
 //			importFileButton.setText("Import Text File");
+			Button bButtonFile = new Button(container, SWT.NONE);
+			bButtonFile.setText("Back");
 			Button nButtonFile = new Button(container, SWT.NONE);
 			nButtonFile.setText("Next");
 			nButtonFile.addSelectionListener(new SelectionAdapter() {
@@ -271,6 +297,14 @@ public class BasicMainPart {
 		            openAnalysisTab();
 		        }
 		    });
+			
+			bButtonFile.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e){
+					tabFolder.setSelection(projectTab);
+					tabSelectionChanged(tabFolder.getSelection().getText());
+				}
+			});
 			fileTab = selectFileTab;
 			
 		}
@@ -286,11 +320,11 @@ public class BasicMainPart {
 			analysisTabItem.setText("Select Analysis ->");
 			Composite container = new Composite(tabFolder, SWT.NONE);
 			 GridLayout layout = new GridLayout();
-			    layout.numColumns = 1;
+			 	layout.numColumns = 2;
 			    layout.marginTop = 15;
+			    layout.makeColumnsEqualWidth = false;
 			container.setLayout(layout);
-			lblAnalyses = new Label(container, SWT.TOP);
-			lblAnalyses.setText("Select an Analysis to use:");
+
 //			CTabFolder innerFolder = new CTabFolder(container, SWT.NONE);
 //			CTabItem basicAnalysis = new CTabItem(innerFolder, SWT.NONE);
 //			basicAnalysis.setText("Basic Analysis Set");
@@ -299,8 +333,12 @@ public class BasicMainPart {
 			
 			Group grpBasicAnalyses = new Group(container, SWT.NONE);
 			grpBasicAnalyses.setLayout(new GridLayout(1, false));
-		    grpBasicAnalyses.setLayoutData(new GridData(400,400));
+			GridData gData = new GridData(400,400);
+			gData.horizontalSpan = 2;
+		    grpBasicAnalyses.setLayoutData(gData);
 		    grpBasicAnalyses.setText("Analyses");
+			lblAnalyses = new Label(grpBasicAnalyses, SWT.NONE);
+			lblAnalyses.setText("Select an Analysis to use:");
 			
 			lstAnalyses = new List(grpBasicAnalyses, SWT.BORDER | SWT.V_SCROLL);
 			lstAnalyses.setLayoutData(grpBasicAnalyses.getLayoutData());
@@ -332,6 +370,8 @@ public class BasicMainPart {
 //			advancedAnalysis.setText("Advanced Analysis Set");
 //			basicAnalysis.setControl(innerFolder);
 //			innerFolder.setLayoutData(new GridData(800, 300));
+			Button analysisBButton = new Button(container, SWT.NONE);
+			analysisBButton.setText("Back");
 			Button analysisNButton = new Button(container, SWT.NONE);
 			analysisNButton.setText("Next");
 			analysisNButton.addSelectionListener(new SelectionAdapter() {
@@ -340,6 +380,14 @@ public class BasicMainPart {
 		            openVisualizationTab();		        
 		        }
 		    });
+			
+			analysisBButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e){
+					tabFolder.setSelection(fileTab);
+					tabSelectionChanged(tabFolder.getSelection().getText());
+				}
+			});
 //			innerFolder.setSelection(basicAnalysis);
 			analysisTabItem.setControl(container);
 			analysisTab = analysisTabItem;
@@ -355,11 +403,14 @@ public class BasicMainPart {
 			visualizationTabItem.setText("Select Visualization");
 			Composite container = new Composite(tabFolder, SWT.NONE);
 			GridLayout layout = new GridLayout();
-			layout.numColumns = 1;
+			layout.numColumns = 2;
+			layout.marginHeight = 15;
 			container.setLayout(layout);
 			Group grpVisualizations = new Group(container, SWT.NONE);
 			grpVisualizations.setLayout(new GridLayout(1, false));
-			grpVisualizations.setLayoutData(new GridData(GridData.FILL_BOTH));
+			GridData vData = new GridData(400,400);
+			vData.horizontalSpan = 2;
+			grpVisualizations.setLayoutData(vData);
 			grpVisualizations.setText("Visualizations");
 
 			Label lblVisualizations = new Label(grpVisualizations, SWT.NONE);
@@ -367,15 +418,24 @@ public class BasicMainPart {
 
 			List lstVisualizations = new List(grpVisualizations, SWT.BORDER
 					| SWT.V_SCROLL);
-			lstVisualizations.setLayoutData(new GridData(400,400));
+			lstVisualizations.setLayoutData(grpVisualizations.getLayoutData());
 			
 			for (String visualization : visualizationPluginMan.getVisualizationNames()) {
 				lstVisualizations.add(visualization);
 			}
 			lstVisualizations.update();
 			visualizationPluginMan.getVisualizationNames();
+			Button bButton = new Button(container, SWT.NONE);
 			Button fButton = new Button(container, SWT.NONE);
+			bButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e){
+					tabFolder.setSelection(analysisTab);
+					tabSelectionChanged(tabFolder.getSelection().getText());
+				}
+			});
 			fButton.setText("Generate Visual");
+			bButton.setText("Back");
 			visualizationTabItem.setControl(container);
 			visualTab = visualizationTabItem;
 			
@@ -416,6 +476,28 @@ public class BasicMainPart {
 //		lstAnalyses.add(tokenization.getName());
 		
 		lstAnalyses.update();
+	}
+	
+	private void tabSelectionChanged(String selectedTab){
+		if(selectedTab.equals(PROJECT_TAB)){
+			if(fileTab != null){fileTab.dispose();}
+			fileTab = null;
+			if(analysisTab != null){analysisTab.dispose();}
+			analysisTab = null;
+			if(visualTab != null){visualTab.dispose();}
+			visualTab = null;
+		}
+		else if(selectedTab.equals(FILE_TAB)){
+			if(analysisTab != null){analysisTab.dispose();}
+			analysisTab = null;
+			if(visualTab != null){visualTab.dispose();}
+			visualTab = null;
+		}
+		else if(selectedTab.equals(ANALYSIS_TAB)){
+			if(visualTab != null){visualTab.dispose();}
+			visualTab = null;
+		}
+		
 	}
  
 }

@@ -20,7 +20,8 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  org.eclipse.e4.core.commands,
  com.google.gson;bundle-version="2.1.0",
  org.eclipse.e4.core.di.extensions,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.eclipse.e4.ui.css.swt.theme;bundle-version="0.9.100"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.0.0"
 Export-Package: LinGUIne.extensions,
