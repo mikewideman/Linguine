@@ -110,9 +110,12 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 							.getVisualizationDescriptionByName(visualization
 									.getName());
 
-					wizardData.setChosenVisualization(visualization);
-					lblDescription.setText(description);
-					lblDescription.update();
+					if (visualization != null) {
+						wizardData.setChosenVisualization(visualization);
+						lblDescription.setText(description);
+						lblDescription.update();
+						setPageComplete(true);
+					}
 				}
 			}
 

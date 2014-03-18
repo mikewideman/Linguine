@@ -2,18 +2,16 @@ package LinGUIne.model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.widgets.Composite;
 
-import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.extensions.IVisualization;
 import LinGUIne.extensions.IVisualizationProvider;
+import LinGUIne.extensions.VisualizationSettings;
 import LinGUIne.extensions.VisualizationView;
 import LinGUIne.extensions.VisualizationWizard;
 
@@ -90,6 +88,18 @@ public class VisualizationPluginManager {
 			public VisualizationWizard getWizard() {
 				return null;
 			}
+
+			@Override
+			public boolean hasSettings() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public VisualizationSettings getSettings() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 
 		final IVisualization vis2 = new IVisualization() {
@@ -134,6 +144,18 @@ public class VisualizationPluginManager {
 
 			@Override
 			public VisualizationWizard getWizard() {
+				return null;
+			}
+
+			@Override
+			public boolean hasSettings() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public VisualizationSettings getSettings() {
+				// TODO Auto-generated method stub
 				return null;
 			}
 		};

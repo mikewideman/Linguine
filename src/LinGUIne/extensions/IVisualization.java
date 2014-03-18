@@ -54,4 +54,21 @@ public interface IVisualization {
 	 * @return The wizard this visualization provides
 	 */
 	VisualizationWizard getWizard();
+
+	/**
+	 * Returns whether this visualization has a settings pane.
+	 * 
+	 * @return True if this visualization can provide a settings pane to show to
+	 *         the user, false otherwise
+	 */
+	boolean hasSettings();
+
+	/**
+	 * Returns the settings pane this visualization provides. If no settings
+	 * pane is available, (hasSettings is false) then this method should return
+	 * null.
+	 * 
+	 * @return The settings pane this visualization provides
+	 */
+	VisualizationSettings getSettings();
 }
