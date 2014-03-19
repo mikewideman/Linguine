@@ -1,24 +1,17 @@
 package LinGUIne.parts.basic;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -26,30 +19,16 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import LinGUIne.extensions.IAnalysisPlugin;
-import LinGUIne.extensions.IVisualization;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
-import LinGUIne.model.Result;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.model.VisualizationPluginManager;
 import LinGUIne.wizards.AnalysisData;
@@ -57,10 +36,17 @@ import LinGUIne.wizards.VisualizationData;
 
 public class BasicMainPart {
 	
+	
+	private final String PROJECT_TAB = "Select Project ";
+	private final String FILE_TAB = "- Select File";
+	private final String ANALYSIS_TAB = "- Select Analysis";
+	private final String VISUAL_TAB = "- Select Visualization";
+	private CTabItem projectTab;
+	private CTabItem fileTab;
+	private CTabItem analysisTab;
+	private CTabItem visualTab;
 	private CTabFolder tabFolder;
 	private Text txtName;
-//	private ProjectManager basicProjectMan;
-//	private SoftwareModuleManager softwareModuleMan;
 	private Project newProject;
 	private Label lblProjects;
 	private List lstProjects;
@@ -71,10 +57,8 @@ public class BasicMainPart {
 	private VisualizationData visualizationData;
 	private Label lblAnalyses;
 	private List lstAnalyses;
-	private final String PROJECT_TAB = "Select Project ->";
-	private final String FILE_TAB = "Select File ->";
-	private final String ANALYSIS_TAB = "Select Analysis ->";
-	private final String VISUAL_TAB = "Select Visualization";
+	private Display display;
+
 	
 	@Inject
 	private MApplication application;
@@ -88,10 +72,7 @@ public class BasicMainPart {
 	@Inject
 	private VisualizationPluginManager visualizationPluginMan;
 	
-	private CTabItem projectTab;
-	private CTabItem fileTab;
-	private CTabItem analysisTab;
-	private CTabItem visualTab;
+
 	
 
 	
@@ -99,6 +80,7 @@ public class BasicMainPart {
 	
 	@PostConstruct
 	public void createComposite(Composite parent){
+		display = getDisplay();
 		projectMan.loadProjects();
 		tabFolder = new CTabFolder(parent,SWT.NONE);
 		tabFolder.setData("org.eclipse.e4.ui.css.id", "basicFolder");
@@ -119,59 +101,57 @@ public class BasicMainPart {
 		analysisData = new AnalysisData();
 		visualizationData = new VisualizationData();
 	    newProject = new Project();
-	    
 	    CTabItem projTabItem = new CTabItem(tabFolder, SWT.NONE);
-	    projTabItem.setText("Select Project ->");
-	    Composite tabComp = new Composite(tabFolder,SWT.CHECK);
+	    projTabItem.setText(PROJECT_TAB);
+//	    FontData[] fD = projTabItem.getFont().getFontData();
+//	    fD[0].setHeight(15);
+//	    projTabItem.setFont( new Font(getDisplay(),fD[0]));
+	    Composite tabComp = new Composite(tabFolder,SWT.NONE);
 	    GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		layout.marginTop = 15;
 		tabComp.setLayout(layout);
-	    Label projLabel = new Label(tabComp, SWT.NONE);
-	    projLabel.setText("Enter name for New Project");
-	    projLabel.setData("org.eclipse.e4.ui.css.id", "basicProjectLabel");
-		txtName = new Text(tabComp, SWT.BORDER | SWT.SINGLE);
-		txtName.setText("");
-		GridData txtData = new GridData();
-		txtData.horizontalSpan = 2;
-		txtName.setLayoutData(txtData);
-		 Group grpProjects = new Group(tabComp, SWT.NONE);
-		    grpProjects.setLayout(new GridLayout(1, false));
-		   GridData projData = new GridData(400,400);
-		    projData.horizontalIndent = 2;
-		    grpProjects.setLayoutData(projData);
-		    grpProjects.setText("Project");
-			Label existingProjLabel = new Label(grpProjects, SWT.NONE);
-			existingProjLabel.setText("Select from list of existing projects");
-		    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL);
-		    lstProjects.setLayoutData(grpProjects.getLayoutData());
-		
-		    for(Project project: projectMan.getProjects()){
-		    	lstProjects.add(project.getName());
-		    }
-		    
-		    lstProjects.addSelectionListener(new SelectionListener(){
+		//Group for the tab
+	    Group grpProjects = new Group(tabComp, SWT.NONE);
+	    grpProjects.setLayout(new GridLayout(1, false));
+	    GridData gData = new GridData(400, 400);
+	    gData.horizontalSpan = 2;
+	    grpProjects.setLayoutData(gData);
+	    
+	    lblProjects = new Label(grpProjects, SWT.NONE);
+	    lblProjects.setText("Select a Project:");
+//	    FontData[] fD = lblProjects.getFont().getFontData();
+//	    fD[0].setHeight(14);
+//	    projTabItem.setFont( new Font(getDisplay(),fD[0]));
+	    
+	    
+	    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+	    lstProjects.setLayoutData(new GridData(370,370));
+	    lstProjects.setEnabled(true);
+	    for(Project project: projectMan.getProjects()){
+	    	lstProjects.add(project.getName());
+	    }
+	    lstProjects.addSelectionListener(new SelectionListener(){
 
-		    	/**
-		    	 * Sets which Project is currently selected and populates the 
-		    	 * List of Project Data in the Project.
-		    	 */
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if(lstProjects.getSelectionCount() > 0){
-						Project selectedProject = projectMan.getProject(lstProjects.getSelection()[0]);
-						analysisData.setChosenProject(selectedProject);
-						analysisData.setChosenProjectData(new LinkedList<IProjectData>());
-					}
+	    	/**
+	    	 * Sets which Project Data are currently selected.
+	    	 */
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(lstProjects.getSelectionCount() > 0){
+					Project selectedProject = projectMan.getProject(lstProjects.getSelection()[0]);
+					analysisData.setChosenProject(selectedProject);
 				}
+			}
 
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {}
-		    });
-		    
-
-
-		    final Button nButton = new Button(tabComp, SWT.NONE);
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+	    });
+	    
+		final Button nButton = new Button(tabComp, SWT.NONE);
 	    nButton.setText("Next");
 	    nButton.addSelectionListener(new SelectionAdapter() {
 	        @Override
@@ -182,24 +162,6 @@ public class BasicMainPart {
 	            
 	        }
 	    });
-		txtName.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyPressed(KeyEvent e) {}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if(isProjectNameValid(txtName.getText())){
-					newProject.setName(txtName.getText());
-				}
-				else{
-					nButton.setGrayed(false);
-				}
-			}
-		});
-		GridData grid = new GridData(800, 25);
-		txtName.setLayoutData(grid);
-		tabComp.setData("org.eclipse.e4.ui.css.id", "basicProjTab");
 	    projTabItem.setControl(tabComp);
 	    projectTab = projTabItem;
 	    tabFolder.setSelection(projectTab);
@@ -223,26 +185,14 @@ public class BasicMainPart {
 	 * 
 	 * @return	True iff the given name is valid, false otherwise.
 	 */
-	private boolean isProjectNameValid(String name){
-		boolean isValid = true;
-				
-		if(name.length() == 0){
-			isValid = false;
-		}
-		else if(projectMan.containsProject(name)){
-			isValid = false;
-		}
-		
-		
-		return isValid;
-	}
+
 	
 	public void openSelectFileTab(){
 		if(fileTab == null){
 			Label lblFiles;
 			
 			CTabItem selectFileTab = new CTabItem(tabFolder, SWT.NONE);
-			selectFileTab.setText("Select File ->");
+			selectFileTab.setText(FILE_TAB);
 			Composite container = new Composite(tabFolder, SWT.NONE);
 			 GridLayout layout = new GridLayout();
 			    layout.numColumns = 2;
@@ -260,7 +210,7 @@ public class BasicMainPart {
 			    lblFiles.setText("Select the Files on which to run the Analysis:");
 			    
 			    lstFiles = new List(grpFiles, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-			    lstFiles.setLayoutData(grpFiles.getLayoutData());
+			    lstFiles.setLayoutData(new GridData(370,370));
 			    lstFiles.setEnabled(true);
 			    lstFiles.addSelectionListener(new SelectionListener(){
 
@@ -317,7 +267,7 @@ public class BasicMainPart {
 			softModMap = new HashMap<String,String>();
 			softwareModuleList.addAll(softwareModuleMan.getSoftwareModuleNames());
 			CTabItem analysisTabItem = new CTabItem(tabFolder, SWT.NONE);
-			analysisTabItem.setText("Select Analysis ->");
+			analysisTabItem.setText(ANALYSIS_TAB);
 			Composite container = new Composite(tabFolder, SWT.NONE);
 			 GridLayout layout = new GridLayout();
 			 	layout.numColumns = 2;
@@ -341,7 +291,7 @@ public class BasicMainPart {
 			lblAnalyses.setText("Select an Analysis to use:");
 			
 			lstAnalyses = new List(grpBasicAnalyses, SWT.BORDER | SWT.V_SCROLL);
-			lstAnalyses.setLayoutData(grpBasicAnalyses.getLayoutData());
+			lstAnalyses.setLayoutData(new GridData(370,370));
 			lstAnalyses.setEnabled(true);
 			
 			lstAnalyses.addSelectionListener(new SelectionListener(){
@@ -400,7 +350,7 @@ public class BasicMainPart {
 	public void openVisualizationTab(){
 		if(visualTab == null){
 			CTabItem visualizationTabItem = new CTabItem(tabFolder, SWT.NONE);
-			visualizationTabItem.setText("Select Visualization");
+			visualizationTabItem.setText(VISUAL_TAB);
 			Composite container = new Composite(tabFolder, SWT.NONE);
 			GridLayout layout = new GridLayout();
 			layout.numColumns = 2;
@@ -418,7 +368,7 @@ public class BasicMainPart {
 
 			List lstVisualizations = new List(grpVisualizations, SWT.BORDER
 					| SWT.V_SCROLL);
-			lstVisualizations.setLayoutData(grpVisualizations.getLayoutData());
+			lstVisualizations.setLayoutData(new GridData(370,370));
 			
 			for (String visualization : visualizationPluginMan.getVisualizationNames()) {
 				lstVisualizations.add(visualization);
@@ -499,5 +449,13 @@ public class BasicMainPart {
 		}
 		
 	}
+	
+	   public static Display getDisplay() {
+		      Display display = Display.getCurrent();
+		      //may be null if outside the UI thread
+		      if (display == null)
+		         display = Display.getDefault();
+		      return display;		
+		   }
  
 }
