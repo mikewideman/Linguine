@@ -1,7 +1,10 @@
-package LinGUIne.model;
+package LinGUIne.serialization;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import LinGUIne.model.KeyValueResultContents;
+import LinGUIne.model.ResultData;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

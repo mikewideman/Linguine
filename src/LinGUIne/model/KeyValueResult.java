@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import LinGUIne.serialization.KeyValueResultTranslator;
+
 /**
  * Represents a result that's data is formatted in a typical key and value 
  * fashion.

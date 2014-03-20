@@ -1,4 +1,4 @@
-package LinGUIne.model;
+package LinGUIne.serialization;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -12,12 +12,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import LinGUIne.model.AnnotationSetContents;
 import LinGUIne.model.annotations.IAnnotation;
 import LinGUIne.model.annotations.MetaAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
-class AnnotationSetTranslator {
+public class AnnotationSetTranslator {
 
 	private final static String TAGS_ATTRIB = "Tags";
 	private final static String ANNOTATIONS_ATTRIB = "Annotations";

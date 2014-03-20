@@ -13,8 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import LinGUIne.model.KeyValueResultContents;
-import LinGUIne.model.KeyValueResultTranslator;
 import LinGUIne.model.ResultData;
+import LinGUIne.serialization.KeyValueResultTranslator;
 
 public class KeyValueResultTranslatorTest {
 
