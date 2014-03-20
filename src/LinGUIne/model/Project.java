@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
 
+import LinGUIne.serialization.ProjectTranslator;
 import LinGUIne.utilities.FileUtils;
 
 /**
@@ -102,50 +103,25 @@ public class Project {
 	 * 			if an error occurred or the file was incorrect.
 	 */
 	public static Project createFromFile(File projectFile){
-		Project newProj = new Project();
+		Project newProj;
 		
 		try(BufferedReader reader = Files.newBufferedReader(projectFile.toPath(),
 				Charset.defaultCharset())){
 			
 			IPath parentDir = FileUtils.toEclipsePath(projectFile.
 					getParentFile().getParentFile());
-			newProj.setParentDirectory(parentDir);
 			
-			//TODO: replace with parsing for actual file format
-			if(reader.ready()){
-				newProj.setName(reader.readLine());
-				
-				while(reader.ready()){
-					String[] lineParts = reader.readLine().split(":");
-					
-					//TODO: full format should specify in-memory type of each file
-					IPath filePath = newProj.getProjectDirectory().append(lineParts[0]);
-					
-					if(lineParts[0].startsWith(DATA_SUBDIR)){
-						IProjectData projData = new TextData(filePath.toFile());
-						
-						newProj.addProjectData(projData);
-					}
-					else if(lineParts[0].startsWith(ANNOTATIONS_SUBDIR)){
-						AnnotationSet annotation = new AnnotationSet(filePath.toFile());
-						IProjectData annotatedData = newProj.getProjectData(lineParts[1]);
-						
-						newProj.addAnnotation(annotation, annotatedData);
-					}
-					else if(lineParts[0].startsWith(RESULTS_SUBDIR)){
-//						Result result = new Result(filePath.toFile());
-//						
-//						//TODO: parse affected files from lineParts[1]
-//						newProj.addResult(result, analyzedData)
-					}
-				}
+			String jsonStr = "";
+			
+			while(reader.ready()){
+				 jsonStr += reader.readLine();
+				 jsonStr += "\n";
 			}
-			else{
-				return null;
-			}
+			
+			newProj = ProjectTranslator.fromJson(jsonStr, parentDir);
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch(IOException ioe) {
+			ioe.printStackTrace();
 			return null;
 		}
 		
@@ -464,6 +440,30 @@ public class Project {
 	}
 	
 	/**
+	 * Returns all of the Project Data associated with the given Result object
+	 * or an empty collection if the Result is not in this Project.
+	 */
+	public Collection<IProjectData> getDataForResult(Result result){
+		if(containsProjectData(result)){
+			HashSet<IProjectData> affectedData = new HashSet<IProjectData>();
+			
+			for(int projDataId: results.get(result)){
+				for(Entry<IProjectData, Integer> projData:
+					projectData.entrySet()){
+					
+					if(projData.getValue() == projDataId){
+						affectedData.add(projData.getKey());
+					}
+				}
+			}
+			
+			return affectedData;
+		}
+		
+		return new HashSet<IProjectData>();
+	}
+	
+	/**
 	 * Returns whether or not the given ProjectData object is annotated in this
 	 * Project.
 	 */
@@ -655,44 +655,23 @@ public class Project {
 	 * @throws IOException
 	 */
 	public void updateProjectFile() throws IOException{
-		
 		Path projectFilePath = getProjectFile().toFile().toPath();
 		
-		BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
-				Charset.defaultCharset());
-		
-		writer.write(projectName + "\n");
-
-		for(IProjectData projData: projectData.keySet()){
-				
-			String parentFolderName = projData.getFile().getParentFile().getName();
-			String lineToWrite = "";
+		try(BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
+				Charset.defaultCharset())){
 			
-			if(parentFolderName.equalsIgnoreCase(DATA_SUBDIR)){
-				lineToWrite += DATA_SUBDIR;
-				lineToWrite += "/" + projData.getFile().getName();
-				
-				if(isAnnotated(projData)){
-					AnnotationSet annotation = getAnnotation(projData);
-					
-					lineToWrite += "\n" + ANNOTATIONS_SUBDIR;
-					lineToWrite += "/" + annotation.getFile().getName();
-					lineToWrite += ":" + projData.getName();
-				}
-			}
-			else if(parentFolderName.equalsIgnoreCase(ANNOTATIONS_SUBDIR)){
-//				lineToWrite += ANNOTATIONS_SUBDIR;
-				continue;
-			}
-			else if(parentFolderName.equalsIgnoreCase(RESULTS_SUBDIR)){
-				lineToWrite += RESULTS_SUBDIR;
-				lineToWrite += "/" + projData.getFile().getName();
-			}
+			String jsonStr = ProjectTranslator.toJson(this);
 			
-			writer.write(lineToWrite + "\n");
+			if(jsonStr != null){
+				writer.write(jsonStr);
+			}
+			else{
+				//TODO: Throw exception of some sort
+			}
 		}
-		
-		writer.close();
+		catch(IOException ioe){
+			ioe.printStackTrace();
+		}
 	}
 	
 	/**
