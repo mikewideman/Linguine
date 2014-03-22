@@ -324,7 +324,7 @@ public class ProjectTranslator {
 			}
 			
 			//TODO: Group paths
-			File dataFile = proj.getSubdirectory(Subdirectory.Results).
+			File dataFile = proj.getSubdirectory(Subdirectory.Annotations).
 					append(name).toFile();
 			JsonElement typeElem = rootObj.get(TYPE_ATTRIB);
 			
