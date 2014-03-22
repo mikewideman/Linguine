@@ -25,7 +25,7 @@ public class ProjectTranslator {
 	private static final String TYPE_ATTRIB = "Type";
 	private static final String RESULTS_ATTRIB = "Results";
 	private static final String ANNOTATIONS_ATTRIB = "Annotations";
-	private static final String ORIG_DATA_ATTRIB = "Original Data";
+	private static final String ORIG_DATA_ATTRIB = "OriginalData";
 	private static final String GROUPS_ATTRIB = "Groups";
 	private static final String NAME_ATTRIB = "Name";
 
@@ -73,8 +73,8 @@ public class ProjectTranslator {
 		
 		rootObj.addProperty(NAME_ATTRIB, proj.getName());
 		
-		JsonArray groupAry = new JsonArray();
-		rootObj.add(GROUPS_ATTRIB, groupAry);
+//		JsonArray groupAry = new JsonArray();
+//		rootObj.add(GROUPS_ATTRIB, groupAry);
 		
 		//TODO: Groups
 		
