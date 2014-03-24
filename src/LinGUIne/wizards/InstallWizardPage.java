@@ -1,10 +1,15 @@
 package LinGUIne.wizards;
 
+import java.util.ArrayList;
+
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -14,25 +19,30 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 public class InstallWizardPage extends WizardPage implements SelectionListener{
 
+	private Composite container;
 	private Button browseButton;
 	private Label repositoryLabel, directoryLabel;
 	private Table contentTable;
+	private TableViewer tableViewer;
+	private TableColumn idColumn, versionColumn;
 	private DirectoryDialog directoryDialog;
 	
 	
+	private P2Data data;
 	
-	protected InstallWizardPage(String pageName) {
+	protected InstallWizardPage(String pageName, P2Data data) {
 		super(pageName);
+		this.data = data;
 		setTitle("Install New Plugin");
 		setDescription("Select a valid repository directory");
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		
 		//Establish the Layouts
 		RowLayout parentLayout = new RowLayout();
 		parentLayout.type = SWT.VERTICAL;
@@ -50,7 +60,7 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		topLayout.marginRight = 5;
 		topLayout.justify = true;
 
-		Composite container = new Composite(parent, SWT.NONE);
+		container = new Composite(parent, SWT.NONE);
 		container.setLayout(parentLayout);
 		Composite topContainer = new Composite(container,SWT.NONE);
 		topContainer.setLayout(topLayout);
@@ -73,20 +83,17 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		contentTable.setLayoutData(new RowData(620,300));
 		contentTable.setLinesVisible(true);
 		contentTable.setHeaderVisible(true);
-		String[] titles = {"Plugin Name", "version", "ID"};
-		for (int i=0; i<titles.length; i++) {
-			TableColumn column = new TableColumn (contentTable, SWT.NONE);
-			column.setText (titles [i]);
-		}
-		for (int i=0; i<titles.length; i++) {
-			contentTable.getColumn(i).pack();
-		}
+		contentTable.addSelectionListener(this);
+		idColumn = new TableColumn (contentTable, SWT.NONE);
+		idColumn.setText("Plugin ID");
+		versionColumn = new TableColumn(contentTable, SWT.NONE);
+		versionColumn.setText("Version");
+		idColumn.pack();
+		versionColumn.pack();
 		
 		parent.pack();
+		container.pack();
 		topContainer.pack();
-		
-		
-		//contentTable = new Table(container,SWT.NONE);
 		
 		setControl(parent);
 		setPageComplete(false);
@@ -100,7 +107,43 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 			directoryDialog.setMessage("Select a valid repository:");
 			String directory = directoryDialog.open();
 			directoryLabel.setText(directory);
+			data.initializeRepositoryData(directory);
+			setDisplayData();
 		}
+		
+		if(e.getSource() == contentTable){
+			//If the action was a check/uncheck
+			if(e.detail == SWT.CHECK){
+				int index = contentTable.indexOf((TableItem)e.item);
+				//If the checked index is present in selectedIUs, remove it
+				if(data.getSelectedIUs().contains(data.getRepositoryIUs().get(index))){
+					System.out.println("Removing " + data.getRepositoryIUs().get(index).getId());
+					data.getSelectedIUs().remove(data.getRepositoryIUs().get(index));
+				}
+				//Otherwise add it to selectedIUs
+				else{
+					System.out.println("Adding " + data.getRepositoryIUs().get(index).getId());
+					data.getSelectedIUs().add(data.getRepositoryIUs().get(index));
+				}
+				if(data.getSelectedIUs().size() > 0){
+					setPageComplete(true);
+				}
+				else{
+					setPageComplete(false);
+				}
+			}
+		}
+	}
+	
+	public void setDisplayData(){
+		contentTable.removeAll();
+		for(int i = 0; i < data.getRepositoryIUs().size(); i++){
+			TableItem item = new TableItem(contentTable,SWT.NONE);
+			item.setText(0,data.getRepositoryIUs().get(i).getId());
+			item.setText(1,data.getRepositoryIUs().get(i).getVersion().toString());
+		}
+		idColumn.pack();
+		versionColumn.pack();
 	}
 
 	@Override
