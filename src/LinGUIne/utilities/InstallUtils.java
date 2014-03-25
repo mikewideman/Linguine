@@ -7,6 +7,8 @@ import java.util.Collection;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.equinox.internal.p2.ui.ProvUI;
+import org.eclipse.equinox.internal.p2.ui.ProvUIActivator;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
@@ -17,7 +19,8 @@ import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
-import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
+import org.eclipse.equinox.p2.ui.ProvisioningUI;
 
 public class InstallUtils {
 
@@ -30,18 +33,11 @@ public class InstallUtils {
 		return iuList;
 	}
 	
+	@SuppressWarnings("restriction")
 	public static IMetadataRepository loadRepository(IProvisioningAgent agent, URI repositoryLocation) throws ProvisionException{
+		final ProvisioningUI ui = ProvUIActivator.getDefault().getProvisioningUI();
+		IArtifactRepositoryManager artifactManager = ProvUI.getArtifactRepositoryManager(ui.getSession());
 		IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
-		IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService("org.eclipse.equinox.internal.p2.metadata.repository.ArtifactRepositoryManager");
-		
-		System.out.println(agent.getService(IMetadataRepositoryManager.SERVICE_NAME));
-		if(manager == null){
-			System.out.println("Metadata Manager is null.");
-		}
-		if(artifactManager == null){
-			System.out.println("Artifact Manager is null");
-		}
-		
 		artifactManager.addRepository(repositoryLocation);
 		IMetadataRepository repository = manager.loadRepository(repositoryLocation, new NullProgressMonitor());
 		return repository;
