@@ -24,7 +24,7 @@ public class InstallWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		return InstallUtils.installIUs(data.getAgent(), data.getSelectedIUs());
+		return InstallUtils.installIUs(data.getAgent(), data.getSelectedIUs(),data.getRepoLocation());
 	}
 
 }

@@ -1,11 +1,5 @@
 package LinGUIne.wizards;
 
-import java.util.ArrayList;
-
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,7 +21,6 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 	private Button browseButton;
 	private Label repositoryLabel, directoryLabel;
 	private Table contentTable;
-	private TableViewer tableViewer;
 	private TableColumn idColumn, versionColumn;
 	private DirectoryDialog directoryDialog;
 	

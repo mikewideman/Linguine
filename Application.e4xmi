@@ -39,6 +39,8 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_5qnvDjdzEeOR8_lurf-ldg" elementId="linguine.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvDzdzEeOR8_lurf-ldg" elementId="linguine.handledmenuitem.about" label="About" command="_5qnvBjdzEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iJhz0LRREeOk9NfP0LXjUA" elementId="linguine.handledmenuitem.install" label="Install Plugin" command="_fBWh8LRREeOk9NfP0LXjUA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FPKHgLRXEeOk9NfP0LXjUA" elementId="linguine.handledmenuitem.test" label="Test" command="_GhvwwLRXEeOk9NfP0LXjUA"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_5qnvFTdzEeOR8_lurf-ldg" elementId="linguine.windowtrim.top">
@@ -62,6 +64,7 @@
   <handlers xmi:id="_5KcewJ8pEeOA0_QUQheDyA" elementId="linguine.handler.removeProject" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RemoveProjectHandler" command="_j2Z5YJ8pEeOA0_QUQheDyA"/>
   <handlers xmi:id="_kYpOUJ8qEeOA0_QUQheDyA" elementId="linguine.handler.newVisualization" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewVisualizationHandler" command="_rcpSAJ8pEeOA0_QUQheDyA"/>
   <handlers xmi:id="_Cq7hEJ8rEeOA0_QUQheDyA" elementId="linguine.handler.newFile" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewFileHandler" command="_BLZoAJ8rEeOA0_QUQheDyA"/>
+  <handlers xmi:id="_lh9IMLRREeOk9NfP0LXjUA" elementId="linguine.handler.installHandler" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.InstallHandler" command="_fBWh8LRREeOk9NfP0LXjUA"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.quit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvAjdzEeOR8_lurf-ldg" elementId="linguine.keybinding.open" keySequence="M1+O" command="_5qnvADdzEeOR8_lurf-ldg"/>
@@ -87,6 +90,8 @@
   </commands>
   <commands xmi:id="_rcpSAJ8pEeOA0_QUQheDyA" elementId="linguine.command.newVisualization" commandName="newVisualizationCommand"/>
   <commands xmi:id="_BLZoAJ8rEeOA0_QUQheDyA" elementId="linguine.command.newFile" commandName="newFileCommand"/>
+  <commands xmi:id="_fBWh8LRREeOk9NfP0LXjUA" elementId="linguine.command.install" commandName="installCommand"/>
+  <commands xmi:id="_GhvwwLRXEeOk9NfP0LXjUA" elementId="linguine.command.test" commandName="testCommand"/>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_5qnu8zdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_5qnu9DdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

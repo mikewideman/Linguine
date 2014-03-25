@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.operations.InstallOperation;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
 import LinGUIne.utilities.InstallUtils;
@@ -15,7 +17,9 @@ public class P2Data {
 	
 	private IProvisioningAgent agent;
 	private IMetadataRepository metaRepo;
+	private IArtifactRepository artRepo;
 	private URI repositoryURI;
+	private InstallOperation installOperation;
 	
 	private ArrayList<IInstallableUnit> selectedIUs;
 	private ArrayList<IInstallableUnit> repositoryIUs;
