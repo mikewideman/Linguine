@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -45,6 +46,9 @@ public class Project {
 	public static final String RESULTS_SUBDIR = "results";
 	public static final String ANNOTATIONS_SUBDIR = "annotations";
 	public static final String PROJECT_FILE = "linguine.project";
+	public static final String DATA_SUBDIR_DISPLAY = "Project Data";
+	public static final String RESULTS_SUBDIR_DISPLAY = "Results";
+	public static final String ANNOTATIONS_SUBDIR_DISPLAY = ANNOTATIONS_SUBDIR;
 	
 	private IPath parentDirectory;
 	private String projectName;
@@ -65,9 +69,15 @@ public class Project {
 	private HashMap<Integer, AnnotationSet> annotationSets;
 	
 	/*
-	 * Maps a Project Group id to its associated ProjectGroup.
+	 * Maps a ProjectGroup to its assigned id.
 	 */
-	private HashMap<Integer, ProjectGroup> groups;
+	private HashMap<ProjectGroup, Integer> groups;
+	
+	/*
+	 * Maps a Project Group id to the set of ids for Project Data located within
+	 * the group.
+	 */
+	private HashMap<Integer, HashSet<Integer>> groupContents;
 	
 	private boolean hasProjectFiles;
 	private int lastId;
@@ -86,10 +96,21 @@ public class Project {
 		projectData = new TreeMap<IProjectData, Integer>();
 		results = new TreeMap<Result, HashSet<Integer>>();
 		annotationSets = new HashMap<Integer, AnnotationSet>();
-		groups = new HashMap<Integer, ProjectGroup>();
+		groups = new HashMap<ProjectGroup, Integer>();
+		groupContents = new HashMap<Integer, HashSet<Integer>>();
 		
-		addGroup(new ProjectGroup(DATA_SUBDIR));
-		addGroup(new ProjectGroup(RESULTS_SUBDIR));
+		RootProjectGroup projDataGroup = new RootProjectGroup(
+				DATA_SUBDIR_DISPLAY, DATA_SUBDIR);
+		RootProjectGroup resultsGroup = new RootProjectGroup(
+				RESULTS_SUBDIR_DISPLAY, RESULTS_SUBDIR);
+		RootProjectGroup annotationsGroup = new RootProjectGroup(
+				ANNOTATIONS_SUBDIR_DISPLAY, ANNOTATIONS_SUBDIR);
+		
+		annotationsGroup.setHidden(true);
+		
+		addGroup(projDataGroup);
+		addGroup(resultsGroup);
+		addGroup(annotationsGroup);
 	}
 	
 	/**
@@ -209,23 +230,35 @@ public class Project {
 	 * 			enum option is provided.
 	 */
 	public IPath getSubdirectory(Subdirectory subdir){
-		String subdirPath;
+		String groupName;
 		
 		switch(subdir){
 			case Data:
-				subdirPath = DATA_SUBDIR;
+				groupName = DATA_SUBDIR_DISPLAY;
 				break;
 			case Results:
-				subdirPath = RESULTS_SUBDIR;
+				groupName = RESULTS_SUBDIR_DISPLAY;
 				break;
 			case Annotations:
-				subdirPath = ANNOTATIONS_SUBDIR;
+				groupName = ANNOTATIONS_SUBDIR;
 				break;
 			default:
 				return null;
 		}
 		
-		return getProjectDirectory().append(subdirPath);
+		return getPathToGroup(getGroup(groupName));
+	}
+	
+	/**
+	 * Returns the full path to the given ProjectGroup or null if it is not in
+	 * this Project.
+	 */
+	public IPath getPathToGroup(ProjectGroup group){
+		if(containsGroup(group)){
+			return getProjectDirectory().append(group.getGroupPath());
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -341,9 +374,44 @@ public class Project {
 		
 		int id = getNextId();
 		
-		groups.put(id, newGroup);
+		groups.put(newGroup, id);
+		groupContents.put(id, new HashSet<Integer>());
 		
 		return true;
+	}
+	
+	/**
+	 * Adds the given Project Data to the given ProjectGroup if they are both
+	 * in this Project.
+	 * Note: This also removes the Project Data from its previous group,
+	 * if any, as Project Data may only be in one group at a time.
+	 * 
+	 * @param projData	The Project Data to be added to the group.
+	 * @param group		The ProjectGroup into which the Project Data is to be
+	 * 					added.
+	 * 
+	 * @return	True iff the data was added successfully to the group, false
+	 * 			otherwise.
+	 */
+	public boolean addDataToGroup(IProjectData projData, ProjectGroup group){
+		if(containsGroup(group) && containsProjectData(projData)){
+			int projDataId = projectData.get(projData);
+
+			//Remove ProjectData from other group if any
+			for(HashSet<Integer> contents: groupContents.values()){
+				for(int dataId: contents){
+					if(dataId == projDataId){
+						contents.remove(projDataId);
+					}
+				}
+			}
+			
+			groupContents.get(groups.get(group)).add(projDataId);
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -417,12 +485,11 @@ public class Project {
 	 * 			not in this Project to begin with.
 	 */
 	public boolean removeGroup(ProjectGroup group){
-		for(Entry<Integer, ProjectGroup> groupEntry: groups.entrySet()){
-			if(groupEntry.getValue().equals(group)){
-				groups.remove(groupEntry.getKey());
-				
-				return true;
-			}
+		if(containsGroup(group)){
+			int id = groups.remove(group);
+			groupContents.remove(id);
+			
+			return true;
 		}
 		
 		return false;
@@ -451,11 +518,7 @@ public class Project {
 	 * Returns whether or not the given ProjectGroup is in this Project.
 	 */
 	public boolean containsGroup(ProjectGroup group){
-		if(group == null){
-			return false;
-		}
-		
-		return containsGroup(group.getName());
+		return groups.containsKey(group);
 	}
 	
 	/**
@@ -523,13 +586,7 @@ public class Project {
 			HashSet<IProjectData> affectedData = new HashSet<IProjectData>();
 			
 			for(int projDataId: results.get(result)){
-				for(Entry<IProjectData, Integer> projData:
-					projectData.entrySet()){
-					
-					if(projData.getValue() == projDataId){
-						affectedData.add(projData.getKey());
-					}
-				}
+				affectedData.add(getProjectDataById(projDataId));
 			}
 			
 			return affectedData;
@@ -542,18 +599,36 @@ public class Project {
 	 * Returns the ProjectGroup with the given name if one exists in this
 	 * Project.
 	 * 
-	 * @param groupName	The name of the ProjectGroup to be returned.
+	 * @param groupName	The display name of the ProjectGroup to be returned.
 	 * 
 	 * @return	The ProjectGroup instance of the given name, or null.
 	 */
 	public ProjectGroup getGroup(String groupName){
-		for(ProjectGroup group: groups.values()){
+		for(ProjectGroup group: groups.keySet()){
 			if(group.getName().equals(groupName)){
 				return group;
 			}
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Returns all of the Project Data contained within the given ProjectGroup
+	 * or an empty collection if there is nothing in the group.
+	 */
+	public Collection<IProjectData> getDataInGroup(ProjectGroup group){
+		TreeSet<IProjectData> groupedData = new TreeSet<IProjectData>();
+		
+		if(containsGroup(group)){
+			int groupId = groups.get(group);
+			
+			for(int projDataId: groupContents.get(groupId)){
+				groupedData.add(getProjectDataById(projDataId));
+			}
+		}
+		
+		return groupedData;
 	}
 	
 	/**
@@ -706,9 +781,9 @@ public class Project {
 		//Create sub-directories
 //		Files.createDirectory(getSubdirectory(Subdirectory.Data).toFile().toPath());
 //		Files.createDirectory(getSubdirectory(Subdirectory.Results).toFile().toPath());
-		Files.createDirectory(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
+//		Files.createDirectory(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
 		
-		for(ProjectGroup group: groups.values()){
+		for(ProjectGroup group: groups.keySet()){
 			group.createGroupDirectory(projectDir);
 		}
 		
@@ -739,7 +814,7 @@ public class Project {
 			}
 			
 			//Delete all ProjectGroups
-			for(ProjectGroup group: groups.values()){
+			for(ProjectGroup group: groups.keySet()){
 				group.deleteGroupDirectory(getProjectDirectory());
 			}
 			
@@ -835,10 +910,25 @@ public class Project {
 		//Delete sub-directories
 //		Files.delete(getSubdirectory(Subdirectory.Data).toFile().toPath());
 //		Files.delete(getSubdirectory(Subdirectory.Results).toFile().toPath());
-		Files.delete(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
+//		Files.delete(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
 		
 		//Delete root project directory
 		Files.delete(projectDir.toFile().toPath());
+	}
+
+	/**
+	 * Looks up Project Data by its id.
+	 */
+	private IProjectData getProjectDataById(int id){
+		for(Entry<IProjectData, Integer> projData:
+			projectData.entrySet()){
+			
+			if(projData.getValue() == id){
+				return projData.getKey();
+			}
+		}
+		
+		return null;
 	}
 	
 	private int getNextId(){

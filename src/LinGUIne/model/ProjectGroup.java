@@ -17,11 +17,9 @@ import LinGUIne.utilities.ParameterCheck;
  */
 public class ProjectGroup {
 
-	private String groupName;
-	private ProjectGroup parentGroup;
-	private LinkedList<ProjectGroup> childGroups;
-	
-	private boolean isLocked;
+	protected String groupName;
+	protected ProjectGroup parentGroup;
+	protected LinkedList<ProjectGroup> childGroups;
 	
 	/**
 	 * Creates a new ProjectGroup with the given name, no parent, and no
@@ -36,8 +34,6 @@ public class ProjectGroup {
 		groupName = name;
 		parentGroup = null;
 		childGroups = new LinkedList<ProjectGroup>();
-		
-		isLocked = false;
 	}
 	
 	/**
@@ -56,16 +52,13 @@ public class ProjectGroup {
 	/**
 	 * Changes the name of this ProjectGroup to the given one.
 	 * Note: Parameter newName cannot be null.
-	 * Note: This function will do nothing if the object has been marked locked.
 	 * 
 	 * @param newName	The new name of this ProjectGroup.
 	 */
 	public void setName(String newName){
-		if(!isLocked){
-			ParameterCheck.notNull(newName, "newName");
-			
-			groupName = newName;
-		}
+		ParameterCheck.notNull(newName, "newName");
+		
+		groupName = newName;
 	}
 	
 	/**
@@ -79,17 +72,14 @@ public class ProjectGroup {
 	 * Sets the given ProjectGroup as this one's parent and notifies it that it
 	 * has a new child. Automatically removes itself as a child of the previous
 	 * parent, if any.
-	 * Note: This function will do nothing if the object has been marked locked.
 	 * 
 	 * @param parent	This ProjectGroup's new parent.
 	 */
 	public void setParent(ProjectGroup parent){
-		if(!isLocked){
-			removeParent();
-			
-			parentGroup = parent;
-			parentGroup.addChild(this);
-		}
+		removeParent();
+		
+		parentGroup = parent;
+		parentGroup.addChild(this);
 	}
 	
 	/**
@@ -109,10 +99,9 @@ public class ProjectGroup {
 	/**
 	 * Removes this object's parent, if any and notifies it that it has lost a
 	 * child.
-	 * Note: This function will do nothing if the object has been marked locked.
 	 */
 	public void removeParent(){
-		if(!isLocked && hasParent()){
+		if(hasParent()){
 			parentGroup.removeChild(this);
 			parentGroup = null;
 		}
@@ -143,22 +132,6 @@ public class ProjectGroup {
 	 */
 	public boolean removeChild(ProjectGroup child){
 		return childGroups.remove(child);
-	}
-	
-	/**
-	 * Sets this ProjectGroup as locked, meaning its name and parent cannot be
-	 * changed.
-	 * Note: Once a ProjectGroup has been locked, it cannot be unlocked.
-	 */
-	public void setLocked(){
-		isLocked = true;
-	}
-	
-	/**
-	 * Returns whether or not this object is locked.
-	 */
-	public boolean isLocked(){
-		return isLocked;
 	}
 	
 	/**
@@ -225,13 +198,13 @@ public class ProjectGroup {
 	public boolean deleteGroupDirectory(IPath rootProjectDir)
 			throws IOException{
 		
-		if(!isLocked){
-			String groupPath = getGroupPath();
-			Path dirPath = rootProjectDir.append(groupPath).
-					toFile().toPath();
-			
+		String groupPath = getGroupPath();
+		Path dirPath = rootProjectDir.append(groupPath).
+				toFile().toPath();
+		
+		if(Files.exists(dirPath)){
 			Files.delete(dirPath);
-			
+		
 			return true;
 		}
 		
@@ -243,7 +216,7 @@ public class ProjectGroup {
 		if(otherObj instanceof ProjectGroup){
 			ProjectGroup otherGroup = (ProjectGroup)otherObj;
 			
-			return groupName.equals(otherGroup.getName());
+			return groupName.equals(otherGroup.groupName);
 		}
 		
 		return false;
