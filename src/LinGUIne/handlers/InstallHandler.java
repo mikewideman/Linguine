@@ -15,6 +15,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.wizards.InstallWizard;
+import LinGUIne.wizards.P2Data;
 
 public class InstallHandler{
 	@Inject
@@ -22,7 +23,8 @@ public class InstallHandler{
 	
 	@Execute
 	public void execute(final IProvisioningAgent agent, final Shell parent, final UISynchronize sync, final IWorkbench workbench){
-		InstallWizard installWizard = new InstallWizard(agent);
+		P2Data data = new P2Data(agent, parent, sync, workbench);
+		InstallWizard installWizard = new InstallWizard(agent,data);
 		WizardDialog wizardDialog = new WizardDialog(parent, installWizard);
 		ContextInjectionFactory.inject(installWizard, application.getContext());
 		int retval = wizardDialog.open();
