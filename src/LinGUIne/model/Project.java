@@ -53,6 +53,10 @@ public class Project {
 	private IPath parentDirectory;
 	private String projectName;
 	
+	private RootProjectGroup projDataGroup;
+	private RootProjectGroup resultsGroup;
+	private RootProjectGroup annotationsGroup;
+	
 	/*
 	 * Maps ProjectData to its assigned id.
 	 */
@@ -85,6 +89,7 @@ public class Project {
 	
 	/**
 	 * Creates a new Project without a name or any Project Data of any kind.
+	 * Adds root ProjectGroups to hold ProjectData, Results, and AnnotationSets.
 	 * Note: A Project created with this constructor is NOT complete; it must
 	 * be given a name.
 	 */
@@ -99,11 +104,11 @@ public class Project {
 		groups = new HashMap<ProjectGroup, Integer>();
 		groupContents = new HashMap<Integer, HashSet<Integer>>();
 		
-		RootProjectGroup projDataGroup = new RootProjectGroup(
+		projDataGroup = new RootProjectGroup(
 				DATA_SUBDIR_DISPLAY, DATA_SUBDIR);
-		RootProjectGroup resultsGroup = new RootProjectGroup(
+		resultsGroup = new RootProjectGroup(
 				RESULTS_SUBDIR_DISPLAY, RESULTS_SUBDIR);
-		RootProjectGroup annotationsGroup = new RootProjectGroup(
+		annotationsGroup = new RootProjectGroup(
 				ANNOTATIONS_SUBDIR_DISPLAY, ANNOTATIONS_SUBDIR);
 		
 		annotationsGroup.setHidden(true);
@@ -273,15 +278,20 @@ public class Project {
 	/**
 	 * Adds the given ProjectData to the Project if it is not already in the
 	 * Project and is not null.
-	 * Note: Results and Annotations should not be added with this method.
+	 * The ProjectData is added to the given ProjectGroup.
+	 * Note: Results and AnnotationSets should not be added with this method,
+	 * they should instead use the addResult and addAnnotation respectively.
 	 * 
 	 * @param projData	The ProjectData to be added to the Project.
 	 * 
 	 * @return	True iff the ProjectData was successfully added, false
 	 * 			otherwise.
 	 */
-	public boolean addProjectData(IProjectData projData){
-		if(projData == null || projectData.containsKey(projData)){
+	public boolean addProjectData(IProjectData projData, 
+			ProjectGroup parentGroup){
+		
+		if(projData == null || projectData.containsKey(projData) ||
+				!groups.containsKey(parentGroup)){
 			return false;
 		}
 		
@@ -289,6 +299,7 @@ public class Project {
 
 		projectData.put(projData, id);
 		annotationSets.put(id, null);
+		addDataToGroup(projData, parentGroup);
 		
 		notifyListeners();
 		
@@ -296,18 +307,30 @@ public class Project {
 	}
 	
 	/**
+	 * Adds the given ProjectData to the Project as addProjectData(IProjectData,
+	 * ProjectGroup) but uses the root ProjectData group as a default
+	 * ProjectGroup.
+	 */
+	public boolean addProjectData(IProjectData projData){
+		return addProjectData(projData, projDataGroup);
+	}
+	
+	/**
 	 * Adds the given Result to the Project as dependent upon all of the
 	 * ProjectData provided in the analyzedData collection. Null Results or
 	 * ProjectData collections are disallowed, and all of the ProjectData
 	 * objects in the collection must be present within this Project.
+	 * The Result is added to the given ProjectGroup.
 	 * 
 	 * @param result		The Result to be added.
 	 * @param analyzedData	A collection of ProjectData objects upon which the
 	 * 						Result is dependent.
+	 * @param parentGroup	The ProjectGroup that the Result is to be placed in.
 	 * 
 	 * @return	True iff the Result was added successfully, false otherwise.
 	 */
-	public boolean addResult(Result result, Collection<IProjectData> analyzedData){
+	public boolean addResult(Result result,
+			Collection<IProjectData> analyzedData, ProjectGroup parentGroup){
 		HashSet<Integer> dataIds = new HashSet<Integer>();
 		
 		if(analyzedData == null || analyzedData.isEmpty()){
@@ -322,7 +345,7 @@ public class Project {
 			dataIds.add(projectData.get(projData));
 		}
 		
-		if(addProjectData(result)){
+		if(addProjectData(result, parentGroup)){
 			results.put(result, dataIds);
 			
 			return true;
@@ -332,10 +355,22 @@ public class Project {
 	}
 	
 	/**
+	 * Adds the given Result to the Project as addResult(Result,
+	 * Collection<IProjectData>, ProjectGroup) but uses the root Results group
+	 * as a default ProjectGroup.
+	 */
+	public boolean addResult(Result result,
+			Collection<IProjectData> analyzedData){
+		
+		return addResult(result, analyzedData, resultsGroup);
+	}
+	
+	/**
 	 * Adds the given AnnotationSet to the Project as markup for the given
 	 * ProjectData. Both the AnnotationSet and ProjectData objects must not be
 	 * null, and the ProjectData object must be both in the Project and not
 	 * already annotated.
+	 * The AnnotationSet is added to the root annotations group as a default.
 	 * 
 	 * @param annotationSet	The AnnotationSet to be added to the Project.
 	 * @param annotatedData	The ProjectData that the AnnotationSet is marking up.
@@ -349,7 +384,7 @@ public class Project {
 		if(containsProjectData(annotatedData) && !isAnnotated(annotatedData)){
 			dataId = projectData.get(annotatedData);
 			
-			if(addProjectData(annotationSet)){
+			if(addProjectData(annotationSet, annotationsGroup)){
 				annotationSets.put(dataId, annotationSet);
 				
 				return true;
@@ -407,6 +442,7 @@ public class Project {
 			}
 			
 			groupContents.get(groups.get(group)).add(projDataId);
+			//TODO: Move the ProjectData File as needed
 			
 			return true;
 		}
@@ -596,6 +632,13 @@ public class Project {
 	}
 	
 	/**
+	 * Returns all of the ProjectGroups in this Project.
+	 */
+	public Collection<ProjectGroup> getGroups(){
+		return groups.keySet();
+	}
+	
+	/**
 	 * Returns the ProjectGroup with the given name if one exists in this
 	 * Project.
 	 * 
@@ -629,6 +672,28 @@ public class Project {
 		}
 		
 		return groupedData;
+	}
+	
+	/**
+	 * Returns the ProjectGroup containing the given ProjectData or null if the
+	 * given data does not exist in this Project.
+	 */
+	public ProjectGroup getGroupFor(IProjectData projData){
+		if(containsProjectData(projData)){
+			int id = projectData.get(projData);
+			
+			for(Entry<Integer, HashSet<Integer>> groupPair: 
+				groupContents.entrySet()){
+				
+				for(Integer dataId: groupPair.getValue()){
+					if(id == dataId){
+						return getGroupById(groupPair.getKey());
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -920,11 +985,22 @@ public class Project {
 	 * Looks up Project Data by its id.
 	 */
 	private IProjectData getProjectDataById(int id){
-		for(Entry<IProjectData, Integer> projData:
-			projectData.entrySet()){
-			
+		for(Entry<IProjectData, Integer> projData: projectData.entrySet()){
 			if(projData.getValue() == id){
 				return projData.getKey();
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Looks up a ProjectGroup by its id.
+	 */
+	private ProjectGroup getGroupById(int id){
+		for(Entry<ProjectGroup, Integer> group: groups.entrySet()){
+			if(group.getValue() == id){
+				return group.getKey();
 			}
 		}
 		

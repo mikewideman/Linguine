@@ -216,7 +216,7 @@ public class ProjectGroup {
 		if(otherObj instanceof ProjectGroup){
 			ProjectGroup otherGroup = (ProjectGroup)otherObj;
 			
-			return groupName.equals(otherGroup.groupName);
+			return getName().equals(otherGroup.getName());
 		}
 		
 		return false;
@@ -224,6 +224,6 @@ public class ProjectGroup {
 	
 	@Override
 	public int hashCode(){
-		return groupName.hashCode();
+		return getName().hashCode();
 	}
 }
