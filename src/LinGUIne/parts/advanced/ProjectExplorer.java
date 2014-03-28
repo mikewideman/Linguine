@@ -53,8 +53,10 @@ import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
+import LinGUIne.model.RootProjectGroup;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
@@ -338,15 +340,15 @@ public class ProjectExplorer {
 			
 			for(Project proj: projectMan.getProjects()){
 				ProjectExplorerTree newRoot = new ProjectExplorerTree(proj);
-				ProjectExplorerNode dataNode = newRoot.addChild("Project Data");
-				ProjectExplorerNode resultsNode = newRoot.addChild("Results");
-				
-				for(IProjectData data: proj.getOriginalData()){
-					dataNode.addDataChild(data.getName(), data);
-				}
-				
-				for(Result result: proj.getResults()){
-					resultsNode.addDataChild(result.getName(), result);
+
+				for(ProjectGroup group: proj.getGroups()){
+					if(group instanceof RootProjectGroup &&
+							((RootProjectGroup)group).isHidden()){
+						continue;
+					}
+					else if(!group.hasParent()){
+						buildSubtree(group, proj, newRoot);
+					}
 				}
 				
 				projectTrees.add(newRoot);
@@ -400,6 +402,27 @@ public class ProjectExplorer {
 		@Override
 		public Object[] getChildren(Object parentElement) {
 			return ((ProjectExplorerNode)parentElement).getChildren();
+		}
+		
+		/**
+		 * Recursively builds a subtree for the given ProjectGroup with the
+		 * given node as its parent.
+		 */
+		private void buildSubtree(ProjectGroup group, Project proj,
+				ProjectExplorerNode parentNode){
+			
+			ProjectExplorerNode newGroupNode = parentNode.addChild(
+					group.getName());
+			
+			//Add child groups
+			for(ProjectGroup childGroup: group.getChildren()){
+				buildSubtree(childGroup, proj, newGroupNode);
+			}
+			
+			//Add child data
+			for(IProjectData data: proj.getDataInGroup(group)){
+				newGroupNode.addDataChild(data.getName(), data);
+			}
 		}
 	}
 	
