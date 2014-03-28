@@ -65,8 +65,10 @@ public class SafeImporter implements ISafeRunnable {
 			File newFile = destProject.getSubdirectory(Project.Subdirectory.Data).
 					append(sourceFile.getName()).toFile();
 			
-			//TODO: get the proper IProjectData type from somewhere
-			IProjectData newProjData = new TextData(newFile);
+			Class<? extends IProjectData> clazz =
+					importedData.getAssociatedDataType();
+			IProjectData newProjData = (IProjectData)clazz.getDeclaredConstructor(
+					File.class).newInstance(newFile);
 			
 			if(newProjData.updateContents(importedData)){				
 				destProject.addProjectData(newProjData);

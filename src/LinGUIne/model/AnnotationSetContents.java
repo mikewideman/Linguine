@@ -111,6 +111,11 @@ public class AnnotationSetContents implements IProjectDataContents {
 	}
 	
 	@Override
+	public Class<? extends IProjectData> getAssociatedDataType() {
+		return AnnotationSet.class;
+	}
+	
+	@Override
 	public int compareTo(IProjectDataContents otherContents) {
 		if(otherContents != null && otherContents instanceof
 				AnnotationSetContents){

@@ -110,6 +110,11 @@ public class KeyValueResultContents implements IProjectDataContents,
 		
 		return newContents;
 	}
+	
+	@Override
+	public Class<? extends IProjectData> getAssociatedDataType() {
+		return KeyValueResult.class;
+	}
 
 	/**
 	 * Returns an iterator over the data in this instance.
