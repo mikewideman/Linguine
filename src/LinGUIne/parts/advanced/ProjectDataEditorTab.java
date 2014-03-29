@@ -9,6 +9,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Display;
 
+import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.model.IProjectData;
 
 /**
@@ -48,6 +49,10 @@ public abstract class ProjectDataEditorTab extends CTabItem{
 	 */
 	public abstract <T extends IProjectData> boolean canOpenDataType(
 			Class<T> type);
+	
+	public abstract boolean hasEditorSettings();
+	
+	public abstract IEditorSettings getEditorSettings();
 	
 	/**
 	 * Updates the primary text area to reflect the current contents of the

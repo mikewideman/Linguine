@@ -6,6 +6,7 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 
+import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.AnnotationSetContents;
 import LinGUIne.model.IProjectData;
@@ -27,6 +28,7 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 	private TextDataContents projectDataContents;
 	private AnnotationSet annotationSet;
 	private AnnotationSetContents annotationSetContents;
+	private AnnotatedTextDataSettings editorSettings;
 	
 	public AnnotatedTextDataEditorTab(CTabFolder parent, int style,
 			TextData projData, AnnotationSet annotation){
@@ -91,5 +93,19 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 				//TODO: Intelligently adjust annotations while editing
 			}
 		};
+	}
+
+	@Override
+	public boolean hasEditorSettings() {
+		return true;
+	}
+
+	@Override
+	public IEditorSettings getEditorSettings() {
+		if(editorSettings == null){
+			editorSettings = new AnnotatedTextDataSettings();
+		}
+		
+		return editorSettings;
 	}
 }

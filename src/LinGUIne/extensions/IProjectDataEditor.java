@@ -26,6 +26,8 @@ public interface IProjectDataEditor {
 	/**
 	 * Returns an instance of this editor's EditorSettings view to be displayed
 	 * in the SettingsPart.
+	 * Note: This function may be called several times per ProjectDataEditor;
+	 * the same EditorSettings instance should be returned each time.
 	 */
 	public IEditorSettings getEditorSettings();
 	
