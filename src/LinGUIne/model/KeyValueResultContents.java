@@ -78,12 +78,26 @@ public class KeyValueResultContents implements IProjectDataContents,
 			KeyValueResultContents otherKeyValueContents =
 					(KeyValueResultContents)otherContents;
 			
-			for(HashMap<String, ResultData> pairs: contents){
-				for(Entry<String, ResultData> pair: pairs.entrySet()){
+			List<HashMap<String, ResultData>> otherEntries =
+					otherKeyValueContents.contents;
+			
+			if(contents.size() != otherEntries.size()){
+				return Integer.compare(contents.size(), otherEntries.size());
+			}
+			else if(getKeys().size() != otherKeyValueContents.getKeys().size()){
+				return Integer.compare(getKeys().size(),
+						otherKeyValueContents.getKeys().size());
+			}
+			
+			for(int x = 0; x < contents.size(); x++){
+				for(String key: getKeys()){
+					ResultData myVal = contents.get(x).get(key);
+					ResultData otherVal = otherEntries.get(x).get(key);
 					
+					if(!myVal.equals(otherVal)){
+						return myVal.compareTo(otherVal);
+					}
 				}
-				
-				//TODO: Is this reasonable? Should we enforce ordering?
 			}
 		}
 		

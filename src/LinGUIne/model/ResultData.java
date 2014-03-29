@@ -5,7 +5,7 @@ package LinGUIne.model;
  * 
  * @author Peter Dimou
  */
-public class ResultData {
+public class ResultData implements Comparable<ResultData>{
 	
 	private Object data;
 	
@@ -62,5 +62,27 @@ public class ResultData {
 		else {
 			return null;
 		}
+	}
+	
+	@Override
+	public int compareTo(ResultData other) {
+		if(getType().equals(other.getType())){
+			Integer intVal = getAsInteger();
+			Double doubleVal = getAsDouble();
+			String stringVal = getAsString();
+			
+			if(intVal != null){
+				return intVal.compareTo(other.getAsInteger());
+			}
+			else if(doubleVal != null){
+				return doubleVal.compareTo(other.getAsDouble());
+			}
+			else{
+				return stringVal.compareTo(other.getAsString());
+			}
+		}
+		
+		return getType().getSimpleName().compareTo(
+				other.getType().getSimpleName());
 	}
 }
