@@ -2,6 +2,8 @@ package LinGUIne.parts.advanced;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -41,6 +43,16 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 		annotationSetContents = annotationSet.getContents();
 		
 		super.createComposite();
+		
+		editorSettings = new AnnotatedTextDataSettings(this, projectDataContents,
+				annotationSetContents);
+		
+		textArea.addCaretListener(new CaretListener(){
+			@Override
+			public void caretMoved(CaretEvent event) {
+				editorSettings.caretMoved(event.caretOffset);
+			}
+		});
 	}
 	
 	@Override
@@ -65,21 +77,23 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 		textArea.append(projectDataContents.getText());
 		
 		for(Tag tag: annotationSetContents.getTags()){
-			for(IAnnotation annotation:
-				annotationSetContents.getAnnotations(tag)){
-				
-				if(annotation instanceof TextAnnotation){
-					TextAnnotation textAnnotation = ((TextAnnotation)annotation);
+			if(tag.getEnabled()){
+				for(IAnnotation annotation:
+					annotationSetContents.getAnnotations(tag)){
 					
-					StyleRange style = new StyleRange(
-							textAnnotation.getStartIndex(),
-							textAnnotation.getLength(),
-							tag.getColor(), textArea.getBackground(), SWT.BOLD);
-					
-					textArea.setStyleRange(style);
-				}
-				else if(annotation instanceof MetaAnnotation){
-					//TODO: Handle annotations of other annotations
+					if(annotation instanceof TextAnnotation){
+						TextAnnotation textAnnotation = ((TextAnnotation)annotation);
+						
+						StyleRange style = new StyleRange(
+								textAnnotation.getStartIndex(),
+								textAnnotation.getLength(),
+								tag.getColor(), textArea.getBackground(), SWT.BOLD);
+						
+						textArea.setStyleRange(style);
+					}
+					else if(annotation instanceof MetaAnnotation){
+						//TODO: Handle annotations of other annotations
+					}
 				}
 			}
 		}
@@ -102,10 +116,6 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 
 	@Override
 	public IEditorSettings getEditorSettings() {
-		if(editorSettings == null){
-			editorSettings = new AnnotatedTextDataSettings();
-		}
-		
 		return editorSettings;
 	}
 }

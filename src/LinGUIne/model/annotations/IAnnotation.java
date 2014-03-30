@@ -13,6 +13,11 @@ public interface IAnnotation extends Comparable<IAnnotation>{
 	Tag getTag();
 	
 	/**
+	 * Performs a deep copy of this Annotation and returns it.
+	 */
+	IAnnotation copy();
+	
+	/**
 	 * Implemented classes must override hashCode.
 	 */
 	int hashCode();

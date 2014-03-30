@@ -18,6 +18,7 @@ public class Tag implements Comparable<Tag>{
 	private String tagName;
 	private String tagComment;
 	private Color tagColor;
+	private boolean isEnabled;
 	
 	/**
 	 * Creates a new Tag with the given display name, comment, and display
@@ -36,6 +37,7 @@ public class Tag implements Comparable<Tag>{
 		tagName = name;
 		tagColor = color;
 		tagComment = comment;
+		isEnabled = true;
 	}
 	
 	/**
@@ -100,6 +102,51 @@ public class Tag implements Comparable<Tag>{
 		tagColor = newColor;
 	}
 
+	/**
+	 * Returns whether or not this tag is enabled.
+	 */
+	public boolean getEnabled(){
+		return isEnabled;
+	}
+	
+	/**
+	 * Sets whether or not this Tag is enabled.
+	 */
+	public void setEnabled(boolean enabled){
+		isEnabled = enabled;
+	}
+	
+	/**
+	 * Performs a deep copy of this Tag and returns it.
+	 */
+	public Tag copy(){
+		return new Tag(tagName, tagColor, tagComment);
+	}
+	
+	/**
+	 * Performs a much deeper comparison of this Tag and the given Tag than the
+	 * standard compareTo does.
+	 */
+	public int deepCompareTo(Tag otherTag){
+		if(compareTo(otherTag) == 0){
+			if(tagComment != null){
+				if(otherTag.tagComment != null){
+					if(tagComment.equals(otherTag.tagComment)){
+						return compareColors(tagColor, otherTag.tagColor);
+					}
+
+					return tagComment.compareTo(otherTag.tagComment);
+				}
+
+				return 1;
+			}
+
+			return -1;
+		}
+		
+		return compareTo(otherTag);
+	}
+	
 	@Override
 	public int compareTo(Tag otherTag) {
 		return tagName.compareTo(otherTag.tagName);
@@ -119,5 +166,18 @@ public class Tag implements Comparable<Tag>{
 		return tagName.hashCode();
 	}
 
-	
+	/**
+	 * Performs a compareTo on the two given Colors.
+	 */
+	private int compareColors(Color a, Color b){
+		if(a.getRed() == b.getRed()){
+			if(a.getGreen() == b.getGreen()){
+				return Integer.compare(a.getBlue(), b.getBlue());
+			}
+			
+			return Integer.compare(a.getGreen(), b.getGreen());
+		}
+
+		return Integer.compare(a.getRed(), b.getRed());
+	}
 }
