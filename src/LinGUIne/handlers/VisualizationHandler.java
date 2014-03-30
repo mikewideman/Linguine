@@ -17,7 +17,7 @@ import LinGUIne.wizards.VisualizationWizard;
  * 
  * @author Peter Dimou
  */
-public class NewVisualizationHandler {
+public class VisualizationHandler {
 	
 	@Inject
 	private MApplication application;
