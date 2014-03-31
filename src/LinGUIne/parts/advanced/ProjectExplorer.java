@@ -225,29 +225,6 @@ public class ProjectExplorer {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
-		MenuItem refreshExplorer = new MenuItem(contextMenu, SWT.NONE);
-		refreshExplorer.setText("Refresh");
-		refreshExplorer.addSelectionListener(new SelectionListener(){
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Command refreshCommand = commandService.getCommand(
-						"linguine.command.refresh");
-				
-				try {
-					refreshCommand.executeWithChecks(new ExecutionEvent());
-				}
-				catch(ExecutionException | NotDefinedException
-						| NotEnabledException | NotHandledException e1) {
-					//TODO: Oh no the command is not defined!
-					e1.printStackTrace();
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-		
 		MenuItem removeProject = new MenuItem(contextMenu, SWT.NONE);
 		removeProject.setText("Remove Project");
 		removeProject.addSelectionListener(new SelectionListener(){
@@ -266,6 +243,34 @@ public class ProjectExplorer {
 						"linguine.command.removeProject");
 				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
 						generateCommand(removeProjectCommand, params);
+				
+				handlerService.executeHandler(parameterizedCmd);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		MenuItem newGroup = new MenuItem(contextMenu, SWT.NONE);
+		newGroup.setText("New Group...");
+		newGroup.addSelectionListener(new SelectionListener(){
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: Make this more robust and only enable command when a Project is selected
+				String selectedProjectName = projectSelection.
+						getSelectedProjects().iterator().next();
+				
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("linguine.command.newGroup.parameter.destProject",
+						selectedProjectName);
+				
+				//TODO: Add other parameter
+				
+				Command newGroupCommand = commandService.getCommand(
+						"linguine.command.newGroup");
+				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
+						generateCommand(newGroupCommand, params);
 				
 				handlerService.executeHandler(parameterizedCmd);
 			}
