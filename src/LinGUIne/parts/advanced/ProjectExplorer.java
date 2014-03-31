@@ -160,7 +160,7 @@ public class ProjectExplorer {
 			public void keyReleased(KeyEvent e) {
 				if(e.keyCode == SWT.DEL){
 					Command removeProjectCommand = commandService.getCommand(
-							"linguine.command.removeProject");
+							"linguine.command.remove.project");
 					
 					try {
 						removeProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -209,7 +209,7 @@ public class ProjectExplorer {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Command newProjectCommand = commandService.getCommand(
-						"linguine.command.newProject");
+						"linguine.command.new.project");
 				
 				try {
 					newProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -240,7 +240,7 @@ public class ProjectExplorer {
 						+ "projectForRemoval", selectedProjectName);
 				
 				Command removeProjectCommand = commandService.getCommand(
-						"linguine.command.removeProject");
+						"linguine.command.remove.project");
 				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
 						generateCommand(removeProjectCommand, params);
 				
@@ -268,7 +268,7 @@ public class ProjectExplorer {
 				//TODO: Add other parameter
 				
 				Command newGroupCommand = commandService.getCommand(
-						"linguine.command.newGroup");
+						"linguine.command.new.group");
 				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
 						generateCommand(newGroupCommand, params);
 				
