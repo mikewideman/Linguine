@@ -263,25 +263,27 @@ public class QuickAnalysisPart {
 				if(supportedSourceDataTypes.contains(projData.getClass())){
 					boolean hasAllResults = true;
 					LinkedList<Result> results = new LinkedList<Result>();
-					
-					for(Class<? extends Result> resultType: requiredResultTypes){
-						if(destProject.hasResultType(projData, resultType)){
-							//All good, carry on
-							//TODO: Prevent duplicate results from being added here
-							results.add(destProject.getResultType(projData,
-									resultType));
-						}
-						else{
-							//Missing required result type
-							//Either run something else first or leave this out
-							hasAllResults = false;
+					//Some analysis don't require a result type
+					if(!requiredResultTypes.isEmpty()){
+						for(Class<? extends Result> resultType: requiredResultTypes){
+							if(destProject.hasResultType(projData, resultType)){
+								//All good, carry on
+								//TODO: Prevent duplicate results from being added here
+								results.add(destProject.getResultType(projData,
+										resultType));
+							}
+							else{
+								//Missing required result type
+								//Either run something else first or leave this out
+								hasAllResults = false;
+							}
 						}
 					}
 					
-					if(hasAllResults){
-						sourceData.add(projData);
-						sourceData.addAll(results);
-					}
+				if(hasAllResults){
+					sourceData.add(projData);
+					sourceData.addAll(results);
+				}
 				}
 				else{
 					//Unsupported source type for this analysis
