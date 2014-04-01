@@ -17,9 +17,26 @@ import org.eclipse.swt.widgets.Shell;
 import LinGUIne.wizards.InstallWizard;
 import LinGUIne.wizards.P2Data;
 
+/**
+ * Handler for using the Install command.
+ * 
+ * @author Matthew Talbot
+ */
+
 public class InstallHandler{
 	@Inject
 	private MApplication application;
+	
+	
+	/**
+	 * Opens the Install Wizard.
+	 * 
+	 * All parameters are started when the application starts.
+	 * @param agent The current ProvisioningAgent
+	 * @param shell	The currently active Shell
+	 * @param sync The currently active UISynchronize
+	 * @param workbench the currently active Workbench
+	 */
 	
 	@Execute
 	public void execute(final IProvisioningAgent agent, final Shell parent, final UISynchronize sync, final IWorkbench workbench){

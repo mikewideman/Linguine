@@ -15,6 +15,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
+
+/**
+ * Wizard Page for Installing plugins and features to the application.
+ * 
+ * @author Matthew Talbot
+ */
 public class InstallWizardPage extends WizardPage implements SelectionListener{
 
 	private Composite container;
@@ -27,6 +33,12 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 	
 	private P2Data data;
 	
+	/**
+	 * Creates a new instance of the page with the given P2Data.
+	 * 
+	 * @param pageName the desired name of the page
+	 * @param data the installation data contained in the wizard
+	 */
 	protected InstallWizardPage(String pageName, P2Data data) {
 		super(pageName);
 		this.data = data;
@@ -34,6 +46,9 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		setDescription("Select a valid repository directory");
 	}
 
+	/**
+	 * Generates all the UI components
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		//Establish the Layouts
@@ -92,6 +107,10 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		setPageComplete(false);
 	}
 
+	/**
+	 * Selection Listener handlers
+	 * @param e The event triggered when a user selects a component
+	 */
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		if(e.getSource() == browseButton){
@@ -128,6 +147,9 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		}
 	}
 	
+	/**
+	 * Generates the data for the table component
+	 */
 	public void setDisplayData(){
 		contentTable.removeAll();
 		for(int i = 0; i < data.getRepositoryIUs().size(); i++){

@@ -16,6 +16,11 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.utilities.InstallUtils;
 
+/**
+ * Data object used to carry data for the InstallWizard.
+ * 
+ * @author Matthew Talbot
+ */
 public class P2Data {
 	
 	private IProvisioningAgent agent;
@@ -28,6 +33,14 @@ public class P2Data {
 	private ArrayList<IInstallableUnit> selectedIUs;
 	private ArrayList<IInstallableUnit> repositoryIUs;
 	
+	/**
+	 * Constructor for the P2Data object
+	 * 
+	 * @param a The current runtime ProvisioningAgent
+	 * @param p The current runtime Shell
+	 * @param s The current runtime UISynchronize
+	 * @param w the current runtime Workbench
+	 */
 	public P2Data(final IProvisioningAgent a, final Shell p, final UISynchronize s, final IWorkbench w){
 		agent = a;
 		parent = p;
@@ -36,6 +49,11 @@ public class P2Data {
 		selectedIUs = new ArrayList<IInstallableUnit>();
 	}
 
+	/**
+	 * Sets up the p2 repository
+	 * 
+	 * @param repoLocation the string representation of a valid p2 repository
+	 */
 	public void initializeRepositoryData(String repoLocation){
 		File f = new File(repoLocation);
 		repositoryURI = f.toURI();
@@ -90,11 +108,18 @@ public class P2Data {
 		return parent;
 	}
 	
-	
+	/**
+	 * Adds an installable unit to the list of IUs that will be installed
+	 * @param index - index of the selected IU from the repository's IU list
+	 */
 	public void addToSelected(int index){
 		selectedIUs.add(repositoryIUs.get(index));
 	}
 	
+	/**
+	 * Removes an installable unit from the list of IUs that will be installed
+	 * @param index - index of the installable unit to be removed
+	 */
 	public void removeFromSelected(int index){
 		IInstallableUnit targetIU = repositoryIUs.get(index);
 		for(int i = 0; i < selectedIUs.size(); i++){
