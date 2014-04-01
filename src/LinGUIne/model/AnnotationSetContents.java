@@ -119,6 +119,19 @@ public class AnnotationSetContents implements IProjectDataContents {
 		return new HashSet<IAnnotation>();
 	}
 	
+	/**
+	 * Attempts to remove the given Annotation from the set of annotations for
+	 * the Annotation's Tag. Returns whether or not the given Annotation was
+	 * removed.
+	 */
+	public boolean removeAnnotation(IAnnotation annotation){
+		if(annotations.containsKey(annotation.getTag())){
+			return annotations.get(annotation.getTag()).remove(annotation);
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public IProjectDataContents copy() {
 		AnnotationSetContents newContents = new AnnotationSetContents();

@@ -263,7 +263,8 @@ public class AnnotationSetTranslator {
 						int start = locationObject.get("Start").getAsInt();
 						int end = locationObject.get("End").getAsInt();
 						
-						newAnnotation = new TextAnnotation(myTag, start, end);
+						newAnnotation = new TextAnnotation(myTag, start,
+								end - start);
 					}
 					else if(location.isJsonPrimitive()){
 						//MetaAnnotation

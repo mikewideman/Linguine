@@ -1,14 +1,21 @@
 package LinGUIne.parts.advanced;
 
+import java.util.LinkedList;
+
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -34,18 +41,26 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 	private TagPanel tagPanel;
 	private GlobalPanel globalPanel;
 	
-	private ProjectDataEditorTab parentEditorTab;
+	private AnnotatedTextDataEditorTab parentEditorTab;
 	private TextDataContents textContents;
 	private AnnotationSetContents annotationContents;
 	
-	private Tag selectedTag;
+	private Tag selectedTag;	
+	private LinkedList<IAnnotation> annotationsAtLocation;
+	private IAnnotation selectedAnnotation;
 	private int caretOffset;
+	private Point selectionOffsets;
 	
-	public AnnotatedTextDataSettings(ProjectDataEditorTab editorTab,
+	public AnnotatedTextDataSettings(AnnotatedTextDataEditorTab editorTab,
 			TextDataContents data, AnnotationSetContents annotations){
 		parentEditorTab = editorTab;
 		textContents = data;
 		annotationContents = annotations;
+		
+		selectedTag = null;
+		caretOffset = 0;
+		annotationsAtLocation = new LinkedList<IAnnotation>();
+		selectedAnnotation = null;
 	}
 	
 	@Override
@@ -53,9 +68,38 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 		parentComposite = parent;
 		parentComposite.setLayout(new GridLayout(1, false));
 		
-		localPanel = new LocalPanel(parentComposite);
-		tagPanel = new TagPanel(parentComposite);
-		globalPanel = new GlobalPanel(parentComposite);
+		//Set up a scrollable container so the components aren't squashed
+		final ScrolledComposite scrollable = new ScrolledComposite(
+				parentComposite, SWT.V_SCROLL);
+		scrollable.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		final Composite container = new Composite(scrollable, SWT.NONE);
+		container.setLayout(new GridLayout(1, false));
+
+		scrollable.setContent(container);
+		scrollable.setExpandHorizontal(true);
+		scrollable.setExpandVertical(true);
+		scrollable.addControlListener(new ControlListener(){
+			boolean haveResized;
+			
+			@Override
+			public void controlMoved(ControlEvent e) {}
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				Rectangle r = scrollable.getClientArea();
+				
+				if(!haveResized){
+					scrollable.setMinSize(parentComposite.computeSize(r.width,
+							SWT.DEFAULT));
+					haveResized = true;
+				}
+			}
+		});
+		
+		localPanel = new LocalPanel(container);
+		tagPanel = new TagPanel(container);
+		globalPanel = new GlobalPanel(container);
 		
 		localPanel.populate();
 		tagPanel.populate();
@@ -69,7 +113,31 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 	
 	public void caretMoved(int newCaretOffset){
 		caretOffset = newCaretOffset;
+		annotationsAtLocation.clear();
+		
+		//Find all the annotations overlapping at the cursor location
+		for(Tag tag: annotationContents.getTags()){
+			for(IAnnotation annotation: annotationContents.getAnnotations(tag)){
+				if(annotation instanceof TextAnnotation){
+					TextAnnotation textAnnotation = (TextAnnotation)annotation;
+					
+					if(textAnnotation.isIndexInRange(caretOffset)){
+						annotationsAtLocation.add(textAnnotation);
+					}
+				}
+			}
+		}
+		
 		localPanel.update();
+	}
+	
+	public void selectionChanged(Point newSelectionOffsets){
+		if(newSelectionOffsets.x == newSelectionOffsets.y){
+			selectionOffsets = null;
+		}
+		else{
+			selectionOffsets = newSelectionOffsets;
+		}
 	}
 	
 	private class LocalPanel{
@@ -77,11 +145,17 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 		private Composite thePanel;
 		
 		private List lstTagsAtLocation;
+		private Text txtAnnotationText;
+		private Button btnAddAnnotation;
+		private Button btnRemoveAnnotation;
 		
 		public LocalPanel(Composite parent){
 			thePanel = new Composite(parent, SWT.BORDER);
 			thePanel.setLayout(new GridLayout(1, false));
-			thePanel.setLayoutData(new GridData(GridData.FILL_BOTH));
+			
+			GridData layoutData = new GridData(GridData.FILL_BOTH);
+			layoutData.heightHint = 250;
+			thePanel.setLayoutData(layoutData);
 		}
 		
 		public void populate(){
@@ -90,22 +164,118 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 			
 			lstTagsAtLocation = new List(thePanel, SWT.BORDER | SWT.V_SCROLL |
 					SWT.H_SCROLL);
-			lstTagsAtLocation.setLayoutData(new GridData(GridData.FILL_BOTH));
+			lstTagsAtLocation.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			lstTagsAtLocation.addSelectionListener(new SelectionListener(){
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if(lstTagsAtLocation.getSelectionCount() != 0){
+						String selection = lstTagsAtLocation.getSelection()[0];
+						
+						for(IAnnotation annotation: annotationsAtLocation){
+							if(annotation.getTag().getName().equals(selection)){
+								selectedAnnotation = annotation;
+							}
+						}
+					}
+					else{
+						selectedAnnotation = null;
+					}
+					
+					update(false);
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			
+			Label lblSelectedAnnotation = new Label(thePanel, SWT.NONE);
+			lblSelectedAnnotation.setText("Selected annotation text:");
+			
+			txtAnnotationText = new Text(thePanel, SWT.BORDER | SWT.WRAP |
+					SWT.V_SCROLL);
+			txtAnnotationText.setLayoutData(new GridData(GridData.FILL_BOTH));
+			
+			Composite annotationButtons = new Composite(thePanel, SWT.NONE);
+			annotationButtons.setLayout(new GridLayout(2, false));
+			annotationButtons.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			
+			btnAddAnnotation = new Button(annotationButtons, SWT.NONE);
+			btnAddAnnotation.setText("Add");
+			btnAddAnnotation.addSelectionListener(new SelectionListener(){
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					int startIndex = selectionOffsets == null ?
+							caretOffset - 1 : selectionOffsets.x;
+					int length = selectionOffsets == null ? 1 :
+						selectionOffsets.y - selectionOffsets.x;
+					
+					TextAnnotation newAnnotation = new TextAnnotation(
+							selectedTag, startIndex, length);
+					
+					annotationContents.addAnnotation(newAnnotation);
+					parentEditorTab.annotationsChanged();
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			
+			btnRemoveAnnotation = new Button(annotationButtons, SWT.NONE);
+			btnRemoveAnnotation.setText("Remove");
+			btnRemoveAnnotation.addSelectionListener(new SelectionListener(){
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					annotationContents.removeAnnotation(selectedAnnotation);
+					parentEditorTab.annotationsChanged();
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			
+			update();
 		}
 		
 		public void update(){
-			lstTagsAtLocation.removeAll();
-			
-			for(Tag tag: annotationContents.getTags()){
-				for(IAnnotation annotation: annotationContents.getAnnotations(tag)){
-					if(annotation instanceof TextAnnotation){
-						TextAnnotation textAnnotation = (TextAnnotation)annotation;
-						
-						if(textAnnotation.isIndexInRange(caretOffset)){
-							lstTagsAtLocation.add(textAnnotation.getTag().getName());
-						}
-					}
+			update(true);
+		}
+		
+		private void update(boolean shouldUpdateList){
+			if(shouldUpdateList){
+				selectedAnnotation = null;
+				lstTagsAtLocation.removeAll();
+				
+				for(IAnnotation annotation: annotationsAtLocation){
+					lstTagsAtLocation.add(annotation.getTag().getName());
 				}
+			}
+			
+			if(selectedAnnotation != null){
+				if(selectedAnnotation instanceof TextAnnotation){
+					TextAnnotation textAnnotation =
+							(TextAnnotation)selectedAnnotation;
+					
+					txtAnnotationText.setEnabled(true);
+					txtAnnotationText.setText(textAnnotation.getText(textContents));
+				}
+				else{
+					txtAnnotationText.setEnabled(false);
+					txtAnnotationText.setText("");
+				}
+				
+				btnRemoveAnnotation.setEnabled(true);
+			}
+			else{
+				txtAnnotationText.setEnabled(false);
+				txtAnnotationText.setText("");
+				btnRemoveAnnotation.setEnabled(false);
+			}
+			
+			if(selectedTag != null){
+				btnAddAnnotation.setEnabled(true);
+			}
+			else{
+				btnAddAnnotation.setEnabled(false);
 			}
 		}
 	}
@@ -123,7 +293,10 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 		public TagPanel(Composite parent){
 			thePanel = new Composite(parent, SWT.BORDER);
 			thePanel.setLayout(new GridLayout(1, false));
-			thePanel.setLayoutData(new GridData(GridData.FILL_BOTH));
+			
+			GridData layoutData = new GridData(GridData.FILL_BOTH);
+			layoutData.heightHint = 150;
+			thePanel.setLayoutData(layoutData);
 		}
 		
 		public void populate(){
@@ -154,7 +327,7 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 						
 						if(!newColor.equals(selectedTag.getColor())){
 							selectedTag.setColor(newColor);
-							parentEditorTab.setDirty(true);
+							parentEditorTab.annotationsChanged();
 							update();
 						}
 					}
@@ -228,7 +401,10 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 		public GlobalPanel(Composite parent){
 			thePanel = new Composite(parent, SWT.BORDER);
 			thePanel.setLayout(new GridLayout(1, false));
-			thePanel.setLayoutData(new GridData(GridData.FILL_BOTH));
+			
+			GridData layoutData = new GridData(GridData.FILL_BOTH);
+			layoutData.heightHint = 100;
+			thePanel.setLayoutData(layoutData);
 		}
 		
 		public void populate(){
@@ -248,6 +424,7 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 						selectedTag = null;
 					}
 					
+					localPanel.update();
 					tagPanel.update();
 				}
 

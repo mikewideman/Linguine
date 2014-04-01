@@ -83,7 +83,7 @@ public class TextAnnotation implements IAnnotation {
 	public boolean isIndexInRange(int index){
 		int distance = index - startChar;
 		
-		return distance > 0 && distance < textLength;
+		return distance >= 0 && distance < textLength;
 	}
 	
 	/**

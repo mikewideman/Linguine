@@ -83,7 +83,6 @@ public class SettingsPart {
 					}
 					else{
 						currentComposite = defaultComposite;
-						//TODO: Minimize SettingsPart (or its PartSash) when defaultComposite is shown
 					}
 				}
 			}

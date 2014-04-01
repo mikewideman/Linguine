@@ -7,6 +7,9 @@ import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 
 import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.model.AnnotationSet;
@@ -53,6 +56,16 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 				editorSettings.caretMoved(event.caretOffset);
 			}
 		});
+		
+		textArea.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				editorSettings.selectionChanged(new Point(e.x, e.y));
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
 	}
 	
 	@Override
@@ -71,9 +84,29 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 	public <T extends IProjectData> boolean canOpenDataType(Class<T> type) {
 		return type == TextData.class || type == AnnotationSet.class;
 	}
+	
+	@Override
+	public boolean hasEditorSettings() {
+		return true;
+	}
 
 	@Override
+	public IEditorSettings getEditorSettings() {
+		return editorSettings;
+	}
+
+	public void annotationsChanged(){
+		int caretOffset = textArea.getCaretOffset();
+		
+		setDirty(true);
+		updateTextArea();
+		
+		textArea.setCaretOffset(caretOffset);
+	}
+	
+	@Override
 	protected void updateTextArea() {
+		textArea.setText("");
 		textArea.append(projectDataContents.getText());
 		
 		for(Tag tag: annotationSetContents.getTags()){
@@ -107,15 +140,5 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 				//TODO: Intelligently adjust annotations while editing
 			}
 		};
-	}
-
-	@Override
-	public boolean hasEditorSettings() {
-		return true;
-	}
-
-	@Override
-	public IEditorSettings getEditorSettings() {
-		return editorSettings;
 	}
 }

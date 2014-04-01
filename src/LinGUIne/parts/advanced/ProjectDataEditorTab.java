@@ -112,7 +112,9 @@ public abstract class ProjectDataEditorTab extends CTabItem{
 		//Update tab name from UI thread
 		Display.getDefault().asyncExec(new Runnable(){
 			public void run(){
-				me.setText(newTabName);
+				if(!me.isDisposed()){
+					me.setText(newTabName);
+				}
 			}
 		});
 	}
