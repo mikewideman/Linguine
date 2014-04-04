@@ -17,7 +17,7 @@
          </property>
          <property
                name="applicationCSS"
-               value="platform:/plugin/LinGUIne/css/default.css">
+               value="platform:/plugin/LinGUIne/css/appStyle.css">
          </property>
          <property
                name="appName"
