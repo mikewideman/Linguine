@@ -56,86 +56,111 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 		layout.numColumns = 1;
 		container.setLayout(layout);
 		
-		lblFiles = new Label(container, SWT.NONE);
-		lblFiles.setText("Add the files that you wish to import:");
-		
-		lstFiles = new List(container, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-		lstFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
-		lstFiles.addSelectionListener(new SelectionListener(){
-
-			/**
-			 * Sets which File is selected.
-			 */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				checkListSelection();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-
-		Composite buttonContainer = new Composite(container, SWT.NONE);
-		buttonContainer.setLayout(new GridLayout(2, false));
-		buttonContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
-		btnAddFile = new Button(buttonContainer, SWT.NONE);
-		btnAddFile.setText("Add file...");
-		btnAddFile.addSelectionListener(new SelectionListener(){
-
-			/**
-			 * Adds a file to the list of Files.
-			 */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileDialog openDialog = new FileDialog(finalParent.getShell(),
-						SWT.OPEN | SWT.MULTI);
-				openDialog.setFilterExtensions(new String[]{
-						wizardData.getChosenImporter().getFileMask()});
-				
-				String dialogResult = openDialog.open();
-				
-				if(dialogResult != null){
-					for(String chosenFile: openDialog.getFileNames()){
-						wizardData.addFile(new File(openDialog.getFilterPath(),
-								chosenFile));
+			lblFiles = new Label(container, SWT.NONE);
+			lblFiles.setText("Add the files that you wish to import:");
+			
+			lstFiles = new List(container, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+			lstFiles.setLayoutData(new GridData(GridData.FILL_BOTH));
+			
+			lstFiles.addSelectionListener(new SelectionListener(){
+	
+				/**
+				 * Sets which File is selected.
+				 */
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					checkListSelection();
+				}
+	
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+	
+			Composite buttonContainer = new Composite(container, SWT.NONE);
+			buttonContainer.setLayout(new GridLayout(3, false));
+			buttonContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
+			
+			btnAddFile = new Button(buttonContainer, SWT.NONE);
+			btnAddFile.setText("Add file...");
+			btnAddFile.addSelectionListener(new SelectionListener(){
+	
+				/**
+				 * Adds a file to the list of Files.
+				 */
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					FileDialog openDialog = new FileDialog(finalParent.getShell(),
+							SWT.OPEN | SWT.MULTI);
+					openDialog.setFilterExtensions(new String[]{
+							wizardData.getChosenImporter().getFileMask()});
+					
+					String dialogResult = openDialog.open();
+					
+					if(dialogResult != null){
+						for(String chosenFile: openDialog.getFileNames()){
+							wizardData.addFile(new File(openDialog.getFilterPath(),
+									chosenFile));
+						}
+						
+						updateFileList();
+						checkListSelection();
+						checkIfPageComplete();
+					}
+				}
+	
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			
+			btnRemoveFile = new Button(buttonContainer, SWT.NONE);
+			btnRemoveFile.setText("Remove file");
+			btnRemoveFile.setEnabled(false);
+			btnRemoveFile.addSelectionListener(new SelectionListener(){
+	
+				/**
+				 * Removes the selected File.
+				 */
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					String[] selection = lstFiles.getSelection();
+					
+					for(String fileToRemove: selection){
+						wizardData.removeFile(new File(fileToRemove));
 					}
 					
 					updateFileList();
 					checkListSelection();
 					checkIfPageComplete();
 				}
-			}
+	
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			
+			final Button btnGetInternetData = new Button(buttonContainer, SWT.CHECK);
+			btnGetInternetData.setText("Use a non local source (Only available for certain imports)");
+			btnGetInternetData.addSelectionListener(new SelectionListener(){
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-		
-		btnRemoveFile = new Button(buttonContainer, SWT.NONE);
-		btnRemoveFile.setText("Remove file");
-		btnRemoveFile.setEnabled(false);
-		btnRemoveFile.addSelectionListener(new SelectionListener(){
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if(btnGetInternetData.getSelection()){
+						wizardData.setInternetSource(true);
+						checkIfPageComplete();
+					}
+					else{
+						wizardData.setInternetSource(false);
+						checkIfPageComplete();
+					}
+					
+				}
 
-			/**
-			 * Removes the selected File.
-			 */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String[] selection = lstFiles.getSelection();
-				
-				for(String fileToRemove: selection){
-					wizardData.removeFile(new File(fileToRemove));
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					// TODO Auto-generated method stub
+					
 				}
 				
-				updateFileList();
-				checkListSelection();
-				checkIfPageComplete();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
+			});
 		
 		setControl(container);
 		setPageComplete(false);
@@ -166,6 +191,9 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 	 */
 	private void checkIfPageComplete(){
 		if(wizardData.isComplete()){
+			setPageComplete(true);
+		}
+		else if(wizardData.isInternetSource() && wizardData.isReadyForFiles()){
 			setPageComplete(true);
 		}
 		else{

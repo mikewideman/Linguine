@@ -1,0 +1,29 @@
+Shell {
+  background-color: rgb(243, 249, 255) rgb(208, 223, 238) rgb(206, 221, 237) rgb(206, 221, 237) rgb(210, 225, 240) rgb(210, 225, 240) rgb(255, 255, 255) 20.0% 45.0% 60.0% 70.0% 100.0% 100.0%;
+  font-family : "Arial";
+}
+
+CTabFolder {
+   swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering'); 
+   padding: 0.0px 9.0px 10.0px;
+   font-size: 9;
+   font-family: Segoe UI;
+   swt-simple: true;
+   swt-mru-visible: false;
+   swt-inner-keyline-color: rgb(255, 255, 255);
+   swt-tab-outline: rgb(182, 188, 204);
+   swt-shadow-visible: true;
+   swt-unselected-tabs-color: rgb(243, 249, 255) rgb(208, 223, 238) rgb(206, 221, 237) rgb(206, 221, 237) rgb(210, 225, 240) rgb(210, 225, 240) rgb(255, 255, 255) 20.0% 45.0% 60.0% 70.0% 100.0% 100.0%;
+   swt-outer-keyline-color: rgb(182, 188, 204);
+    swt-selected-tab-fill: rgb(255,255,255);
+}
+
+#basicFolder {
+   swt-tab-height: 20px;
+   font-size: 14;
+}
+
+#projExplorerPart {
+   swt-selected-tabs-background: black;
+}
+

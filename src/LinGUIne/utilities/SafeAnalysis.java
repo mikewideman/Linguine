@@ -12,6 +12,7 @@ import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.Project;
+import LinGUIne.model.Project.Subdirectory;
 import LinGUIne.model.Result;
 
 /**
@@ -76,7 +77,7 @@ public class SafeAnalysis implements ISafeRunnable {
 			}
 
 			//TODO: Properly generate File names and File extensions
-			File resultFile = new File(resultFileName + ".result");
+			File resultFile = destProject.getSubdirectory(Subdirectory.Results).append(resultFileName).toFile();
 			Result result = Result.createResult(returnedResult, resultFile);
 			
 			result.updateContents(contents);

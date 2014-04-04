@@ -49,7 +49,7 @@
 
    <element name="analyzer">
       <complexType>
-         <attribute name="NLTKTokenizerAnalysis" type="string" use="required">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   

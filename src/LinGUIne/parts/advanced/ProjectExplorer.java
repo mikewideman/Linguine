@@ -95,6 +95,7 @@ public class ProjectExplorer {
 	 */
 	@PostConstruct
 	public void createComposite(Composite parent){
+		parent.setData("org.eclipse.e4.ui.css.id", "projExplorerPart");
 		parent.setLayout(new GridLayout());
 
 		tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
