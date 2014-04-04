@@ -6,7 +6,7 @@
         <children xsi:type="basic:PartSashContainer" xmi:id="_5qnvEjdzEeOR8_lurf-ldg" elementId="linguine.partsashcontainer.advanced.mainPartStash" containerData="">
           <children xsi:type="basic:PartSashContainer" xmi:id="_zzDjwD0HEeO2ApE61zFgiA" elementId="linguine.partsashcontainer.advanced.upperPartStash" containerData="7000" horizontal="true">
             <children xsi:type="basic:PartStack" xmi:id="_wi7UEDt4EeOb2KrfPNKZWQ" elementId="linguine.partstack.advanced.projectExplorerPartStack" containerData="1500" accessibilityPhrase="" selectedElement="_FaN88DuCEeOb2KrfPNKZWQ">
-              <children xsi:type="basic:Part" xmi:id="_FaN88DuCEeOb2KrfPNKZWQ" elementId="linguine.part.advanced.projectExplorer" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.ProjectExplorer" label="Project Explorer" iconURI="platform:/plugin/LinGUIne/icons/filenav_nav.gif" closeable="true"/>
+              <children xsi:type="basic:Part" xmi:id="_FaN88DuCEeOb2KrfPNKZWQ" elementId="linguine.part.advanced.projectExplorerPart" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.ProjectExplorer" label="Project Explorer" iconURI="platform:/plugin/LinGUIne/icons/filenav_nav.gif" closeable="true"/>
             </children>
             <children xsi:type="basic:PartStack" xmi:id="_Lxd80LhbEeOPZ-IS4_9pnA" elementId="linguine.partstack.advanced.dataExplorerPartStack" containerData="7000" selectedElement="_DsgvwD0IEeO2ApE61zFgiA">
               <children xsi:type="basic:Part" xmi:id="_DsgvwD0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.dataExplorerPart" containerData="" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.DataEditorPart" label="Data Explorer" iconURI="" closeable="true"/>
@@ -17,7 +17,7 @@
           </children>
           <children xsi:type="basic:PartSashContainer" xmi:id="_0U00ED0HEeO2ApE61zFgiA" elementId="linguine.partsashcontainer.advanced.lowerPartStash" containerData="3000" horizontal="true">
             <children xsi:type="basic:PartStack" xmi:id="_l5ZH8LhbEeOPZ-IS4_9pnA" elementId="linguine.partstack.advanced.quickAnalysisViewPartStack" containerData="3000" selectedElement="_bBJ68D0IEeO2ApE61zFgiA">
-              <children xsi:type="basic:Part" xmi:id="_bBJ68D0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.QuickAnalysisPart" containerData="" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.QuickAnalysisPart" label="Quick Analysis Part" iconURI="platform:/plugin/LinGUIne/icons/category_obj.gif" closeable="true"/>
+              <children xsi:type="basic:Part" xmi:id="_bBJ68D0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.quickAnalysisPart" containerData="" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.QuickAnalysisPart" label="Quick Analysis" iconURI="platform:/plugin/LinGUIne/icons/category_obj.gif" closeable="true"/>
             </children>
             <children xsi:type="basic:PartStack" xmi:id="_mRJgoLhbEeOPZ-IS4_9pnA" elementId="linguine.partstack.advanced.propertiesPartStack" containerData="7000" selectedElement="_el07kD0IEeO2ApE61zFgiA">
               <children xsi:type="basic:Part" xmi:id="_el07kD0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.propertiesPart" containerData="" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.MetaPart" label="Properties" iconURI="platform:/plugin/LinGUIne/icons/properties.gif" closeable="true"/>
@@ -109,14 +109,24 @@
   <handlers xmi:id="_5qnu_TdzEeOR8_lurf-ldg" elementId="linguine.handler.exit" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ExitHandler" command="_5qnu_DdzEeOR8_lurf-ldg"/>
   <handlers xmi:id="_5qnvBDdzEeOR8_lurf-ldg" elementId="linguine.handler.save" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.SaveHandler" command="_5qnvAzdzEeOR8_lurf-ldg"/>
   <handlers xmi:id="_5qnvBzdzEeOR8_lurf-ldg" elementId="linguine.handler.about" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.AboutHandler" command="_5qnvBjdzEeOR8_lurf-ldg"/>
-  <handlers xmi:id="_oavOcDxIEeOsebD9DszETw" elementId="linguine.handler.import" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportHandler" command="_qikdoDxIEeOsebD9DszETw"/>
-  <handlers xmi:id="_VRHFoDxdEeOsebD9DszETw" elementId="linguine.handler.newProject" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewProjectHandler" command="_oQ1w8DxbEeOsebD9DszETw"/>
-  <handlers xmi:id="_X2sAwDxdEeOsebD9DszETw" elementId="linguine.handler.export" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ExportHandler" command="_riS6oDxbEeOsebD9DszETw"/>
+  <handlers xmi:id="_oavOcDxIEeOsebD9DszETw" elementId="linguine.handler.import.file" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportFileHandler" command="_IMmrwLhXEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_VRHFoDxdEeOsebD9DszETw" elementId="linguine.handler.new.project" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewProjectHandler" command="_oQ1w8DxbEeOsebD9DszETw"/>
+  <handlers xmi:id="_X2sAwDxdEeOsebD9DszETw" elementId="linguine.handler.export" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ExportGeneralHandler" command="_riS6oDxbEeOsebD9DszETw"/>
   <handlers xmi:id="_F3frcEA7EeODy_z0LLz00g" elementId="linguine.handler.analysis" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.AnalysisHandler" command="_73x6AEA6EeODy_z0LLz00g"/>
-  <handlers xmi:id="_tnoi4J8pEeOA0_QUQheDyA" elementId="linguine.handler.switchPerspective" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.SwitchPerspectiveHandler" command="_d6y2kJ8pEeOA0_QUQheDyA"/>
+  <handlers xmi:id="_tnoi4J8pEeOA0_QUQheDyA" elementId="linguine.handler.switchToAdvancedPerspective" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.SwitchToAdvancedPerspectiveHandler" command="_d6y2kJ8pEeOA0_QUQheDyA"/>
   <handlers xmi:id="_5KcewJ8pEeOA0_QUQheDyA" elementId="linguine.handler.removeProject" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RemoveProjectHandler" command="_j2Z5YJ8pEeOA0_QUQheDyA"/>
   <handlers xmi:id="_kYpOUJ8qEeOA0_QUQheDyA" elementId="linguine.handler.newVisualization" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.VisualizationHandler" command="_rcpSAJ8pEeOA0_QUQheDyA"/>
-  <handlers xmi:id="_Cq7hEJ8rEeOA0_QUQheDyA" elementId="linguine.handler.newFile" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewFileHandler" command="_BLZoAJ8rEeOA0_QUQheDyA"/>
+  <handlers xmi:id="_Cq7hEJ8rEeOA0_QUQheDyA" elementId="linguine.handler.new.file" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewFileHandler" command="_BLZoAJ8rEeOA0_QUQheDyA"/>
+  <handlers xmi:id="_nT0tYLoCEeOI6M-uodZr5Q" elementId="linguine.handler.new" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewGeneralHandler" command="_KqIBoLhYEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_Ll4KMLoDEeOI6M-uodZr5Q" elementId="linguine.handler.new.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.NewGroupHandler" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_TpA6MLoDEeOI6M-uodZr5Q" elementId="linguine.handler.switchToBasicPerspective" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.SwitchToBasicPerspectiveHandler" command="_2LJRcLhWEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_oahaQLoDEeOI6M-uodZr5Q" elementId="linguine.handler.view.projectExplorer" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ViewProjectExplorerHandler" command="_k0m8ELhZEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_cCfmQLoGEeOI6M-uodZr5Q" elementId="linguine.handler.view.quickAnalysis" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ViewQuickAnalysisViewHandler" command="_pxqE4LhZEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_kSLkgLoGEeOI6M-uodZr5Q" elementId="linguine.handler.view.settings" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ViewSettingsHandler" command="_uc_LkLhZEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_nWLhALoGEeOI6M-uodZr5Q" elementId="linguine.handler.view.properties" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ViewPropertiesHandler" command="_yNCVwLhZEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_l6cQ4LoIEeOI6M-uodZr5Q" elementId="linguine.handler.import" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportGeneralHandler" command="_qikdoDxIEeOsebD9DszETw"/>
+  <handlers xmi:id="_kexusLoJEeOI6M-uodZr5Q" elementId="linguine.handler.export.file" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ExportFileHandler" command="_YZiNYLhXEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_kbi_ELoKEeOI6M-uodZr5Q" elementId="linguine.handler.import.project" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportProjectHandler" command="_U45YMLhXEeOPZ-IS4_9pnA"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.exit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvBTdzEeOR8_lurf-ldg" elementId="linguine.keybinding.save" keySequence="M1+S" command="_5qnvAzdzEeOR8_lurf-ldg"/>
@@ -150,7 +160,7 @@
   <commands xmi:id="_nJT0gLhXEeOPZ-IS4_9pnA" elementId="linguine.command.install" commandName="installCommand" description="Starts the process for installing new plugins"/>
   <commands xmi:id="_rI5PgLhXEeOPZ-IS4_9pnA" elementId="linguine.command.preferences" commandName="preferencesCommand" description="Starts the process of displaying preferences"/>
   <commands xmi:id="_K8pfkLhZEeOPZ-IS4_9pnA" elementId="linguine.command.print" commandName="printCommand" description="Context aware print"/>
-  <commands xmi:id="_k0m8ELhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.projectexplorer" commandName="viewProjectExplorerCommand" description="Toggles the project explorer"/>
+  <commands xmi:id="_k0m8ELhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.projectExplorer" commandName="viewProjectExplorerCommand" description="Toggles the project explorer"/>
   <commands xmi:id="_pxqE4LhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.quickAnalysisView" commandName="viewQuickAnalysisViewCommand" description="Toggles the quick analysis view"/>
   <commands xmi:id="_uc_LkLhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.settings" commandName="viewSettingsCommand" description="Toggles the settings pane"/>
   <commands xmi:id="_yNCVwLhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.properties" commandName="viewPropertiesCommand" description="Toggles the properties pane"/>

@@ -1,3 +1,4 @@
+ 
 package LinGUIne.handlers;
 
 import javax.inject.Inject;
@@ -9,18 +10,24 @@ import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
-public class SwitchToBasicPerspectiveHandler {
+/**
+ * Handler to toggle between the advanced and basic Perspectives.
+ * 
+ * @author Kyle Mullins
+ */
+public class SwitchToAdvancedPerspectiveHandler {
 
 	private static final String PERSPECTIVE_ID =
-			"linguine.perspective.basicPerspective";
+			"linguine.perspective.advancedPerspective";
 	
-	private MPerspective basicPerspective;
+	private MPerspective advancedPerspective;
 	
 	@Inject
-	public SwitchToBasicPerspectiveHandler(MApplication app,
+	public SwitchToAdvancedPerspectiveHandler(MApplication app,
 			EModelService modelService){
 		
-		basicPerspective = (MPerspective)modelService.find(PERSPECTIVE_ID, app);
+		advancedPerspective = (MPerspective)modelService.find(
+				PERSPECTIVE_ID, app);
 	}
 	
 	@CanExecute
@@ -28,11 +35,11 @@ public class SwitchToBasicPerspectiveHandler {
 		MPerspective activePerspective = modelService.getActivePerspective(
 				app.getSelectedElement());
 		
-		return basicPerspective != activePerspective;
+		return advancedPerspective != activePerspective;
 	}
 	
 	@Execute
 	public void execute(EPartService partService) {
-		partService.switchPerspective(basicPerspective);
+		partService.switchPerspective(advancedPerspective);
 	}
 }

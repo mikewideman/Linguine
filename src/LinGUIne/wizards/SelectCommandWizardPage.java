@@ -22,6 +22,7 @@ public class SelectCommandWizardPage extends WizardPage {
 			Collection<String> options){
 		
 		super(title);
+		setTitle(title);
 		setMessage(message);
 		
 		commandOptions = options;
@@ -56,6 +57,7 @@ public class SelectCommandWizardPage extends WizardPage {
 		}
 		
 		setPageComplete(false);
+		setControl(lstOptions);
 	}
 	
 	public String getSelectedOption(){

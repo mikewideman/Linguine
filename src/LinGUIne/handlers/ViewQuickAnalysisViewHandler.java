@@ -8,10 +8,10 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
-public class ViewProjectExplorerHandler {
-	
+public class ViewQuickAnalysisViewHandler {
+
 	private static final String PART_ID =
-			"linguine.part.advanced.projectExplorerPart";
+			"linguine.part.advanced.quickAnalysisPart";
 	private static final String PERSPECTIVE_ID =
 			"linguine.perspective.advancedPerspective";
 	
@@ -27,15 +27,15 @@ public class ViewProjectExplorerHandler {
 	public void execute(MApplication application, EPartService partService,
 			EModelService modelService){
 		
-		MPart projectExplorer = (MPart)modelService.find(PART_ID, application);
+		MPart quickAnalysis = (MPart)modelService.find(PART_ID, application);
 		
-		boolean isVisible = partService.isPartVisible(projectExplorer);
+		boolean isVisible = partService.isPartVisible(quickAnalysis);
 		
 		if(isVisible){
-			partService.hidePart(projectExplorer);
+			partService.hidePart(quickAnalysis);
 		}
 		else{
-			partService.activate(projectExplorer);
+			partService.activate(quickAnalysis);
 		}
 	}
 }
