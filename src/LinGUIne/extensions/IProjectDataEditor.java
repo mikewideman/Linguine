@@ -3,6 +3,7 @@ package LinGUIne.extensions;
 import org.eclipse.swt.widgets.Composite;
 
 import LinGUIne.model.IProjectData;
+import LinGUIne.model.Project;
 
 /**
  * Represents an editor of Project Data.
@@ -38,4 +39,12 @@ public interface IProjectDataEditor {
 	 * @param parent	The parent part of this ProjectDataEditor instance.
 	 */
 	public void createComposite(Composite parent);
+	
+	public void setInputData(IProjectData data, Project parentProj);
+	
+//	public void setDirtyStateListener(DirtyStateChangedListener listener);
+	
+	public boolean saveChanges();
+	
+	public String getPartLabel();
 }

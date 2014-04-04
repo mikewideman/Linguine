@@ -34,7 +34,7 @@ public class SettingsPart {
 		//Register for the event manually to avoid getting selection changes for
 		//other parts
 		selectionService.addSelectionListener(
-				"linguine.part.advanced.dataExplorerPart",
+				"linguine.part.advanced.dataEditorPart",
 				new DataEditorSelectionListener());
 	}
 	

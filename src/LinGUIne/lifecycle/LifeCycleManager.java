@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.model.VisualizationPluginManager;
+import LinGUIne.parts.advanced.DataEditorManager;
 import LinGUIne.utilities.FileUtils;
 
 /**
@@ -108,11 +109,14 @@ public class LifeCycleManager {
 		
 		VisualizationPluginManager visualisationPluginMan = new VisualizationPluginManager();
 		
+		DataEditorManager dataEditorMan = new DataEditorManager();
+		
 		context.set(SoftwareModuleManager.class, softwareModuleMan);
 		context.set(ProjectManager.class, projectMan);
 		context.set(VisualizationPluginManager.class, visualisationPluginMan);
 		
 		ContextInjectionFactory.inject(projectMan, context);
+		ContextInjectionFactory.inject(dataEditorMan, context);
 	}
 	
 	/**

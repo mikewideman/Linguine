@@ -8,8 +8,8 @@
             <children xsi:type="basic:PartStack" xmi:id="_wi7UEDt4EeOb2KrfPNKZWQ" elementId="linguine.partstack.advanced.projectExplorerPartStack" containerData="1500" accessibilityPhrase="" selectedElement="_FaN88DuCEeOb2KrfPNKZWQ">
               <children xsi:type="basic:Part" xmi:id="_FaN88DuCEeOb2KrfPNKZWQ" elementId="linguine.part.advanced.projectExplorerPart" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.ProjectExplorer" label="Project Explorer" iconURI="platform:/plugin/LinGUIne/icons/filenav_nav.gif" closeable="true"/>
             </children>
-            <children xsi:type="basic:PartStack" xmi:id="_Lxd80LhbEeOPZ-IS4_9pnA" elementId="linguine.partstack.advanced.dataExplorerPartStack" containerData="7000" selectedElement="_DsgvwD0IEeO2ApE61zFgiA">
-              <children xsi:type="basic:Part" xmi:id="_DsgvwD0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.dataExplorerPart" containerData="" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.DataEditorPart" label="Data Explorer" iconURI="" closeable="true"/>
+            <children xsi:type="basic:PartStack" xmi:id="_Lxd80LhbEeOPZ-IS4_9pnA" elementId="linguine.partstack.advanced.dataEditorPartStack" containerData="7000">
+              <children xsi:type="advanced:Placeholder" xmi:id="_TaZPULrHEeOBMpdl5je1ig" elementId="linguine.placeholder.sharedArea"/>
             </children>
             <children xsi:type="basic:PartStack" xmi:id="_Mz1YwLhbEeOPZ-IS4_9pnA" elementId="linguine.partstack.advanced.settingsPartStack" containerData="1500" selectedElement="_SM2zwD0IEeO2ApE61zFgiA">
               <children xsi:type="basic:Part" xmi:id="_SM2zwD0IEeO2ApE61zFgiA" elementId="linguine.part.advanced.settingsPart" containerData="" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.SettingsPart" label="Settings" iconURI="platform:/plugin/LinGUIne/icons/outline_co.gif" closeable="true"/>
@@ -136,6 +136,8 @@
     <children xmi:id="_5qnu-jdzEeOR8_lurf-ldg" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
     <children xmi:id="_5qnu-zdzEeOR8_lurf-ldg" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
+  <descriptors xmi:id="_-nQXkLrGEeOBMpdl5je1ig" elementId="linguine.partdescriptor.testEditor" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.TestDataEditor"/>
+  <descriptors xmi:id="_r40NILtjEeOBMpdl5je1ig" elementId="linguine.partdescriptor.projectDataEditorContainer" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://LinGUIne/LinGUIne.parts.advanced.ProjectDataEditorContainer"/>
   <commands xmi:id="_5qnu_DdzEeOR8_lurf-ldg" elementId="linguine.command.exit" commandName="exitCommand" description="Exits the application"/>
   <commands xmi:id="_5qnvAzdzEeOR8_lurf-ldg" elementId="linguine.commands.save" commandName="saveCommand" description="Context aware save"/>
   <commands xmi:id="_Ea1_cLhZEeOPZ-IS4_9pnA" elementId="linguine.command.saveall" commandName="saveAllCommand" description="Context aware save all"/>
