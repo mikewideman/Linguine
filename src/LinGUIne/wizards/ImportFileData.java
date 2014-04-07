@@ -18,6 +18,7 @@ public class ImportFileData {
 	private ArrayList<File> chosenFiles;
 	private boolean createNewProject;
 	private boolean internetSource;
+	private String internetSourceFileName;//Used when importing non-local files into project
 	
 	/**
 	 * Creates a default empty instance.
@@ -164,5 +165,13 @@ public class ImportFileData {
 	
 	public void setInternetSource(boolean value){
 		internetSource = value;
+	}
+	
+	public void setInternetSourceFileName(String name){
+		internetSourceFileName = name;
+	}
+	
+	public String getInternetSourceFileName(){
+		return internetSourceFileName;
 	}
 }
