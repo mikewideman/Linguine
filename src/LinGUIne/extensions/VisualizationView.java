@@ -18,5 +18,22 @@ public abstract class VisualizationView extends ViewPart {
 	 * @param parent The container that the application will attempt to hold this view
 	 */
 	public abstract void createPartControl(Composite parent);
+	
+	/**
+	 * Returns whether this visualization has a settings pane.
+	 * 
+	 * @return True if this visualization can provide a settings pane to show to
+	 *         the user, false otherwise
+	 */
+	public abstract boolean hasSettings();
+
+	/**
+	 * Returns the settings pane this visualization provides. If no settings
+	 * pane is available, (hasSettings is false) then this method should return
+	 * null.
+	 * 
+	 * @return The settings pane this visualization provides
+	 */
+	public abstract VisualizationSettings getSettings();
 
 }

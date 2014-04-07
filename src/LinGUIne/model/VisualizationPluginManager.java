@@ -69,6 +69,18 @@ public class VisualizationPluginManager {
 						
 					}
 
+					@Override
+					public boolean hasSettings() {
+						// TODO Auto-generated method stub
+						return false;
+					}
+
+					@Override
+					public VisualizationSettings getSettings() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
 				};
 			}
 
@@ -89,17 +101,6 @@ public class VisualizationPluginManager {
 				return null;
 			}
 
-			@Override
-			public boolean hasSettings() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public VisualizationSettings getSettings() {
-				// TODO Auto-generated method stub
-				return null;
-			}
 		};
 
 		final IVisualization vis2 = new IVisualization() {
@@ -128,6 +129,18 @@ public class VisualizationPluginManager {
 						
 					}
 
+					@Override
+					public boolean hasSettings() {
+						// TODO Auto-generated method stub
+						return false;
+					}
+
+					@Override
+					public VisualizationSettings getSettings() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
 				};
 			}
 
@@ -147,17 +160,6 @@ public class VisualizationPluginManager {
 				return null;
 			}
 
-			@Override
-			public boolean hasSettings() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public VisualizationSettings getSettings() {
-				// TODO Auto-generated method stub
-				return null;
-			}
 		};
 
 		visualizations.put(vis1, "Description of Visualization 1");

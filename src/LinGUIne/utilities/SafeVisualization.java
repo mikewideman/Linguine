@@ -57,7 +57,7 @@ public class SafeVisualization implements ISafeRunnable {
 		VisualizationView view = visualization.runVisualization();
 
 		VisualizationViewEvent viewEvent = new VisualizationViewEvent(view,
-				visualization.getSettings(), visualization);
+				view.getSettings(), visualization);
 
 		eventBroker.post(LinGUIneEvents.UILifeCycle.VISUALIZATION_VIEW,
 				viewEvent);
