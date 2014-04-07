@@ -141,7 +141,7 @@ public class ProjectExplorer {
 					Project containingProject = ((ProjectExplorerTree)
 							dataNode.getRootNode()).getProject();
 					OpenProjectDataEvent openEvent = new OpenProjectDataEvent(
-							data, containingProject.getAnnotation(data));
+							data, containingProject);
 					
 					eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA, openEvent);
 				}

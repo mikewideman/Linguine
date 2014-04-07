@@ -77,5 +77,10 @@ public class LinGUIneEvents {
 		 * Sent when the user attempts to open some ProjectData.
 		 */
 		public static final String OPEN_PROJECT_DATA = UI_EVENTS_BASE_TOPIC + SEP + "OpenProjectData";
+		
+		/**
+		 * Sent when the ProjectDataEditor that currently has focus changes.
+		 */
+		public static final String ACTIVE_EDITOR_CHANGED = UI_EVENTS_BASE_TOPIC + SEP + "ActiveEditorChanged";
 	}
 }

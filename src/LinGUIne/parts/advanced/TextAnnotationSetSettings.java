@@ -34,14 +34,14 @@ import LinGUIne.model.annotations.IAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
-public class AnnotatedTextDataSettings implements IEditorSettings {
+public class TextAnnotationSetSettings implements IEditorSettings {
 
 	private Composite parentComposite;
-	private LocalPanel localPanel;
-	private TagPanel tagPanel;
 	private GlobalPanel globalPanel;
+	private TagPanel tagPanel;
+	private LocalPanel localPanel;
 	
-	private AnnotatedTextDataEditorTab parentEditorTab;
+	private TextAnnotationSetEditor parentEditor;
 	private TextDataContents textContents;
 	private AnnotationSetContents annotationContents;
 	
@@ -51,9 +51,9 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 	private int caretOffset;
 	private Point selectionOffsets;
 	
-	public AnnotatedTextDataSettings(AnnotatedTextDataEditorTab editorTab,
+	public TextAnnotationSetSettings(TextAnnotationSetEditor editor,
 			TextDataContents data, AnnotationSetContents annotations){
-		parentEditorTab = editorTab;
+		parentEditor = editor;
 		textContents = data;
 		annotationContents = annotations;
 		
@@ -97,13 +97,13 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 			}
 		});
 		
-		localPanel = new LocalPanel(container);
-		tagPanel = new TagPanel(container);
 		globalPanel = new GlobalPanel(container);
+		tagPanel = new TagPanel(container);
+		localPanel = new LocalPanel(container);
 		
-		localPanel.populate();
-		tagPanel.populate();
 		globalPanel.populate();
+		tagPanel.populate();
+		localPanel.populate();
 	}
 
 	@Override
@@ -128,7 +128,9 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 			}
 		}
 		
-		localPanel.update();
+		if(localPanel != null){
+			localPanel.update();
+		}
 	}
 	
 	public void selectionChanged(Point newSelectionOffsets){
@@ -213,7 +215,7 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 							selectedTag, startIndex, length);
 					
 					annotationContents.addAnnotation(newAnnotation);
-					parentEditorTab.annotationsChanged();
+					parentEditor.annotationsChanged();
 				}
 
 				@Override
@@ -226,7 +228,7 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					annotationContents.removeAnnotation(selectedAnnotation);
-					parentEditorTab.annotationsChanged();
+					parentEditor.annotationsChanged();
 				}
 
 				@Override
@@ -327,7 +329,7 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 						
 						if(!newColor.equals(selectedTag.getColor())){
 							selectedTag.setColor(newColor);
-							parentEditorTab.annotationsChanged();
+							parentEditor.annotationsChanged();
 							update();
 						}
 					}
@@ -351,7 +353,7 @@ public class AnnotatedTextDataSettings implements IEditorSettings {
 					if(selectedTag != null && !selectedTag.getComment().equals(
 							txtTagComment.getText())){
 						selectedTag.setComment(txtTagComment.getText());
-						parentEditorTab.setDirty(true);
+						parentEditor.setDirty(true);
 					}
 				}
 			});

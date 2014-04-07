@@ -4,17 +4,18 @@ package LinGUIne.parts.advanced;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.extensions.IEditorSettings;
+import LinGUIne.extensions.IProjectDataEditor;
 
 /**
  * Container part to show the EditorSettings view provided by the currently
@@ -28,15 +29,6 @@ public class SettingsPart {
 	private Composite mainParent;
 	private Composite currentComposite;
 	private Composite defaultComposite;
-	
-	@Inject
-	public SettingsPart(ESelectionService selectionService) {
-		//Register for the event manually to avoid getting selection changes for
-		//other parts
-		selectionService.addSelectionListener(
-				"linguine.part.advanced.dataEditorPart",
-				new DataEditorSelectionListener());
-	}
 	
 	@PostConstruct
 	public void postConstruct(Composite parent) {
@@ -58,33 +50,25 @@ public class SettingsPart {
 	@Focus
 	public void onFocus() {}
 	
-	class DataEditorSelectionListener implements ISelectionListener{
-		@Override
-		public void selectionChanged(MPart part, Object selection) {
-			if(selection != null){
-				if(selection instanceof ProjectDataEditorTab){
-					ProjectDataEditorTab editorTab =
-							(ProjectDataEditorTab)selection;
+	@Inject
+	public void activeEditorChangedEvent(@Optional @UIEventTopic(LinGUIneEvents.
+			UILifeCycle.ACTIVE_EDITOR_CHANGED) IProjectDataEditor editor){
+		
+		if(editor != null){
+			if(editor.hasEditorSettings()){
+				IEditorSettings editorSettings = editor.getEditorSettings();
+				Composite settingsComposite = editorSettings.getParent();
+				
+				//If this EditorSettings instance is new, create a new
+				//parent for it and call EditorSettings.createComposite
+				if(settingsComposite == null){
+					settingsComposite = new Composite(mainParent,
+							SWT.NONE);
 					
-					if(editorTab.hasEditorSettings()){
-						IEditorSettings editorSettings = editorTab.getEditorSettings();
-						Composite settingsComposite = editorSettings.getParent();
-						
-						//If this EditorSettings instance is new, create a new
-						//parent for it and call EditorSettings.createComposite
-						if(settingsComposite == null){
-							settingsComposite = new Composite(mainParent,
-									SWT.NONE);
-							
-							editorSettings.createComposite(settingsComposite);
-						}
-						
-						currentComposite = settingsComposite;
-					}
-					else{
-						currentComposite = defaultComposite;
-					}
+					editorSettings.createComposite(settingsComposite);
 				}
+				
+				currentComposite = settingsComposite;
 			}
 			else{
 				currentComposite = defaultComposite;

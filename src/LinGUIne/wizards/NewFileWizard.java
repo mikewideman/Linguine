@@ -58,7 +58,7 @@ public class NewFileWizard extends Wizard {
 			chosenProject.addProjectData(newTextData);
 			
 			eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
-					new OpenProjectDataEvent(newTextData));
+					new OpenProjectDataEvent(newTextData, chosenProject));
 		}
 		catch(IOException e) {
 			e.printStackTrace();

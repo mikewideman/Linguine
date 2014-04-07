@@ -1,7 +1,7 @@
 package LinGUIne.events;
 
-import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.IProjectData;
+import LinGUIne.model.Project;
 
 /**
  * Container for data related to ProjectData open events.
@@ -11,26 +11,22 @@ import LinGUIne.model.IProjectData;
 public class OpenProjectDataEvent {
 	
 	private IProjectData projectData;
-	private AnnotationSet annotationSet;
+	private Project parentProject;
 	
-	public OpenProjectDataEvent(IProjectData data, AnnotationSet annotation){
+	public OpenProjectDataEvent(IProjectData data, Project project){
 		projectData = data;
-		annotationSet = annotation;
-	}
-	
-	public OpenProjectDataEvent(IProjectData data){
-		this(data, null);
+		parentProject = project;
 	}
 	
 	public IProjectData getProjectData() {
 		return projectData;
 	}
 
-	public AnnotationSet getAnnotationSet() {
-		return annotationSet;
+	public Project getParentProject() {
+		return parentProject;
 	}
-	
-	public boolean hasAnnotation(){
-		return annotationSet != null;
+
+	public void setParentProject(Project project) {
+		parentProject = project;
 	}
 }
