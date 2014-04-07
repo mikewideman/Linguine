@@ -80,7 +80,7 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		lstImporters.add("Plaintext file");
 		
 		IConfigurationElement[] configElements = Platform.getExtensionRegistry().
-				getConfigurationElementsFor("LinGUIne.extensions.IFileImporter");
+				getConfigurationElementsFor("LinGUIne.LinGUIne.extensions.IFileImporter");
 		
 		final HashMap<String, IConfigurationElement> importerConfigs =
 				new HashMap<String, IConfigurationElement>();
@@ -102,7 +102,7 @@ public class ImportFileWizardSetupPage extends WizardPage {
 				if(lstImporters.getSelectionCount() != 0){
 					String selectedFileType = lstImporters.getSelection()[0];
 					IFileImporter importer = null;
-					
+					wizardData.setInternetSource(false);
 					if(importerConfigs.containsKey(selectedFileType)){
 						IConfigurationElement importerConfig =
 								importerConfigs.get(selectedFileType);

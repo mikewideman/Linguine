@@ -42,6 +42,7 @@ public class AnnotationSetContents implements IProjectDataContents {
 		}
 		
 		annotations.put(newTag, new HashSet<IAnnotation>());
+		
 		return true;
 	}
 	
@@ -74,6 +75,27 @@ public class AnnotationSetContents implements IProjectDataContents {
 	}
 	
 	/**
+	 * Returns whether or not there is a Tag with the given name in this
+	 * AnnotationSet.
+	 */
+	public boolean containsTag(String tagName){
+		return getTag(tagName) != null;
+	}
+	
+	/**
+	 * Returns the Tag with the given name if there is one, null otherwise.
+	 */
+	public Tag getTag(String tagName){
+		for(Tag tag: getTags()){
+			if(tag.getName().equals(tagName)){
+				return tag;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Returns a collection of the Tags contained in this AnnotationSet.
 	 * 
 	 * @return	All Tags this AnnotationSet contains.
@@ -97,17 +119,35 @@ public class AnnotationSetContents implements IProjectDataContents {
 		return new HashSet<IAnnotation>();
 	}
 	
+	/**
+	 * Attempts to remove the given Annotation from the set of annotations for
+	 * the Annotation's Tag. Returns whether or not the given Annotation was
+	 * removed.
+	 */
+	public boolean removeAnnotation(IAnnotation annotation){
+		if(annotations.containsKey(annotation.getTag())){
+			return annotations.get(annotation.getTag()).remove(annotation);
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public IProjectDataContents copy() {
 		AnnotationSetContents newContents = new AnnotationSetContents();
 		
 		for(HashSet<IAnnotation> annotationSet: annotations.values()){
 			for(IAnnotation anotation: annotationSet){
-				newContents.addAnnotation(anotation);
+				newContents.addAnnotation(anotation.copy());
 			}
 		}
 		
 		return newContents;
+	}
+	
+	@Override
+	public Class<? extends IProjectData> getAssociatedDataType() {
+		return AnnotationSet.class;
 	}
 	
 	@Override
@@ -117,8 +157,12 @@ public class AnnotationSetContents implements IProjectDataContents {
 			AnnotationSetContents otherAnnotationSet =
 					(AnnotationSetContents)otherContents;
 			
-			for(Tag otherTag: otherAnnotationSet.annotations.keySet()){
+			for(Tag otherTag: otherAnnotationSet.getTags()){
 				if(annotations.containsKey(otherTag)){
+					if(getTag(otherTag.getName()).deepCompareTo(otherTag) != 0){
+						return getTag(otherTag.getName()).deepCompareTo(otherTag);
+					}
+					
 					HashSet<IAnnotation> myAnnotations = annotations.get(otherTag);
 					
 					for(IAnnotation otherAnnotation:

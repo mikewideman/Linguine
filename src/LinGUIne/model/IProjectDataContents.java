@@ -13,4 +13,10 @@ public interface IProjectDataContents extends Comparable<IProjectDataContents> {
 	 * @return	A deep-copy of the instance.
 	 */
 	IProjectDataContents copy();
+	
+	/**
+	 * Returns the Type of Project Data that this IProjectDataContents is
+	 * associated with.
+	 */
+	Class<? extends IProjectData> getAssociatedDataType();
 }

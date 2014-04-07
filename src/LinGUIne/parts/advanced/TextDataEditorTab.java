@@ -4,6 +4,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 
+import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
@@ -59,5 +60,15 @@ class TextDataEditorTab extends ProjectDataEditorTab{
 				}
 			}
 		};
+	}
+
+	@Override
+	public boolean hasEditorSettings() {
+		return false;
+	}
+
+	@Override
+	public IEditorSettings getEditorSettings() {
+		return null;
 	}
 }

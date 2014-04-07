@@ -17,6 +17,7 @@ public class ImportFileData {
 	private Project chosenProject;
 	private ArrayList<File> chosenFiles;
 	private boolean createNewProject;
+	private boolean internetSource;
 	
 	/**
 	 * Creates a default empty instance.
@@ -26,6 +27,7 @@ public class ImportFileData {
 		chosenProject = null;
 		chosenFiles = new ArrayList<File>();
 		createNewProject = false;
+		internetSource = false;
 	}
 	
 	/**
@@ -149,5 +151,18 @@ public class ImportFileData {
 //		return chosenImporter != null && !chosenFiles.isEmpty() &&
 //				chosenProject != null;
 		return isReadyForFiles() && !chosenFiles.isEmpty();
+	}
+	
+	/**
+	 * Determines whether or not we are looking to import a concrete file on the disk or must pull 
+	 * the data from a non-local source
+	 * @return True if the file is not local, false otherwise.
+	 */
+	public boolean isInternetSource(){
+		return internetSource;
+	}
+	
+	public void setInternetSource(boolean value){
+		internetSource = value;
 	}
 }

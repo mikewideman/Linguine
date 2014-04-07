@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import LinGUIne.serialization.AnnotationSetTranslator;
+
 /**
  * Represents the annotations of some single ProjectData.
  * 
@@ -44,13 +46,15 @@ public class AnnotationSet implements ITypedProjectData<AnnotationSetContents> {
 					 jsonStr += "\n";
 				}
 				
-				AnnotationSetContents newContents = AnnotationSetTranslator.fromJson(jsonStr);
+				AnnotationSetContents newContents = AnnotationSetTranslator.
+						fromJson(jsonStr);
 				
 				if(newContents != null){
 					contents = newContents;
 				}
 				else{
 					//TODO: Throw an exception of some sort
+					return null;
 				}
 			}
 			catch(IOException ioe) {
@@ -71,13 +75,15 @@ public class AnnotationSet implements ITypedProjectData<AnnotationSetContents> {
 				try(BufferedWriter writer = Files.newBufferedWriter(
 						annotationFile.toPath(), Charset.defaultCharset())){
 					
-					String jsonStr = AnnotationSetTranslator.toJson(newAnnotationContents);
+					String jsonStr = AnnotationSetTranslator.toJson(
+							newAnnotationContents);
 					
 					if(jsonStr != null){
 						writer.write(jsonStr);
 					}
 					else{
 						//TODO: Throw and exception of some sort
+						return false;
 					}
 				}
 				catch(IOException e){

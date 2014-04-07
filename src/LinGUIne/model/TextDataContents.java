@@ -51,6 +51,11 @@ public class TextDataContents implements IProjectDataContents {
 	}
 	
 	@Override
+	public Class<? extends IProjectData> getAssociatedDataType() {
+		return TextData.class;
+	}
+	
+	@Override
 	public int compareTo(IProjectDataContents otherContents) {
 		if(otherContents != null && otherContents instanceof TextDataContents){
 			TextDataContents otherTextContents = (TextDataContents)otherContents;

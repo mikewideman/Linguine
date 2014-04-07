@@ -75,6 +75,19 @@ public class ImportFileWizard extends Wizard {
 				}
 			}
 		}
+		if(wizardData.isInternetSource()){
+			TwitDataWizard twitterWizard = new TwitDataWizard(wizardData);
+			WizardDialog tWizDialog = new WizardDialog(getShell(), twitterWizard);
+			
+			int retval = tWizDialog.open();
+			
+			if(retval == WizardDialog.OK){
+				//do stuff to run the query and put it in a file.
+				System.out.println("WEEEE");
+				
+			}
+			
+		}
 		
 		if(wizardData.getChosenProject() != null){
 			SafeImporter safeImporter = new SafeImporter(getShell(),

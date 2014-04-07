@@ -53,8 +53,10 @@ import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.events.ProjectEvent;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
+import LinGUIne.model.RootProjectGroup;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
@@ -93,6 +95,7 @@ public class ProjectExplorer {
 	 */
 	@PostConstruct
 	public void createComposite(Composite parent){
+		parent.setData("org.eclipse.e4.ui.css.id", "projExplorerPart");
 		parent.setLayout(new GridLayout());
 
 		tree = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -158,7 +161,7 @@ public class ProjectExplorer {
 			public void keyReleased(KeyEvent e) {
 				if(e.keyCode == SWT.DEL){
 					Command removeProjectCommand = commandService.getCommand(
-							"linguine.command.removeProject");
+							"linguine.command.remove.project");
 					
 					try {
 						removeProjectCommand.executeWithChecks(new ExecutionEvent());
@@ -207,33 +210,10 @@ public class ProjectExplorer {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Command newProjectCommand = commandService.getCommand(
-						"linguine.command.newProject");
+						"linguine.command.new.project");
 				
 				try {
 					newProjectCommand.executeWithChecks(new ExecutionEvent());
-				}
-				catch(ExecutionException | NotDefinedException
-						| NotEnabledException | NotHandledException e1) {
-					//TODO: Oh no the command is not defined!
-					e1.printStackTrace();
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-		
-		MenuItem refreshExplorer = new MenuItem(contextMenu, SWT.NONE);
-		refreshExplorer.setText("Refresh");
-		refreshExplorer.addSelectionListener(new SelectionListener(){
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Command refreshCommand = commandService.getCommand(
-						"linguine.command.refresh");
-				
-				try {
-					refreshCommand.executeWithChecks(new ExecutionEvent());
 				}
 				catch(ExecutionException | NotDefinedException
 						| NotEnabledException | NotHandledException e1) {
@@ -261,9 +241,37 @@ public class ProjectExplorer {
 						+ "projectForRemoval", selectedProjectName);
 				
 				Command removeProjectCommand = commandService.getCommand(
-						"linguine.command.removeProject");
+						"linguine.command.remove.project");
 				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
 						generateCommand(removeProjectCommand, params);
+				
+				handlerService.executeHandler(parameterizedCmd);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		MenuItem newGroup = new MenuItem(contextMenu, SWT.NONE);
+		newGroup.setText("New Group...");
+		newGroup.addSelectionListener(new SelectionListener(){
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: Make this more robust and only enable command when a Project is selected
+				String selectedProjectName = projectSelection.
+						getSelectedProjects().iterator().next();
+				
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("linguine.command.newGroup.parameter.destProject",
+						selectedProjectName);
+				
+				//TODO: Add other parameter
+				
+				Command newGroupCommand = commandService.getCommand(
+						"linguine.command.new.group");
+				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
+						generateCommand(newGroupCommand, params);
 				
 				handlerService.executeHandler(parameterizedCmd);
 			}
@@ -338,15 +346,15 @@ public class ProjectExplorer {
 			
 			for(Project proj: projectMan.getProjects()){
 				ProjectExplorerTree newRoot = new ProjectExplorerTree(proj);
-				ProjectExplorerNode dataNode = newRoot.addChild("Project Data");
-				ProjectExplorerNode resultsNode = newRoot.addChild("Results");
-				
-				for(IProjectData data: proj.getOriginalData()){
-					dataNode.addDataChild(data.getName(), data);
-				}
-				
-				for(Result result: proj.getResults()){
-					resultsNode.addDataChild(result.getName(), result);
+
+				for(ProjectGroup group: proj.getGroups()){
+					if(group instanceof RootProjectGroup &&
+							((RootProjectGroup)group).isHidden()){
+						continue;
+					}
+					else if(!group.hasParent()){
+						buildSubtree(group, proj, newRoot);
+					}
 				}
 				
 				projectTrees.add(newRoot);
@@ -400,6 +408,27 @@ public class ProjectExplorer {
 		@Override
 		public Object[] getChildren(Object parentElement) {
 			return ((ProjectExplorerNode)parentElement).getChildren();
+		}
+		
+		/**
+		 * Recursively builds a subtree for the given ProjectGroup with the
+		 * given node as its parent.
+		 */
+		private void buildSubtree(ProjectGroup group, Project proj,
+				ProjectExplorerNode parentNode){
+			
+			ProjectExplorerNode newGroupNode = parentNode.addChild(
+					group.getName());
+			
+			//Add child groups
+			for(ProjectGroup childGroup: group.getChildren()){
+				buildSubtree(childGroup, proj, newGroupNode);
+			}
+			
+			//Add child data
+			for(IProjectData data: proj.getDataInGroup(group)){
+				newGroupNode.addDataChild(data.getName(), data);
+			}
 		}
 	}
 	

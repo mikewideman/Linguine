@@ -77,6 +77,16 @@ public class TextAnnotation implements IAnnotation {
 	}
 	
 	/**
+	 * Returns whether or not the given index lies within the range of this
+	 * Annotation.
+	 */
+	public boolean isIndexInRange(int index){
+		int distance = index - startChar;
+		
+		return distance >= 0 && distance < textLength;
+	}
+	
+	/**
 	 * Returns the text that this Annotation references.
 	 * 
 	 * @param data	IProjectDataContents instance from which to get the text of
@@ -120,6 +130,10 @@ public class TextAnnotation implements IAnnotation {
 		return Integer.compare(hashCode(), otherAnnotation.hashCode());
 	}
 
+	public IAnnotation copy(){
+		return new TextAnnotation(myTag.copy(), startChar, textLength);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 
+import LinGUIne.utilities.ParameterCheck;
+
 /**
  * Represents the Result of some analysis on some ProjectData.
  * 
@@ -25,6 +27,8 @@ public abstract class Result implements IProjectData {
 	 * Note: All Result subclasses must provide this constructor.
 	 */
 	protected Result(File file){
+		ParameterCheck.notNull(file, "file");
+		
 		resultFile = file;
 	}
 	

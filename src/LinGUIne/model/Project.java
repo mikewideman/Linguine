@@ -13,10 +13,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IPath;
 
+import LinGUIne.serialization.ProjectTranslator;
 import LinGUIne.utilities.FileUtils;
+import LinGUIne.utilities.ParameterCheck;
 
 /**
  * Represents a LinGUIne Project with a name, a file system location, and
@@ -43,24 +46,42 @@ public class Project {
 	public static final String RESULTS_SUBDIR = "results";
 	public static final String ANNOTATIONS_SUBDIR = "annotations";
 	public static final String PROJECT_FILE = "linguine.project";
+	public static final String DATA_SUBDIR_DISPLAY = "Project Data";
+	public static final String RESULTS_SUBDIR_DISPLAY = "Results";
+	public static final String ANNOTATIONS_SUBDIR_DISPLAY = ANNOTATIONS_SUBDIR;
 	
 	private IPath parentDirectory;
 	private String projectName;
 	
+	private RootProjectGroup projDataGroup;
+	private RootProjectGroup resultsGroup;
+	private RootProjectGroup annotationsGroup;
+	
 	/*
-	 * Maps ProjectData to its assigned id
+	 * Maps ProjectData to its assigned id.
 	 */
 	private TreeMap<IProjectData, Integer> projectData;
 	
 	/*
-	 * Maps a Result to the set of ids for the associated ProjectData
+	 * Maps a Result to the set of ids for the associated ProjectData.
 	 */
 	private TreeMap<Result, HashSet<Integer>> results;
 	
 	/*
-	 * Maps a Project Data id to its associated AnnotationSet
+	 * Maps a Project Data id to its associated AnnotationSet.
 	 */
 	private HashMap<Integer, AnnotationSet> annotationSets;
+	
+	/*
+	 * Maps a ProjectGroup to its assigned id.
+	 */
+	private HashMap<ProjectGroup, Integer> groups;
+	
+	/*
+	 * Maps a Project Group id to the set of ids for Project Data located within
+	 * the group.
+	 */
+	private HashMap<Integer, HashSet<Integer>> groupContents;
 	
 	private boolean hasProjectFiles;
 	private int lastId;
@@ -68,6 +89,7 @@ public class Project {
 	
 	/**
 	 * Creates a new Project without a name or any Project Data of any kind.
+	 * Adds root ProjectGroups to hold ProjectData, Results, and AnnotationSets.
 	 * Note: A Project created with this constructor is NOT complete; it must
 	 * be given a name.
 	 */
@@ -79,16 +101,34 @@ public class Project {
 		projectData = new TreeMap<IProjectData, Integer>();
 		results = new TreeMap<Result, HashSet<Integer>>();
 		annotationSets = new HashMap<Integer, AnnotationSet>();
+		groups = new HashMap<ProjectGroup, Integer>();
+		groupContents = new HashMap<Integer, HashSet<Integer>>();
+		
+		projDataGroup = new RootProjectGroup(
+				DATA_SUBDIR_DISPLAY, DATA_SUBDIR);
+		resultsGroup = new RootProjectGroup(
+				RESULTS_SUBDIR_DISPLAY, RESULTS_SUBDIR);
+		annotationsGroup = new RootProjectGroup(
+				ANNOTATIONS_SUBDIR_DISPLAY, ANNOTATIONS_SUBDIR);
+		
+		annotationsGroup.setHidden(true);
+		
+		addGroup(projDataGroup);
+		addGroup(resultsGroup);
+		addGroup(annotationsGroup);
 	}
 	
 	/**
 	 * Creates a Project just as the default constructor, but the given name is
 	 * assigned as well.
+	 * Note: Parameter projName cannot be null.
 	 * 
 	 * @param projName	The name of the Project.
 	 */
 	public Project(String projName){
 		this();
+		
+		ParameterCheck.notNull(projName, "projName");
 		
 		projectName = projName;
 	}
@@ -102,50 +142,25 @@ public class Project {
 	 * 			if an error occurred or the file was incorrect.
 	 */
 	public static Project createFromFile(File projectFile){
-		Project newProj = new Project();
+		Project newProj;
 		
 		try(BufferedReader reader = Files.newBufferedReader(projectFile.toPath(),
 				Charset.defaultCharset())){
 			
 			IPath parentDir = FileUtils.toEclipsePath(projectFile.
 					getParentFile().getParentFile());
-			newProj.setParentDirectory(parentDir);
 			
-			//TODO: replace with parsing for actual file format
-			if(reader.ready()){
-				newProj.setName(reader.readLine());
-				
-				while(reader.ready()){
-					String[] lineParts = reader.readLine().split(":");
-					
-					//TODO: full format should specify in-memory type of each file
-					IPath filePath = newProj.getProjectDirectory().append(lineParts[0]);
-					
-					if(lineParts[0].startsWith(DATA_SUBDIR)){
-						IProjectData projData = new TextData(filePath.toFile());
-						
-						newProj.addProjectData(projData);
-					}
-					else if(lineParts[0].startsWith(ANNOTATIONS_SUBDIR)){
-						AnnotationSet annotation = new AnnotationSet(filePath.toFile());
-						IProjectData annotatedData = newProj.getProjectData(lineParts[1]);
-						
-						newProj.addAnnotation(annotation, annotatedData);
-					}
-					else if(lineParts[0].startsWith(RESULTS_SUBDIR)){
-//						Result result = new Result(filePath.toFile());
-//						
-//						//TODO: parse affected files from lineParts[1]
-//						newProj.addResult(result, analyzedData)
-					}
-				}
+			String jsonStr = "";
+			
+			while(reader.ready()){
+				 jsonStr += reader.readLine();
+				 jsonStr += "\n";
 			}
-			else{
-				return null;
-			}
+			
+			newProj = ProjectTranslator.fromJson(jsonStr, parentDir);
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch(IOException ioe) {
+			ioe.printStackTrace();
 			return null;
 		}
 		
@@ -165,8 +180,11 @@ public class Project {
 	
 	/**
 	 * Sets the name of this Project.
+	 * Note: Parameter projName cannot be null.
 	 */
 	public void setName(String projName){
+		ParameterCheck.notNull(projName, "projName");
+		
 		projectName = projName;
 	}
 	
@@ -217,23 +235,35 @@ public class Project {
 	 * 			enum option is provided.
 	 */
 	public IPath getSubdirectory(Subdirectory subdir){
-		String subdirPath;
+		String groupName;
 		
 		switch(subdir){
 			case Data:
-				subdirPath = DATA_SUBDIR;
+				groupName = DATA_SUBDIR_DISPLAY;
 				break;
 			case Results:
-				subdirPath = RESULTS_SUBDIR;
+				groupName = RESULTS_SUBDIR_DISPLAY;
 				break;
 			case Annotations:
-				subdirPath = ANNOTATIONS_SUBDIR;
+				groupName = ANNOTATIONS_SUBDIR;
 				break;
 			default:
 				return null;
 		}
 		
-		return getProjectDirectory().append(subdirPath);
+		return getPathToGroup(getGroup(groupName));
+	}
+	
+	/**
+	 * Returns the full path to the given ProjectGroup or null if it is not in
+	 * this Project.
+	 */
+	public IPath getPathToGroup(ProjectGroup group){
+		if(containsGroup(group)){
+			return getProjectDirectory().append(group.getGroupPath());
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -248,22 +278,28 @@ public class Project {
 	/**
 	 * Adds the given ProjectData to the Project if it is not already in the
 	 * Project and is not null.
-	 * Note: Results and Annotations should not be added with this method.
+	 * The ProjectData is added to the given ProjectGroup.
+	 * Note: Results and AnnotationSets should not be added with this method,
+	 * they should instead use the addResult and addAnnotation respectively.
 	 * 
 	 * @param projData	The ProjectData to be added to the Project.
 	 * 
 	 * @return	True iff the ProjectData was successfully added, false
 	 * 			otherwise.
 	 */
-	public boolean addProjectData(IProjectData projData){
-		int id = getNextId();
+	public boolean addProjectData(IProjectData projData, 
+			ProjectGroup parentGroup){
 		
-		if(projData == null || projectData.containsKey(projData)){
+		if(projData == null || projectData.containsKey(projData) ||
+				!groups.containsKey(parentGroup)){
 			return false;
 		}
 		
+		int id = getNextId();
+
 		projectData.put(projData, id);
 		annotationSets.put(id, null);
+		addDataToGroup(projData, parentGroup);
 		
 		notifyListeners();
 		
@@ -271,18 +307,30 @@ public class Project {
 	}
 	
 	/**
+	 * Adds the given ProjectData to the Project as addProjectData(IProjectData,
+	 * ProjectGroup) but uses the root ProjectData group as a default
+	 * ProjectGroup.
+	 */
+	public boolean addProjectData(IProjectData projData){
+		return addProjectData(projData, projDataGroup);
+	}
+	
+	/**
 	 * Adds the given Result to the Project as dependent upon all of the
 	 * ProjectData provided in the analyzedData collection. Null Results or
 	 * ProjectData collections are disallowed, and all of the ProjectData
 	 * objects in the collection must be present within this Project.
+	 * The Result is added to the given ProjectGroup.
 	 * 
 	 * @param result		The Result to be added.
 	 * @param analyzedData	A collection of ProjectData objects upon which the
 	 * 						Result is dependent.
+	 * @param parentGroup	The ProjectGroup that the Result is to be placed in.
 	 * 
 	 * @return	True iff the Result was added successfully, false otherwise.
 	 */
-	public boolean addResult(Result result, Collection<IProjectData> analyzedData){
+	public boolean addResult(Result result,
+			Collection<IProjectData> analyzedData, ProjectGroup parentGroup){
 		HashSet<Integer> dataIds = new HashSet<Integer>();
 		
 		if(analyzedData == null || analyzedData.isEmpty()){
@@ -297,7 +345,7 @@ public class Project {
 			dataIds.add(projectData.get(projData));
 		}
 		
-		if(addProjectData(result)){
+		if(addProjectData(result, parentGroup)){
 			results.put(result, dataIds);
 			
 			return true;
@@ -307,10 +355,22 @@ public class Project {
 	}
 	
 	/**
+	 * Adds the given Result to the Project as addResult(Result,
+	 * Collection<IProjectData>, ProjectGroup) but uses the root Results group
+	 * as a default ProjectGroup.
+	 */
+	public boolean addResult(Result result,
+			Collection<IProjectData> analyzedData){
+		
+		return addResult(result, analyzedData, resultsGroup);
+	}
+	
+	/**
 	 * Adds the given AnnotationSet to the Project as markup for the given
 	 * ProjectData. Both the AnnotationSet and ProjectData objects must not be
 	 * null, and the ProjectData object must be both in the Project and not
 	 * already annotated.
+	 * The AnnotationSet is added to the root annotations group as a default.
 	 * 
 	 * @param annotationSet	The AnnotationSet to be added to the Project.
 	 * @param annotatedData	The ProjectData that the AnnotationSet is marking up.
@@ -324,11 +384,67 @@ public class Project {
 		if(containsProjectData(annotatedData) && !isAnnotated(annotatedData)){
 			dataId = projectData.get(annotatedData);
 			
-			if(addProjectData(annotationSet)){
+			if(addProjectData(annotationSet, annotationsGroup)){
 				annotationSets.put(dataId, annotationSet);
 				
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Adds the given ProjectGroup to this Project if it wasn't already added.
+	 * 
+	 * @param newGroup	The new ProjectGroup to be added.
+	 * 
+	 * @return	True if the ProjectGroup was added successfully, false
+	 * 			otherwise.
+	 */
+	public boolean addGroup(ProjectGroup newGroup){
+		if(newGroup == null || groups.containsKey(newGroup)){
+			return false;
+		}
+		
+		int id = getNextId();
+		
+		groups.put(newGroup, id);
+		groupContents.put(id, new HashSet<Integer>());
+		
+		return true;
+	}
+	
+	/**
+	 * Adds the given Project Data to the given ProjectGroup if they are both
+	 * in this Project.
+	 * Note: This also removes the Project Data from its previous group,
+	 * if any, as Project Data may only be in one group at a time.
+	 * 
+	 * @param projData	The Project Data to be added to the group.
+	 * @param group		The ProjectGroup into which the Project Data is to be
+	 * 					added.
+	 * 
+	 * @return	True iff the data was added successfully to the group, false
+	 * 			otherwise.
+	 */
+	public boolean addDataToGroup(IProjectData projData, ProjectGroup group){
+		if(containsGroup(group) && containsProjectData(projData)){
+			int projDataId = projectData.get(projData);
+
+			//Remove ProjectData from other group if any
+			for(HashSet<Integer> contents: groupContents.values()){
+				for(int dataId: contents){
+					if(dataId == projDataId){
+						contents.remove(projDataId);
+					}
+				}
+			}
+			
+			groupContents.get(groups.get(group)).add(projDataId);
+			//TODO: Move the ProjectData File as needed
+			
+			return true;
 		}
 		
 		return false;
@@ -397,6 +513,25 @@ public class Project {
 	}
 	
 	/**
+	 * Removes from this Project the given ProjectGroup if it exists.
+	 * 
+	 * @param group	The ProjectGroup to be removed.
+	 * 
+	 * @return	True iff the ProjectGroup was removed, false if the group was
+	 * 			not in this Project to begin with.
+	 */
+	public boolean removeGroup(ProjectGroup group){
+		if(containsGroup(group)){
+			int id = groups.remove(group);
+			groupContents.remove(id);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Returns whether or not the given ProjectData is in this Project.
 	 */
 	public boolean containsProjectData(IProjectData projData){
@@ -413,6 +548,21 @@ public class Project {
 	 */
 	public boolean containsProjectData(String projDataName){
 		return getProjectData(projDataName) != null;
+	}
+
+	/**
+	 * Returns whether or not the given ProjectGroup is in this Project.
+	 */
+	public boolean containsGroup(ProjectGroup group){
+		return groups.containsKey(group);
+	}
+	
+	/**
+	 * Returns whether or not this Project contains a ProjectGroup of the given
+	 * name.
+	 */
+	public boolean containsGroup(String groupName){
+		return getGroup(groupName) != null;
 	}
 	
 	/**
@@ -461,6 +611,89 @@ public class Project {
 		}
 		
 		return originalData;
+	}
+	
+	/**
+	 * Returns all of the Project Data associated with the given Result object
+	 * or an empty collection if the Result is not in this Project.
+	 */
+	public Collection<IProjectData> getDataForResult(Result result){
+		if(containsProjectData(result)){
+			HashSet<IProjectData> affectedData = new HashSet<IProjectData>();
+			
+			for(int projDataId: results.get(result)){
+				affectedData.add(getProjectDataById(projDataId));
+			}
+			
+			return affectedData;
+		}
+		
+		return new HashSet<IProjectData>();
+	}
+	
+	/**
+	 * Returns all of the ProjectGroups in this Project.
+	 */
+	public Collection<ProjectGroup> getGroups(){
+		return groups.keySet();
+	}
+	
+	/**
+	 * Returns the ProjectGroup with the given name if one exists in this
+	 * Project.
+	 * 
+	 * @param groupName	The display name of the ProjectGroup to be returned.
+	 * 
+	 * @return	The ProjectGroup instance of the given name, or null.
+	 */
+	public ProjectGroup getGroup(String groupName){
+		for(ProjectGroup group: groups.keySet()){
+			if(group.getName().equals(groupName)){
+				return group;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns all of the Project Data contained within the given ProjectGroup
+	 * or an empty collection if there is nothing in the group.
+	 */
+	public Collection<IProjectData> getDataInGroup(ProjectGroup group){
+		TreeSet<IProjectData> groupedData = new TreeSet<IProjectData>();
+		
+		if(containsGroup(group)){
+			int groupId = groups.get(group);
+			
+			for(int projDataId: groupContents.get(groupId)){
+				groupedData.add(getProjectDataById(projDataId));
+			}
+		}
+		
+		return groupedData;
+	}
+	
+	/**
+	 * Returns the ProjectGroup containing the given ProjectData or null if the
+	 * given data does not exist in this Project.
+	 */
+	public ProjectGroup getGroupFor(IProjectData projData){
+		if(containsProjectData(projData)){
+			int id = projectData.get(projData);
+			
+			for(Entry<Integer, HashSet<Integer>> groupPair: 
+				groupContents.entrySet()){
+				
+				for(Integer dataId: groupPair.getValue()){
+					if(id == dataId){
+						return getGroupById(groupPair.getKey());
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -602,7 +835,8 @@ public class Project {
 	public boolean createProjectFiles() throws IOException{
 		IPath projectDir = getProjectDirectory();
 		
-		if(projectDir == null || Files.exists(projectDir.toFile().toPath())){
+		if(projectDir == null || Files.exists(projectDir.toFile().toPath()) ||
+				hasProjectFiles){
 			return false;
 		}
 		
@@ -610,9 +844,13 @@ public class Project {
 		Files.createDirectory(projectDir.toFile().toPath());
 		
 		//Create sub-directories
-		Files.createDirectory(getSubdirectory(Subdirectory.Data).toFile().toPath());
-		Files.createDirectory(getSubdirectory(Subdirectory.Results).toFile().toPath());
-		Files.createDirectory(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
+//		Files.createDirectory(getSubdirectory(Subdirectory.Data).toFile().toPath());
+//		Files.createDirectory(getSubdirectory(Subdirectory.Results).toFile().toPath());
+//		Files.createDirectory(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
+		
+		for(ProjectGroup group: groups.keySet()){
+			group.createGroupDirectory(projectDir);
+		}
 		
 		//Create project file
 		updateProjectFile();
@@ -635,8 +873,14 @@ public class Project {
 	public boolean deleteProjectContentsOnDisk() throws IOException{
 		if(hasProjectFiles)
 		{
+			//Delete all ProjectData
 			for(IProjectData projData: projectData.keySet()){
 				projData.deleteContentsOnDisk();
+			}
+			
+			//Delete all ProjectGroups
+			for(ProjectGroup group: groups.keySet()){
+				group.deleteGroupDirectory(getProjectDirectory());
 			}
 			
 			deleteProjectFiles();
@@ -655,44 +899,23 @@ public class Project {
 	 * @throws IOException
 	 */
 	public void updateProjectFile() throws IOException{
-		
 		Path projectFilePath = getProjectFile().toFile().toPath();
 		
-		BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
-				Charset.defaultCharset());
-		
-		writer.write(projectName + "\n");
-
-		for(IProjectData projData: projectData.keySet()){
-				
-			String parentFolderName = projData.getFile().getParentFile().getName();
-			String lineToWrite = "";
+		try(BufferedWriter writer = Files.newBufferedWriter(projectFilePath,
+				Charset.defaultCharset())){
 			
-			if(parentFolderName.equalsIgnoreCase(DATA_SUBDIR)){
-				lineToWrite += DATA_SUBDIR;
-				lineToWrite += "/" + projData.getFile().getName();
-				
-				if(isAnnotated(projData)){
-					AnnotationSet annotation = getAnnotation(projData);
-					
-					lineToWrite += "\n" + ANNOTATIONS_SUBDIR;
-					lineToWrite += "/" + annotation.getFile().getName();
-					lineToWrite += ":" + projData.getName();
-				}
-			}
-			else if(parentFolderName.equalsIgnoreCase(ANNOTATIONS_SUBDIR)){
-//				lineToWrite += ANNOTATIONS_SUBDIR;
-				continue;
-			}
-			else if(parentFolderName.equalsIgnoreCase(RESULTS_SUBDIR)){
-				lineToWrite += RESULTS_SUBDIR;
-				lineToWrite += "/" + projData.getFile().getName();
-			}
+			String jsonStr = ProjectTranslator.toJson(this);
 			
-			writer.write(lineToWrite + "\n");
+			if(jsonStr != null){
+				writer.write(jsonStr);
+			}
+			else{
+				//TODO: Throw exception of some sort
+			}
 		}
-		
-		writer.close();
+		catch(IOException ioe){
+			ioe.printStackTrace();
+		}
 	}
 	
 	/**
@@ -702,6 +925,7 @@ public class Project {
 		return getName();
 	}
 	
+	@Override
 	public int hashCode(){
 		return getName().hashCode();
 	}
@@ -749,12 +973,38 @@ public class Project {
 		Files.delete(getProjectFile().toFile().toPath());
 		
 		//Delete sub-directories
-		Files.delete(getSubdirectory(Subdirectory.Data).toFile().toPath());
-		Files.delete(getSubdirectory(Subdirectory.Results).toFile().toPath());
-		Files.delete(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
+//		Files.delete(getSubdirectory(Subdirectory.Data).toFile().toPath());
+//		Files.delete(getSubdirectory(Subdirectory.Results).toFile().toPath());
+//		Files.delete(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
 		
 		//Delete root project directory
 		Files.delete(projectDir.toFile().toPath());
+	}
+
+	/**
+	 * Looks up Project Data by its id.
+	 */
+	private IProjectData getProjectDataById(int id){
+		for(Entry<IProjectData, Integer> projData: projectData.entrySet()){
+			if(projData.getValue() == id){
+				return projData.getKey();
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Looks up a ProjectGroup by its id.
+	 */
+	private ProjectGroup getGroupById(int id){
+		for(Entry<ProjectGroup, Integer> group: groups.entrySet()){
+			if(group.getValue() == id){
+				return group.getKey();
+			}
+		}
+		
+		return null;
 	}
 	
 	private int getNextId(){

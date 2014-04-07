@@ -10,35 +10,24 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import LinGUIne.wizards.ImportFileWizard;
+import LinGUIne.wizards.ExportFileWizard;
 
 /**
- * Handler for importing one or more Files into a Project in the workspace.
+ * Handles exporting Project Data to other file formats.
  * 
  * @author Kyle Mullins
  */
-public class ImportHandler {
-	
+public class ExportFileHandler {
 	@Inject
 	private MApplication application;
 	
-	/**
-	 * Opens the ImportFileWizard.
-	 * 
-	 * @param shell	The currently active Shell.
-	 */
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
+		ExportFileWizard exportWizard = new ExportFileWizard();
+		WizardDialog wizardDialog = new WizardDialog(shell, exportWizard);
 		
-		ImportFileWizard importWizard = new ImportFileWizard();
-		WizardDialog wizardDialog = new WizardDialog(shell, importWizard);
+		ContextInjectionFactory.inject(exportWizard, application.getContext());
 		
-		ContextInjectionFactory.inject(importWizard, application.getContext());
-		
-		int retval = wizardDialog.open();
-		
-		if(retval == WizardDialog.OK){
-			//TODO: stuff?
-		}
+		wizardDialog.open();
 	}
 }

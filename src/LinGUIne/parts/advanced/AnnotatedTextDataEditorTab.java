@@ -2,10 +2,16 @@ package LinGUIne.parts.advanced;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 
+import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.AnnotationSetContents;
 import LinGUIne.model.IProjectData;
@@ -27,6 +33,7 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 	private TextDataContents projectDataContents;
 	private AnnotationSet annotationSet;
 	private AnnotationSetContents annotationSetContents;
+	private AnnotatedTextDataSettings editorSettings;
 	
 	public AnnotatedTextDataEditorTab(CTabFolder parent, int style,
 			TextData projData, AnnotationSet annotation){
@@ -39,6 +46,26 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 		annotationSetContents = annotationSet.getContents();
 		
 		super.createComposite();
+		
+		editorSettings = new AnnotatedTextDataSettings(this, projectDataContents,
+				annotationSetContents);
+		
+		textArea.addCaretListener(new CaretListener(){
+			@Override
+			public void caretMoved(CaretEvent event) {
+				editorSettings.caretMoved(event.caretOffset);
+			}
+		});
+		
+		textArea.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				editorSettings.selectionChanged(new Point(e.x, e.y));
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
 	}
 	
 	@Override
@@ -57,27 +84,49 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 	public <T extends IProjectData> boolean canOpenDataType(Class<T> type) {
 		return type == TextData.class || type == AnnotationSet.class;
 	}
+	
+	@Override
+	public boolean hasEditorSettings() {
+		return true;
+	}
 
 	@Override
+	public IEditorSettings getEditorSettings() {
+		return editorSettings;
+	}
+
+	public void annotationsChanged(){
+		int caretOffset = textArea.getCaretOffset();
+		
+		setDirty(true);
+		updateTextArea();
+		
+		textArea.setCaretOffset(caretOffset);
+	}
+	
+	@Override
 	protected void updateTextArea() {
+		textArea.setText("");
 		textArea.append(projectDataContents.getText());
 		
 		for(Tag tag: annotationSetContents.getTags()){
-			for(IAnnotation annotation:
-				annotationSetContents.getAnnotations(tag)){
-				
-				if(annotation instanceof TextAnnotation){
-					TextAnnotation textAnnotation = ((TextAnnotation)annotation);
+			if(tag.getEnabled()){
+				for(IAnnotation annotation:
+					annotationSetContents.getAnnotations(tag)){
 					
-					StyleRange style = new StyleRange(
-							textAnnotation.getStartIndex(),
-							textAnnotation.getLength(),
-							tag.getColor(), textArea.getBackground(), SWT.BOLD);
-					
-					textArea.setStyleRange(style);
-				}
-				else if(annotation instanceof MetaAnnotation){
-					//TODO: Handle annotations of other annotations
+					if(annotation instanceof TextAnnotation){
+						TextAnnotation textAnnotation = ((TextAnnotation)annotation);
+						
+						StyleRange style = new StyleRange(
+								textAnnotation.getStartIndex(),
+								textAnnotation.getLength(),
+								tag.getColor(), textArea.getBackground(), SWT.BOLD);
+						
+						textArea.setStyleRange(style);
+					}
+					else if(annotation instanceof MetaAnnotation){
+						//TODO: Handle annotations of other annotations
+					}
 				}
 			}
 		}

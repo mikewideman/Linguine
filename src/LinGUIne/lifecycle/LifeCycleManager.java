@@ -3,6 +3,7 @@ package LinGUIne.lifecycle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
@@ -13,10 +14,12 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
+import org.eclipse.swt.widgets.Display;
 
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.model.VisualizationPluginManager;
+import LinGUIne.utilities.FileUtils;
 
 /**
  * Hooks into the Eclipse life cycle to perform operations at startup.
@@ -42,30 +45,43 @@ public class LifeCycleManager {
 		File workbenchXMI = Platform.getLocation().append(".metadata").append(
 				".plugins").append("org.eclipse.e4.workbench").append(
 				"workbench.xmi").toFile();
+		File workbenchBackup = FileUtils.appendPath(workbenchXMI.getParentFile(),
+				"workbench.bak");
+		boolean restoredFromBackup = false;
+		
+		//If there is no workbench.xmi but there is a backup, restore the backup
+		if(!workbenchXMI.exists() && workbenchBackup.exists()){
+			try(OutputStream outStream = Files.newOutputStream(
+					workbenchXMI.toPath())){
+				
+				Files.copy(workbenchBackup.toPath(), outStream);
+				restoredFromBackup = true;
+			}
+			catch(IOException ioe){
+				ioe.printStackTrace();
+			}
+		}
 		
 		if(workbenchXMI.exists()){
+			if(!restoredFromBackup){
+				//Backup the workbench.xmi file in case we terminate unusually
+				try(OutputStream outStream = Files.newOutputStream(
+						workbenchBackup.toPath())){
+					
+					Files.copy(workbenchXMI.toPath(), outStream);
+				}
+				catch(IOException ioe) {
+					ioe.printStackTrace();
+				}
+			}
+			
 			try(BufferedReader reader = Files.newBufferedReader(
 					workbenchXMI.toPath(), Charset.defaultCharset())){
 				
-				String persistedStateLineStart = "<persistedState key=\"" + 
-						ProjectManager.PROJECT_LIST_KEY + "\" value=\"";
-				String persistedStateLineEnd = "\"/>";
-				
-				while(reader.ready()){
-					String line = reader.readLine().trim();
-					
-					if(line.startsWith(persistedStateLineStart)){
-						int beginIndex = persistedStateLineStart.length();
-						int endIndex = line.length() -
-								persistedStateLineEnd.length();
-						
-						projectManagerProjectList = line.substring(beginIndex, 
-								endIndex);
-					}
-				}
+				readPersistedStateFromWorkbench(reader);
 			}
-			catch(IOException e) {
-				e.printStackTrace();
+			catch(IOException ioe) {
+				ioe.printStackTrace();
 			}
 		}
 	}
@@ -108,4 +124,35 @@ public class LifeCycleManager {
 	 */
 	@PreSave
 	public void preSave(MApplication application){}
+	
+	private void readPersistedStateFromWorkbench(BufferedReader reader)
+			throws IOException{
+		
+		String persistedStateLineStart = "<persistedState key=\"" + 
+				ProjectManager.PROJECT_LIST_KEY + "\" value=\"";
+		String persistedStateLineEnd = "\"/>";
+		
+		while(reader.ready()){
+			String line = reader.readLine().trim();
+			
+			if(line.startsWith(persistedStateLineStart)){
+				int beginIndex = persistedStateLineStart.length();
+				int endIndex = line.length() -
+						persistedStateLineEnd.length();
+				
+				projectManagerProjectList = line.substring(beginIndex, 
+						endIndex);
+			}
+		}
+	}
+	
+	public static Display getDisplay() {
+		Display display = Display.getCurrent();
+		//may be null if outside the UI thread
+		if (display == null){
+			display = Display.getDefault();
+		}
+		
+		return display;		
+	}
 }

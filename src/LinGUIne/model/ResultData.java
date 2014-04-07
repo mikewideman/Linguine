@@ -5,7 +5,7 @@ package LinGUIne.model;
  * 
  * @author Peter Dimou
  */
-public class ResultData {
+public class ResultData implements Comparable<ResultData>{
 	
 	private Object data;
 	
@@ -23,42 +23,66 @@ public class ResultData {
 	 * 
 	 * @return The Class of the data this object is holding.
 	 */
-	public Class getType() {
+	public Class<?> getType() {
 		return data.getClass();
 	}
 	
 	/**
-	 * Returns the data's toString method.
+	 * Returns the data as a String.
 	 *  
-	 * @return The object's toString method.
+	 * @return The stringified version of the data.
 	 */
 	public String getAsString() {
 		return data.toString();
 	}
 	
 	/**
-	 * Returns the object as an Integer iff the held data is of type Integer.
+	 * Returns the data as an Integer iff it is of type Integer.
 	 * 
-	 * @return The object as an Integer
+	 * @return The data as an Integer or null if it is not an Integer.
 	 */
 	public Integer getAsInteger() {
-		if(data.getClass().equals(Integer.class)) {
+		if(data instanceof Integer) {
 			return (Integer)data;
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
 
 	/**
-	 * Returns the object as a Double iff the held data is of type Double.
+	 * Returns the data as a Double iff it is of type Double.
 	 * 
-	 * @return The object as an Double
+	 * @return The data as an Double or null if it is not a Double.
 	 */
 	public Double getAsDouble() {
-		if(data.getClass().equals(Integer.class)) {
+		if(data instanceof Double) {
 			return (Double)data;
-		} else {
+		}
+		else {
 			return null;
 		}
+	}
+	
+	@Override
+	public int compareTo(ResultData other) {
+		if(getType().equals(other.getType())){
+			Integer intVal = getAsInteger();
+			Double doubleVal = getAsDouble();
+			String stringVal = getAsString();
+			
+			if(intVal != null){
+				return intVal.compareTo(other.getAsInteger());
+			}
+			else if(doubleVal != null){
+				return doubleVal.compareTo(other.getAsDouble());
+			}
+			else{
+				return stringVal.compareTo(other.getAsString());
+			}
+		}
+		
+		return getType().getSimpleName().compareTo(
+				other.getType().getSimpleName());
 	}
 }
