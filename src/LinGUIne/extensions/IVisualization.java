@@ -38,6 +38,13 @@ public interface IVisualization {
 	 *         with
 	 */
 	Collection<Class<? extends Result>> getSupportedResultTypes();
+	
+	/**
+	 * Set the results that this visualization needs in order to run.
+	 * 
+	 * @return If the results were accepted
+	 */
+	boolean setResults(Collection<Result> results);
 
 	/**
 	 * Returns whether this visualization has a wizard.

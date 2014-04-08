@@ -101,6 +101,12 @@ public class VisualizationPluginManager {
 				return null;
 			}
 
+			@Override
+			public boolean setResults(Collection<Result> results) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
 		};
 
 		final IVisualization vis2 = new IVisualization() {
@@ -158,6 +164,12 @@ public class VisualizationPluginManager {
 			@Override
 			public VisualizationWizard getWizard() {
 				return null;
+			}
+
+			@Override
+			public boolean setResults(Collection<Result> results) {
+				// TODO Auto-generated method stub
+				return false;
 			}
 
 		};
