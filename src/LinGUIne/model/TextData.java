@@ -93,6 +93,7 @@ public class TextData implements ITypedProjectData<TextDataContents> {
 					writer.write(newTextContents.getText());
 				}
 				catch(IOException e){
+					System.out.println("HEY I FOUND A PROBLEM " + e);
 					return false;
 				}
 			}
