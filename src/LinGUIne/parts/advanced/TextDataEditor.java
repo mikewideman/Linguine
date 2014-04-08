@@ -1,13 +1,21 @@
 package LinGUIne.parts.advanced;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.extensions.IProjectDataEditor;
 import LinGUIne.model.IProjectData;
@@ -17,6 +25,9 @@ import LinGUIne.model.TextDataContents;
 
 public class TextDataEditor implements IProjectDataEditor {
 
+	@Inject
+	private IEventBroker eventBroker;
+	
 	private StyledText textArea;
 	
 	private Project parentProject;
@@ -58,6 +69,7 @@ public class TextDataEditor implements IProjectDataEditor {
 		});
 		
 		textArea.append(projectDataContents.getText());
+		createContextMenu(textArea);
 	}
 
 	@Override
@@ -114,5 +126,37 @@ public class TextDataEditor implements IProjectDataEditor {
 			isDirty = dirty;
 			dirtyListener.dirtyChanged(isDirty);
 		}
+	}
+	
+	private void createContextMenu(Composite container){
+		final TextDataEditor self = this;
+		
+		Menu contextMenu = new Menu(container);
+		container.setMenu(contextMenu);
+		
+		MenuItem editAnnotationsItem = new MenuItem(contextMenu, SWT.NONE);
+		editAnnotationsItem.setText("Edit Annotations");
+		editAnnotationsItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				eventBroker.post(LinGUIneEvents.UILifeCycle.EDIT_ANNOTATIONS,
+						self);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		MenuItem selectAllItem = new MenuItem(contextMenu, SWT.NONE);
+		selectAllItem.setText("Select All");
+		selectAllItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				textArea.setSelection(0, textArea.getText().length());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
 	}
 }

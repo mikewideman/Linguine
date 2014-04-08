@@ -75,7 +75,10 @@ public class SettingsPart {
 			}
 			
 			mainLayout.topControl = currentComposite;
-			mainParent.layout();
+			
+			if(!mainLayout.topControl.isDisposed()){
+				mainParent.layout();
+			}
 		}
 	}
 }

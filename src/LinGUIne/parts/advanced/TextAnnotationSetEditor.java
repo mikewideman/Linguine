@@ -13,6 +13,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 
 import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.extensions.IProjectDataEditor;
@@ -43,7 +45,13 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 	
 	@Override
 	public boolean canOpenData(IProjectData data, Project proj) {
-		return data instanceof TextData && proj.isAnnotated(data);
+		if(data instanceof AnnotationSet){
+			AnnotationSet annotations = (AnnotationSet)data;
+			
+			return proj.getDataForAnnotation(annotations) instanceof TextData;
+		}
+		
+		return false;
 	}
 
 	@Override
@@ -95,15 +103,16 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 		});
 		
 		updateTextArea();
+		createContextMenu(textArea);
 	}
 
 	@Override
 	public void setInputData(IProjectData data, Project parentProj) {
 		if(canOpenData(data, parentProj)){
-			projectData = (TextData)data;
-			projectDataContents = projectData.getContents();
-			annotationSet = parentProj.getAnnotation(projectData);
+			annotationSet = (AnnotationSet)data;
 			annotationSetContents = annotationSet.getContents();
+			projectData = (TextData)parentProj.getDataForAnnotation(annotationSet);
+			projectDataContents = projectData.getContents();
 			parentProject = parentProj;
 			
 			editorSettings = new TextAnnotationSetSettings(this, projectDataContents,
@@ -163,7 +172,6 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 	public void annotationsChanged(){
 		int caretOffset = textArea.getCaretOffset();
 		
-		setDirty(true);
 		updateTextArea();
 		
 		textArea.setCaretOffset(caretOffset);
@@ -197,5 +205,22 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 				}
 			}
 		}
+	}
+	
+	private void createContextMenu(Composite container){
+		Menu contextMenu = new Menu(container);
+		container.setMenu(contextMenu);
+		
+		MenuItem selectAllItem = new MenuItem(contextMenu, SWT.NONE);
+		selectAllItem.setText("Select All");
+		selectAllItem.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				textArea.setSelection(0, textArea.getText().length());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
 	}
 }

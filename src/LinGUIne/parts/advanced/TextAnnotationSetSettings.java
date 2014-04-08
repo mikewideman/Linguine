@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
@@ -13,6 +14,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -73,8 +76,11 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 				parentComposite, SWT.V_SCROLL);
 		scrollable.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
+		GridLayout layout = new GridLayout(1, false);
+		layout.verticalSpacing = 15;
+		
 		final Composite container = new Composite(scrollable, SWT.NONE);
-		container.setLayout(new GridLayout(1, false));
+		container.setLayout(layout);
 
 		scrollable.setContent(container);
 		scrollable.setExpandHorizontal(true);
@@ -156,13 +162,22 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 			thePanel.setLayout(new GridLayout(1, false));
 			
 			GridData layoutData = new GridData(GridData.FILL_BOTH);
-			layoutData.heightHint = 250;
+			layoutData.heightHint = 275;
 			thePanel.setLayoutData(layoutData);
 		}
 		
 		public void populate(){
+			Label lblHeader = new Label(thePanel, SWT.NONE);
+			lblHeader.setText("Current Selection");
+			
+			FontDescriptor descriptor = FontDescriptor.createFrom(
+					lblHeader.getFont());
+			descriptor = descriptor.setStyle(SWT.BOLD).setHeight(10);
+
+			lblHeader.setFont(descriptor.createFont(lblHeader.getDisplay()));
+			
 			Label lblTagsAtLocation = new Label(thePanel, SWT.NONE);
-			lblTagsAtLocation.setText("Tags at caret location:");
+			lblTagsAtLocation.setText("Tags in selection:");
 			
 			lstTagsAtLocation = new List(thePanel, SWT.BORDER | SWT.V_SCROLL |
 					SWT.H_SCROLL);
@@ -191,11 +206,12 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 			});
 			
 			Label lblSelectedAnnotation = new Label(thePanel, SWT.NONE);
-			lblSelectedAnnotation.setText("Selected annotation text:");
+			lblSelectedAnnotation.setText("Annotation text:");
 			
 			txtAnnotationText = new Text(thePanel, SWT.BORDER | SWT.WRAP |
 					SWT.V_SCROLL);
 			txtAnnotationText.setLayoutData(new GridData(GridData.FILL_BOTH));
+			txtAnnotationText.setEditable(false);
 			
 			Composite annotationButtons = new Composite(thePanel, SWT.NONE);
 			annotationButtons.setLayout(new GridLayout(2, false));
@@ -216,6 +232,7 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 					
 					annotationContents.addAnnotation(newAnnotation);
 					parentEditor.annotationsChanged();
+					parentEditor.setDirty(true);
 				}
 
 				@Override
@@ -229,6 +246,7 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 				public void widgetSelected(SelectionEvent e) {
 					annotationContents.removeAnnotation(selectedAnnotation);
 					parentEditor.annotationsChanged();
+					parentEditor.setDirty(true);
 				}
 
 				@Override
@@ -249,6 +267,11 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 				
 				for(IAnnotation annotation: annotationsAtLocation){
 					lstTagsAtLocation.add(annotation.getTag().getName());
+				}
+				
+				if(!annotationsAtLocation.isEmpty()){
+					lstTagsAtLocation.setSelection(0);
+					selectedAnnotation = annotationsAtLocation.getFirst();
 				}
 			}
 			
@@ -297,11 +320,20 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 			thePanel.setLayout(new GridLayout(1, false));
 			
 			GridData layoutData = new GridData(GridData.FILL_BOTH);
-			layoutData.heightHint = 150;
+			layoutData.heightHint = 175;
 			thePanel.setLayoutData(layoutData);
 		}
 		
 		public void populate(){
+			Label lblHeader = new Label(thePanel, SWT.NONE);
+			lblHeader.setText("Current Tag");
+			
+			FontDescriptor descriptor = FontDescriptor.createFrom(
+					lblHeader.getFont());
+			descriptor = descriptor.setStyle(SWT.BOLD).setHeight(10);
+
+			lblHeader.setFont(descriptor.createFont(lblHeader.getDisplay()));
+			
 			Composite colorPanel = new Composite(thePanel, SWT.NONE);
 			colorPanel.setLayout(new GridLayout(3, false));
 			colorPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -330,6 +362,7 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 						if(!newColor.equals(selectedTag.getColor())){
 							selectedTag.setColor(newColor);
 							parentEditor.annotationsChanged();
+							parentEditor.setDirty(true);
 							update();
 						}
 					}
@@ -364,6 +397,7 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					selectedTag.setEnabled(chkTagEnabled.getSelection());
+					parentEditor.annotationsChanged();
 				}
 
 				@Override
@@ -381,6 +415,7 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 
 				txtTagComment.setEnabled(true);
 				btnChangeColor.setEnabled(true);
+				chkTagEnabled.setEnabled(true);
 			}
 			else{
 				txtTagComment.setText("");
@@ -389,6 +424,7 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 
 				txtTagComment.setEnabled(false);
 				btnChangeColor.setEnabled(false);
+				chkTagEnabled.setEnabled(false);
 			}
 		}
 	}
@@ -405,11 +441,20 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 			thePanel.setLayout(new GridLayout(1, false));
 			
 			GridData layoutData = new GridData(GridData.FILL_BOTH);
-			layoutData.heightHint = 100;
+			layoutData.heightHint = 150;
 			thePanel.setLayoutData(layoutData);
 		}
 		
 		public void populate(){
+			Label lblHeader = new Label(thePanel, SWT.NONE);
+			lblHeader.setText("Current File");
+			
+			FontDescriptor descriptor = FontDescriptor.createFrom(
+					lblHeader.getFont());
+			descriptor = descriptor.setStyle(SWT.BOLD).setHeight(10);
+
+			lblHeader.setFont(descriptor.createFont(lblHeader.getDisplay()));
+			
 			lstAllTags = new List(thePanel, SWT.BORDER | SWT.V_SCROLL |
 					SWT.H_SCROLL);
 			lstAllTags.setLayoutData(new GridData(GridData.FILL_BOTH));

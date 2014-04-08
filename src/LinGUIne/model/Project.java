@@ -632,6 +632,20 @@ public class Project {
 	}
 	
 	/**
+	 * Returns the Project Data associated with the given AnnotationSet object
+	 * or null if the AnnotationSet is not in this Project.
+	 */
+	public IProjectData getDataForAnnotation(AnnotationSet annotation){
+		for(Entry<Integer, AnnotationSet> pair: annotationSets.entrySet()){
+			if(annotation.compareTo(pair.getValue()) == 0){
+				return getProjectDataById(pair.getKey());
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Returns all of the ProjectGroups in this Project.
 	 */
 	public Collection<ProjectGroup> getGroups(){

@@ -1,8 +1,11 @@
 package LinGUIne.parts.advanced;
 
+import java.io.File;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -17,8 +20,11 @@ import org.osgi.service.event.EventHandler;
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.extensions.IProjectDataEditor;
+import LinGUIne.model.AnnotationSet;
+import LinGUIne.model.AnnotationSetContents;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
+import LinGUIne.model.Project.Subdirectory;
 
 public class DataEditorManager {
 
@@ -69,55 +75,102 @@ public class DataEditorManager {
 			IProjectData projData = openEvent.getProjectData();
 			Project project = openEvent.getParentProject();
 			
-			//Iterate through all currently open editor containers and check if any
-			//of them have the file asking to be opened, if so, simply activate that
-			//part and skip the rest of this
-			for(MPart part: modelService.findElements(application,
-					CONTAINER_PART_ID, MPart.class, null)){
-				
-				if(part.isVisible()){
-					ProjectDataEditorContainer editorContainer =
-							(ProjectDataEditorContainer)part.getObject();
-					IProjectDataEditor editor =
-							editorContainer.getProjectDataEditor();
-					
-					if(editor.getInputParentProject().equals(project) &&
-							editor.getInputProjectData().equals(projData)){
-						
-						partService.activate(part);
-						
-						return;
-					}
-				}
-			}
+			//Check if any open editors have the file asking to be opened,
+			//if so, simply activate that part and skip the rest of this
+			MPart existingPart = findAssociatedPart(projData, project);
 			
-			MPart newPart = partService.createPart(CONTAINER_PART_ID);
-			
-			partStack.getChildren().add(newPart);
-			partService.activate(newPart);
-			
-			IProjectDataEditor dataEditor;
-			
-			
-			//TODO: Actually iterate through all choices
-			if(new TextAnnotationSetEditor().canOpenData(projData, project)){
-				dataEditor = new TextAnnotationSetEditor();
-				
-			}
-			else if(new TextDataEditor().canOpenData(projData, project)){
-				dataEditor = new TextDataEditor();
+			if(existingPart != null){
+				partService.activate(existingPart);
 			}
 			else{
-				return;
+				MPart newPart = partService.createPart(CONTAINER_PART_ID);
+				
+				partStack.getChildren().add(newPart);
+				partService.activate(newPart);
+				
+				IProjectDataEditor dataEditor;
+				
+				//TODO: Actually iterate through all choices
+				if(new TextAnnotationSetEditor().canOpenData(projData, project)){
+					dataEditor = new TextAnnotationSetEditor();
+					
+				}
+				else if(new TextDataEditor().canOpenData(projData, project)){
+					dataEditor = new TextDataEditor();
+				}
+				else{
+					return;
+				}
+				
+				ContextInjectionFactory.inject(dataEditor, application.getContext());
+				dataEditor.setInputData(projData, project);
+				
+				ProjectDataEditorContainer editorContainer =
+						(ProjectDataEditorContainer)newPart.getObject();
+				editorContainer.setProjectDataEditor(dataEditor);
 			}
-			
-			dataEditor.setInputData(projData, project);
-			
-			ProjectDataEditorContainer editorContainer =
-					(ProjectDataEditorContainer)newPart.getObject();
-			editorContainer.setProjectDataEditor(dataEditor);
 		}
 	}
 	
+	/**
+	 * Called when a user attempts to edit the Annotations on a file.
+	 */
+	@Inject
+	public void editAnnotations(@Optional @UIEventTopic(LinGUIneEvents.
+			UILifeCycle.EDIT_ANNOTATIONS) IProjectDataEditor dataEditor){
+
+		if(dataEditor != null){
+			IProjectData projData = dataEditor.getInputProjectData();
+			Project project = dataEditor.getInputParentProject();
+			MPart parentPart = findAssociatedPart(projData, project);
+			AnnotationSet annotations;
+			
+			if(project.isAnnotated(projData)){
+				annotations = project.getAnnotation(projData);
+			}
+			//Create a new AnnotationSet for the ProjectData
+			else{
+				String annotationName = projData.getName() + ".ann";
+				File annotationFile = project.getSubdirectory(
+						Subdirectory.Annotations).append(annotationName).toFile();
+				
+				annotations = new AnnotationSet(annotationFile);
+				annotations.updateContents(new AnnotationSetContents());
+				project.addAnnotation(annotations, projData);
+			}
+			
+			OpenProjectDataEvent openEvent = new OpenProjectDataEvent(annotations,
+					project);
+			
+			partService.hidePart(parentPart);
+			parentPart.getParent().getChildren().remove(parentPart);
+			
+			fileOpenEvent(openEvent);
+		}
+	}
 	
+	/**
+	 * Returns the MPart that is associated with the given ProjectData and
+	 * Project or null if there isn't one.
+	 */
+	private MPart findAssociatedPart(IProjectData projData, Project project){
+		for(MPart part: modelService.findElements(application,
+				CONTAINER_PART_ID, MPart.class, null)){
+			
+			if(part.isVisible() && part.getObject() != null){
+				ProjectDataEditorContainer editorContainer =
+						(ProjectDataEditorContainer)part.getObject();
+				IProjectDataEditor editor =
+						editorContainer.getProjectDataEditor();
+				
+				if(editor.getInputParentProject().equals(project) &&
+						editor.getInputProjectData().equals(projData)){
+					
+					return part;
+				}
+			}
+		}
+		
+		return null;
+	}
 }

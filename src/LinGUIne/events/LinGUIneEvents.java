@@ -82,5 +82,10 @@ public class LinGUIneEvents {
 		 * Sent when the ProjectDataEditor that currently has focus changes.
 		 */
 		public static final String ACTIVE_EDITOR_CHANGED = UI_EVENTS_BASE_TOPIC + SEP + "ActiveEditorChanged";
+		
+		/**
+		 * Sent when the user attempts to edit the Annotations of some ProjectData.
+		 */
+		public static final String EDIT_ANNOTATIONS = UI_EVENTS_BASE_TOPIC + SEP + "EditAnnotations";
 	}
 }
