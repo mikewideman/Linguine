@@ -26,6 +26,7 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -34,6 +35,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -47,6 +49,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Table;
 
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
@@ -63,10 +66,12 @@ import LinGUIne.model.RootProjectGroup;
  * 
  * @author Kyle Mullins
  */
-public class ProjectExplorer {
+public class ProjectExplorer implements IPropertiesProvider{
 
 	private ProjectExplorerSelection projectSelection;
 	private TreeViewer tree;
+	
+	private ProjectExplorerProperties propertiesView;
 	
 	@Inject
 	ProjectManager projectMan;
@@ -121,6 +126,7 @@ public class ProjectExplorer {
 				
 				buildProjectExplorerSelection(selection);
 				
+				updatePropertiesView();
 				selectionService.setSelection(projectSelection);
 			}
 		});
@@ -194,8 +200,21 @@ public class ProjectExplorer {
 		tree.getTree().setFocus();
 	}
 
-	@PreDestroy
-	public void dispose() {}
+	@Override
+	public Composite getProperties(Composite parent){
+		if(propertiesView == null){
+			propertiesView = new ProjectExplorerProperties(projectMan);
+			propertiesView.createComposite(parent);
+		}
+		
+		return propertiesView.getComposite();
+	}
+	
+	private void updatePropertiesView(){
+		propertiesView.setInput(projectSelection);
+		eventBroker.post(LinGUIneEvents.UILifeCycle.PROPERTIES_VIEW_CHANGED,
+				this);
+	}
 	
 	/**
 	 * Builds the ProjectExplorer's context menu
@@ -283,6 +302,12 @@ public class ProjectExplorer {
 		tree.getTree().setMenu(contextMenu);
 	}
 
+	/**
+	 * Assembles the ProjectExplorerSelection object for the current state of
+	 * the ProjectExplorer.
+	 * 
+	 * @param selection	The current selection for the TreeViewer.
+	 */
 	private void buildProjectExplorerSelection(IStructuredSelection selection){
 		for(Object selected: selection.toList()){
 			//If the node is a root node, add it's Project

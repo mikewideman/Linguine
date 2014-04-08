@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
@@ -46,7 +48,7 @@ import LinGUIne.utilities.SafeAnalysis;
  * @author Pete Maresca
  * @author Kyle Mullins
  */
-public class QuickAnalysisPart {
+public class QuickAnalysisPart implements IPropertiesProvider {
 	
 	@Inject
 	private ProjectManager projectMan;
@@ -54,13 +56,19 @@ public class QuickAnalysisPart {
 	@Inject
 	private SoftwareModuleManager softwareModuleMan;
 	
+	@Inject
+	private IEventBroker eventBroker;
+	
 	private ProjectExplorerSelection projectSelection;
 	
 	private Composite myParent;
 	private ListViewer lstSoftwareModules;
 	private ListViewer lstAnalyses;
-	private Text txtDescription;
 	private Button btnRunAnalysis;
+
+	private Composite propertiesView;
+	private Label lblSelectedAnalysis;
+	private Text txtDescription;
 	private Label lblNumFiles;
 	private Label lblNumJobs;
 	
@@ -72,7 +80,7 @@ public class QuickAnalysisPart {
 	public void createComposite(Composite parent){
 		myParent = parent;
 		
-		GridLayout layout = new GridLayout(3, true);
+		GridLayout layout = new GridLayout(2, true);
 		parent.setLayout(layout);
 
 		Label lblLibraries = new Label(parent, SWT.NONE);
@@ -80,9 +88,6 @@ public class QuickAnalysisPart {
 
 		Label lblFeatures = new Label(parent, SWT.NONE);
 		lblFeatures.setText("Analyses");
-
-		Label lblDescription = new Label(parent, SWT.NONE);
-		lblDescription.setText("Description");
 
 		lstSoftwareModules = new ListViewer(parent, SWT.BORDER | SWT.V_SCROLL);
 
@@ -125,8 +130,9 @@ public class QuickAnalysisPart {
 					
 					lstAnalyses.setInput(softwareModuleMan.getAnalyses(
 							softwareModuleName));
-					txtDescription.setText("");
 					btnRunAnalysis.setEnabled(false);
+					
+					updatePropertiesView(null);
 				}
 			}
 		});
@@ -169,16 +175,12 @@ public class QuickAnalysisPart {
 				if(selection.size() > 0){
 					IAnalysisPlugin analysis = (IAnalysisPlugin)selection.getFirstElement();
 					
-					txtDescription.setText(analysis.getAnalysisDescription());
 					btnRunAnalysis.setEnabled(true);
+					
+					updatePropertiesView(analysis);
 				}
 			}
 		});
-
-		txtDescription = new Text(parent, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
-		txtDescription.setEditable(false);
-		txtDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
-		txtDescription.setBackground(lstAnalyses.getControl().getBackground());
 
 		btnRunAnalysis = new Button(parent, SWT.NONE);
 		btnRunAnalysis.setText("Run Analysis");
@@ -199,14 +201,6 @@ public class QuickAnalysisPart {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
-		lblNumFiles = new Label(parent, SWT.NONE);
-		lblNumFiles.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		lblNumFiles.setText("Selected files: 0");
-		
-		lblNumJobs = new Label(parent, SWT.NONE);
-		lblNumJobs.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		lblNumJobs.setText("Analysis jobs: 0");
-		
 		lstSoftwareModules.setInput(softwareModuleMan);
 	}
 
@@ -236,8 +230,71 @@ public class QuickAnalysisPart {
 				}
 			}
 			
+			updatePropertiesView(numFiles, numProjects);
+		}
+	}
+	
+	@Override
+	public Composite getProperties(Composite parent){
+		if(propertiesView == null){
+			createPropertiesView(parent);
+		}
+		
+		return propertiesView;
+	}
+	
+	private void createPropertiesView(Composite parent){
+		propertiesView = new Composite(parent, SWT.NONE);
+		propertiesView.setLayout(new GridLayout(1, false));
+		
+		lblSelectedAnalysis = new Label(propertiesView, SWT.NONE);
+		lblSelectedAnalysis.setText("Selected Analysis: ");
+		
+		Label lblDescription = new Label(propertiesView, SWT.NONE);
+		lblDescription.setText("Description");
+		
+		txtDescription = new Text(propertiesView, SWT.BORDER | SWT.V_SCROLL |
+				SWT.WRAP);
+		txtDescription.setEditable(false);
+		txtDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
+		txtDescription.setBackground(lstAnalyses.getControl().getBackground());
+		
+		Composite bottomContainer = new Composite(propertiesView, SWT.NONE);
+		bottomContainer.setLayout(new GridLayout(2, false));
+		
+		lblNumFiles = new Label(bottomContainer, SWT.NONE);
+		lblNumFiles.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lblNumFiles.setText("Selected files: 0");
+		
+		lblNumJobs = new Label(bottomContainer, SWT.NONE);
+		lblNumJobs.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lblNumJobs.setText("Analysis jobs: 0");
+	}
+	
+	private void updatePropertiesView(int numFiles, int numProjects){
+		if(propertiesView != null){
 			lblNumFiles.setText("Selected files: " + numFiles);
 			lblNumJobs.setText("Analysis jobs: " + numProjects);
+			
+			eventBroker.post(LinGUIneEvents.UILifeCycle.PROPERTIES_VIEW_CHANGED,
+					this);
+		}
+	}
+	
+	private void updatePropertiesView(IAnalysisPlugin analysis){
+		if(propertiesView != null){
+			if(analysis != null){
+				lblSelectedAnalysis.setText("Selected Analysis: " +
+						analysis.getName());
+				txtDescription.setText(analysis.getAnalysisDescription());
+			}
+			else{
+				lblSelectedAnalysis.setText("Selected Analysis: ");
+				txtDescription.setText("");
+			}
+			
+			eventBroker.post(LinGUIneEvents.UILifeCycle.PROPERTIES_VIEW_CHANGED,
+					this);
 		}
 	}
 	

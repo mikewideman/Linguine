@@ -75,17 +75,26 @@ public class LinGUIneEvents {
 		
 		/**
 		 * Sent when the user attempts to open some ProjectData.
+		 * OpenProjectDataEvent sent.
 		 */
 		public static final String OPEN_PROJECT_DATA = UI_EVENTS_BASE_TOPIC + SEP + "OpenProjectData";
 		
 		/**
 		 * Sent when the ProjectDataEditor that currently has focus changes.
+		 * ProjectDataEditor sent.
 		 */
 		public static final String ACTIVE_EDITOR_CHANGED = UI_EVENTS_BASE_TOPIC + SEP + "ActiveEditorChanged";
 		
 		/**
 		 * Sent when the user attempts to edit the Annotations of some ProjectData.
+		 * ProjectDataEditor sent.
 		 */
 		public static final String EDIT_ANNOTATIONS = UI_EVENTS_BASE_TOPIC + SEP + "EditAnnotations";
+		
+		/**
+		 * Sent when a part changes its properties view.
+		 * IPropertiesProvider sent.
+		 */
+		public static final String PROPERTIES_VIEW_CHANGED = UI_EVENTS_BASE_TOPIC + SEP + "PropertiesViewChanged";
 	}
 }
