@@ -54,6 +54,8 @@ public class SettingsPart {
 	public void activeEditorChangedEvent(@Optional @UIEventTopic(LinGUIneEvents.
 			UILifeCycle.ACTIVE_EDITOR_CHANGED) IProjectDataEditor editor){
 		
+		currentComposite = defaultComposite;
+		
 		if(editor != null){
 			if(editor.hasEditorSettings()){
 				IEditorSettings editorSettings = editor.getEditorSettings();
@@ -70,10 +72,9 @@ public class SettingsPart {
 				
 				currentComposite = settingsComposite;
 			}
-			else{
-				currentComposite = defaultComposite;
-			}
-			
+		}
+		
+		if(mainLayout != null){
 			mainLayout.topControl = currentComposite;
 			
 			if(!mainLayout.topControl.isDisposed()){

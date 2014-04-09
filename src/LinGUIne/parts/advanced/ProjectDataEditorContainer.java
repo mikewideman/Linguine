@@ -10,6 +10,8 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 
 import LinGUIne.events.LinGUIneEvents;
@@ -59,6 +61,15 @@ public class ProjectDataEditorContainer {
 	@PostConstruct
 	public void createComposite(Composite parent){
 		editorParent = parent;
+		editorParent.addDisposeListener(new DisposeListener(){
+			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				//When the Composite gets disposed (the Part closes) notify
+				//the SettingsPart that it has closed
+				eventBroker.post(LinGUIneEvents.UILifeCycle.
+						ACTIVE_EDITOR_CHANGED, null);
+			}
+		});
 	}
 	
 	@Persist
