@@ -107,6 +107,13 @@ public class NewFileWizardPage extends WizardPage {
 		
 		if(wizardData.isComplete()){
 			String fileName = wizardData.getNewFileName();
+			
+			//Add a default extension if the file name doesn't already have one
+			if(fileName.lastIndexOf(".") == -1){
+				fileName += ".txt";
+				wizardData.setNewFileName(fileName);
+			}
+			
 			if(!wizardData.getChosenProject().containsProjectData(fileName)){
 				if(FileUtils.isValidFileName(fileName)){
 					pageComplete = true;

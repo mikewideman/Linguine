@@ -117,7 +117,8 @@ public class ProjectExplorerProperties {
 			public String getText(Object element) {
 				IProjectData data = (IProjectData)element;
 				
-				return (data.getFile().length() / 1024) + " KB";
+				return (int)Math.ceil(((double)data.getFile().length() /
+						1024d)) + " KB";
 			}
 		});
 		
