@@ -1,5 +1,11 @@
 package LinGUIne.parts.advanced;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,6 +22,7 @@ import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -44,9 +51,11 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
@@ -60,6 +69,7 @@ import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 import LinGUIne.model.RootProjectGroup;
+import LinGUIne.utilities.FileUtils;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
@@ -761,6 +771,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		public void update(ViewerCell cell){
 			ProjectExplorerNode node = (ProjectExplorerNode)cell.getElement();
 			StyledString label = new StyledString(node.getName());
+			String nodeIconName;
 			
 			if(node instanceof ProjectExplorerDataNode){
 				ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
@@ -771,10 +782,26 @@ public class ProjectExplorer implements IPropertiesProvider{
 				if(parentProject.isAnnotated(dataNode.getNodeData())){
 					label.append(" (Annotated)", StyledString.COUNTER_STYLER);
 				}
+				
+				nodeIconName = "file_obj.gif";
+			}
+			else{
+				nodeIconName = "prj_obj.gif";
 			}
 			
 			cell.setText(label.toString());
 			cell.setStyleRanges(label.getStyleRanges());
+			
+			try {
+				URL iconFolderURL = new URL("platform:/plugin/LinGUIne/icons/" +
+						nodeIconName);
+				
+				cell.setImage(new Image(Display.getCurrent(),
+						iconFolderURL.openStream()));
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
 			
 			super.update(cell);
 		}
