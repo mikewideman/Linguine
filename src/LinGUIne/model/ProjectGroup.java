@@ -145,10 +145,22 @@ public class ProjectGroup {
 		String groupPath = "";
 		
 		if(hasParent()){
-			groupPath += parentGroup.getGroupPath();
+			groupPath += parentGroup.getGroupPath() + "/";
 		}
 		
 		groupPath += groupName;
+		
+		return groupPath;
+	}
+	
+	public String getDisplayGroupPath(){
+		String groupPath = "";
+		
+		if(hasParent()){
+			groupPath += parentGroup.getDisplayGroupPath() + "/";
+		}
+		
+		groupPath += getName();
 		
 		return groupPath;
 	}

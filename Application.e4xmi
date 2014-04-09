@@ -34,46 +34,46 @@
       <children xsi:type="menu:Menu" xmi:id="_5qnvCjdzEeOR8_lurf-ldg" elementId="linguine.menu.file" label="File">
         <children xsi:type="menu:Menu" xmi:id="_hFZyULhMEeOPZ-IS4_9pnA" elementId="linguine.menu.file.new" label="New" iconURI="platform:/plugin/LinGUIne/icons/new_wiz.gif">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_jHhbELhMEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.file" label="File" iconURI="platform:/plugin/LinGUIne/icons/new_con.gif" tooltip="New File" command="_BLZoAJ8rEeOA0_QUQheDyA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_LYIYILhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.0" label="Group" iconURI="platform:/plugin/LinGUIne/icons/newfolder_wiz.gif" tooltip="New Group" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_Tm_3ALhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.1" label="Project" iconURI="platform:/plugin/LinGUIne/icons/newprj_wiz.gif" tooltip="New Project" command="_oQ1w8DxbEeOsebD9DszETw"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_LYIYILhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.group" label="Group" iconURI="platform:/plugin/LinGUIne/icons/newfolder_wiz.gif" tooltip="New Group" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_Tm_3ALhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.project" label="Project" iconURI="platform:/plugin/LinGUIne/icons/newprj_wiz.gif" tooltip="New Project" command="_oQ1w8DxbEeOsebD9DszETw"/>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_XW1ecLhQEeOPZ-IS4_9pnA" elementId="linguine.menu.import" label="Import" iconURI="platform:/plugin/LinGUIne/icons/import_wiz.gif">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_wLGpULhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file" label="File" iconURI="platform:/plugin/LinGUIne/icons/file_obj.gif" tooltip="Import files" command="_IMmrwLhXEeOPZ-IS4_9pnA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_0jAdsLhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.project" label="Project" iconURI="platform:/plugin/LinGUIne/icons/prj_obj.gif" tooltip="Import project" command="_U45YMLhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_wLGpULhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.import.file" label="File" iconURI="platform:/plugin/LinGUIne/icons/file_obj.gif" tooltip="Import files" command="_IMmrwLhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_0jAdsLhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.import.project" label="Project" iconURI="platform:/plugin/LinGUIne/icons/prj_obj.gif" tooltip="Import project" command="_U45YMLhXEeOPZ-IS4_9pnA"/>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_cr5eoLhQEeOPZ-IS4_9pnA" elementId="linguine.menu.export" label="Export" iconURI="platform:/plugin/LinGUIne/icons/export_wiz.gif">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_jguzALhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.result" label="Result" iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Export a result" command="_YZiNYLhXEeOPZ-IS4_9pnA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_qnASILhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.Visualization" label="Visualization" iconURI="platform:/plugin/LinGUIne/icons/brkp_grp.gif" tooltip="Export a visualization" command="_bQQi4LhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_jguzALhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.export.result" label="Result" iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Export a result" command="_YZiNYLhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_qnASILhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.export.visualization" label="Visualization" iconURI="platform:/plugin/LinGUIne/icons/brkp_grp.gif" tooltip="Export a visualization" command="_bQQi4LhXEeOPZ-IS4_9pnA"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_e6HpsLhQEeOPZ-IS4_9pnA" elementId="linguine.menuseparator.0"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_fRlugLhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.save" label="Save" iconURI="platform:/plugin/LinGUIne/icons/save_edit.gif" tooltip="Save" command="_5qnvAzdzEeOR8_lurf-ldg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_jFIRkLhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.saveall" label="Save All" iconURI="platform:/plugin/LinGUIne/icons/saveall_edit.gif" command="_Ea1_cLhZEeOPZ-IS4_9pnA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_fRlugLhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.save" label="Save" iconURI="platform:/plugin/LinGUIne/icons/save_edit.gif" tooltip="Save" command="_5qnvAzdzEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_jFIRkLhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.saveall" label="Save All" iconURI="platform:/plugin/LinGUIne/icons/saveall_edit.gif" command="_Ea1_cLhZEeOPZ-IS4_9pnA"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_mTu7kLhQEeOPZ-IS4_9pnA" elementId="linguine.menuseparator.1"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_m2JFELhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.print" label="Print" iconURI="platform:/plugin/LinGUIne/icons/nav_print.gif" command="_K8pfkLhZEeOPZ-IS4_9pnA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_m2JFELhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.print" label="Print" iconURI="platform:/plugin/LinGUIne/icons/nav_print.gif" command="_K8pfkLhZEeOPZ-IS4_9pnA"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_r-oo4LhQEeOPZ-IS4_9pnA" elementId="linguine.menuseparator.2"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_sXRLULhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.exit" label="Exit" command="_5qnu_DdzEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_sXRLULhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.exit" label="Exit" command="_5qnu_DdzEeOR8_lurf-ldg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_gLZywLhNEeOPZ-IS4_9pnA" elementId="linguine.menu.run" label="Run">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_jgmM8LhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.analysis" label="Analysis..." iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Choose an analysis and then run it" command="_73x6AEA6EeODy_z0LLz00g"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_pBYU8LhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.visualization" label="Visualization..." iconURI="platform:/plugin/LinGUIne/icons/brkp_grp.gif" tooltip="Choose a visualization and then run it" command="_rcpSAJ8pEeOA0_QUQheDyA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_jgmM8LhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.run.analysis" label="Analysis..." iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Choose an analysis and then run it" command="_73x6AEA6EeODy_z0LLz00g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_pBYU8LhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.run.visualization" label="Visualization..." iconURI="platform:/plugin/LinGUIne/icons/brkp_grp.gif" tooltip="Choose a visualization and then run it" command="_rcpSAJ8pEeOA0_QUQheDyA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_rmiZULhNEeOPZ-IS4_9pnA" elementId="linguine.menu.view" label="View">
         <children xsi:type="menu:Menu" xmi:id="_202r4LhNEeOPZ-IS4_9pnA" elementId="linguine.menu.openperspective" label="Open Perspective">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_vbaZILhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.advanced" label="Advanced" tooltip="Swith to the advanced perspective" command="_d6y2kJ8pEeOA0_QUQheDyA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_0azEQLhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.basic" label="Basic" tooltip="Swith to the basic perspective" command="_2LJRcLhWEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_vbaZILhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.openperspective.advanced" label="Advanced" tooltip="Swith to the advanced perspective" command="_d6y2kJ8pEeOA0_QUQheDyA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_0azEQLhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.openperspective.basic" label="Basic" tooltip="Swith to the basic perspective" command="_2LJRcLhWEeOPZ-IS4_9pnA"/>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_D7QhcLhOEeOPZ-IS4_9pnA" elementId="linguine.menu.showview" label="Show View">
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_GKmt4LhOEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.projectexplorer" label="Project Explorer" iconURI="platform:/plugin/LinGUIne/icons/workset.gif" tooltip="Show the project explorer" type="Check" command="_k0m8ELhZEeOPZ-IS4_9pnA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_jTuZILhOEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.quickanalysisview" label="Quick Analysis View" iconURI="platform:/plugin/LinGUIne/icons/category_obj.gif" tooltip="Show the Quick Analysis View" type="Check" command="_pxqE4LhZEeOPZ-IS4_9pnA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_t5gFALhOEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.properties" label="Properties" iconURI="platform:/plugin/LinGUIne/icons/properties.gif" tooltip="Show the properties view" type="Check" command="_yNCVwLhZEeOPZ-IS4_9pnA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_F-XzQLhPEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.settings" label="Settings Pane" iconURI="platform:/plugin/LinGUIne/icons/outline_co.gif" tooltip="Show the settings pane" type="Check" command="_uc_LkLhZEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_GKmt4LhOEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.showview.projectexplorer" label="Project Explorer" iconURI="platform:/plugin/LinGUIne/icons/workset.gif" tooltip="Show the project explorer" type="Check" command="_k0m8ELhZEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_jTuZILhOEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.showview.quickanalysisview" label="Quick Analysis View" iconURI="platform:/plugin/LinGUIne/icons/category_obj.gif" tooltip="Show the Quick Analysis View" type="Check" command="_pxqE4LhZEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_t5gFALhOEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.showview.properties" label="Properties" iconURI="platform:/plugin/LinGUIne/icons/properties.gif" tooltip="Show the properties view" type="Check" command="_yNCVwLhZEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_F-XzQLhPEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.showview.settings" label="Settings Pane" iconURI="platform:/plugin/LinGUIne/icons/outline_co.gif" tooltip="Show the settings pane" type="Check" command="_uc_LkLhZEeOPZ-IS4_9pnA"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_0yufQLhREeOPZ-IS4_9pnA" elementId="linguine.menuseparator.3"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_xgf5gLhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.preferences" label="Preferences" iconURI="platform:/plugin/LinGUIne/icons/thread_view.gif" command="_rI5PgLhXEeOPZ-IS4_9pnA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_xgf5gLhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.view.preferences" label="Preferences" iconURI="platform:/plugin/LinGUIne/icons/thread_view.gif" command="_rI5PgLhXEeOPZ-IS4_9pnA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_5qnvDjdzEeOR8_lurf-ldg" elementId="linguine.menu.help" label="Help">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_DAIrELhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.install" label="Install..." iconURI="platform:/plugin/LinGUIne/icons/install-handler.gif" command="_nJT0gLhXEeOPZ-IS4_9pnA"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvDzdzEeOR8_lurf-ldg" elementId="linguine.handledmenuitem.aboutlinguine" label="About LinGUIne" command="_5qnvBjdzEeOR8_lurf-ldg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_DAIrELhQEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.help.install" label="Install..." iconURI="platform:/plugin/LinGUIne/icons/install-handler.gif" command="_nJT0gLhXEeOPZ-IS4_9pnA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_5qnvDzdzEeOR8_lurf-ldg" elementId="linguine.handledmenuitem.help.aboutlinguine" label="About LinGUIne" command="_5qnvBjdzEeOR8_lurf-ldg"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_5qnvFTdzEeOR8_lurf-ldg" elementId="linguine.windowtrim.top">
@@ -146,7 +146,10 @@
   <commands xmi:id="_5qnvBjdzEeOR8_lurf-ldg" elementId="linguine.commands.about" commandName="aboutCommand" description="Shows a description of the application"/>
   <commands xmi:id="_KqIBoLhYEeOPZ-IS4_9pnA" elementId="linguine.command.new" commandName="newGeneralCommand" description="Starts the process of creating something new"/>
   <commands xmi:id="_BLZoAJ8rEeOA0_QUQheDyA" elementId="linguine.command.new.file" commandName="newFileCommand" description="Initiates the process to create a new file"/>
-  <commands xmi:id="_EgcjELhXEeOPZ-IS4_9pnA" elementId="linguine.command.new.group" commandName="newGroupCommand" description="Initiaties the process to create a new group"/>
+  <commands xmi:id="_EgcjELhXEeOPZ-IS4_9pnA" elementId="linguine.command.new.group" commandName="newGroupCommand" description="Initiaties the process to create a new group">
+    <parameters xmi:id="_J-HCAMAgEeOJvZWPOU87lA" elementId="linguine.command.newGroup.parameter.destinationProject" name="destinationProject"/>
+    <parameters xmi:id="_VMV1AMAgEeOJvZWPOU87lA" elementId="linguine.command.newGroup.parameter.parentGroup" name="parentGroup"/>
+  </commands>
   <commands xmi:id="_oQ1w8DxbEeOsebD9DszETw" elementId="linguine.command.new.project" commandName="newProjectCommand" description="Starts the process of creating a new project"/>
   <commands xmi:id="_qikdoDxIEeOsebD9DszETw" elementId="linguine.command.import.general" commandName="importGeneralCommand" description="Shows the import wizard"/>
   <commands xmi:id="_IMmrwLhXEeOPZ-IS4_9pnA" elementId="linguine.command.import.file" commandName="importFileCommand" description="Starts the process of importing a file"/>

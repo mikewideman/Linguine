@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -19,23 +20,25 @@ public class NewGroupHandler {
 	private ProjectManager projectMan;
 	
 	@Execute
-	public void execute(@Named("linguine.command.newGroup.parameter."
-			+ "destinationProject") String destinationProject, @Named("linguine"
+	public void execute(@Optional @Named("linguine.command.newGroup.parameter."
+			+ "destinationProject") String destinationProject, @Optional @Named("linguine"
 			+ ".command.newGroup.parameter.parentGroup") String
 			parentGroup, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell){
 		
-		Project project = projectMan.getProject(destinationProject);
+		Project project = destinationProject == null ? null :
+			projectMan.getProject(destinationProject);
+		NewGroupWizard groupWizard = new NewGroupWizard(projectMan);
 		
 		if(project != null){
 			ProjectGroup group = project.getGroup(parentGroup);
 			
 			if(parentGroup != null){
-				NewGroupWizard groupWizard = new NewGroupWizard(projectMan,
-						project, group);
-				WizardDialog wizardDialog = new WizardDialog(shell, groupWizard);
-				
-				int retval = wizardDialog.open();
+				groupWizard.addStartingData(project, group);
 			}
 		}
+		
+		WizardDialog wizardDialog = new WizardDialog(shell, groupWizard);
+		
+		int retval = wizardDialog.open();
 	}
 }

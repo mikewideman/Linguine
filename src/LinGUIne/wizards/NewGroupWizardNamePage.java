@@ -19,6 +19,8 @@ public class NewGroupWizardNamePage extends WizardPage {
 	
 	public NewGroupWizardNamePage(NewGroupData data){
 		super("New Group Wizard");
+		setTitle("New Group Wizard");
+		setDescription("Choose a name for the new Group.");
 		
 		wizardData = data;
 	}
@@ -29,7 +31,7 @@ public class NewGroupWizardNamePage extends WizardPage {
 		container.setLayout(new GridLayout(2, false));
 		
 		lblGroupName = new Label(container, SWT.NONE);
-		lblGroupName.setText("Enter name for the new Group.");
+		lblGroupName.setText("Enter name for the new Group:");
 		
 		txtGroupName = new Text(container, SWT.BORDER | SWT.SINGLE);
 		txtGroupName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -49,6 +51,7 @@ public class NewGroupWizardNamePage extends WizardPage {
 			}
 		});
 		
+		setControl(container);
 		setPageComplete(false);
 	}
 	

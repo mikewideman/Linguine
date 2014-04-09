@@ -411,6 +411,7 @@ public class Project {
 		
 		groups.put(newGroup, id);
 		groupContents.put(id, new HashSet<Integer>());
+		notifyListeners();
 		
 		return true;
 	}
