@@ -32,9 +32,7 @@ public class NewGroupHandler {
 		if(project != null){
 			ProjectGroup group = project.getGroup(parentGroup);
 			
-			if(parentGroup != null){
-				groupWizard.addStartingData(project, group);
-			}
+			groupWizard.addStartingData(project, group);
 		}
 		
 		WizardDialog wizardDialog = new WizardDialog(shell, groupWizard);

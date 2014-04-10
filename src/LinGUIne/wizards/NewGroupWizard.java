@@ -22,20 +22,18 @@ public class NewGroupWizard extends Wizard {
 	}
 	
 	public void addStartingData(Project project, ProjectGroup group){		
-		System.out.println("Starting data");
 		wizardData.setDestProject(project);
 		wizardData.setParentGroup(group);
 	}
 	
 	@Override
 	public void addPages(){
-		System.out.println("Add pages");
 		selectProjectPage = new NewGroupWizardSelectProjectPage(projectMan,
 				wizardData);
 		namePage = new NewGroupWizardNamePage(wizardData);
 
 		//Only add the first page if the Project and Group haven't been chosen
-		if(wizardData.getDestProject() == null &&
+		if(wizardData.getDestProject() == null ||
 				wizardData.getParentGroup() == null){
 
 			addPage(selectProjectPage);

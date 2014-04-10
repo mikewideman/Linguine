@@ -96,6 +96,13 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 		
 		setControl(container);
 		setPageComplete(false);
+		
+		//If there is a Project already selected (in wizardData), select it
+		if(wizardData.getDestProject() != null){
+			lstProjects.setSelection(
+					new String[]{wizardData.getDestProject().getName()});
+			populateGroupList();
+		}
 	}
 	
 	private void populateGroupList(){

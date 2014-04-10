@@ -287,15 +287,25 @@ public class ProjectExplorer implements IPropertiesProvider{
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: Make this more robust and only enable command when a Project is selected
-				String selectedProjectName = projectSelection.
-						getSelectedProjects().iterator().next();
-				
 				HashMap<String, String> params = new HashMap<String, String>();
-				params.put("linguine.command.newGroup.parameter.destProject",
-						selectedProjectName);
+				String selectedProjectName = null;
+				String selectedGroupName = null;
 				
-				//TODO: Add other parameter
+				if(!projectSelection.getSelectedProjects().isEmpty()){
+					selectedProjectName = projectSelection.
+							getSelectedProjects().iterator().next();
+					params.put("linguine.command.newGroup.parameter." +
+							"destinationProject", selectedProjectName);
+					
+					if(!projectSelection.getSelectedGroups(selectedProjectName).
+							isEmpty()){
+						
+						selectedGroupName = projectSelection.getSelectedGroups(
+								selectedProjectName).iterator().next();
+						params.put("linguine.command.newGroup.parameter.parentGroup",
+								selectedGroupName);
+					}
+				}
 				
 				Command newGroupCommand = commandService.getCommand(
 						"linguine.command.new.group");
@@ -337,11 +347,12 @@ public class ProjectExplorer implements IPropertiesProvider{
 				LinkedList<ProjectGroup> selectedGroups =
 						new LinkedList<ProjectGroup>();
 				
-				addNode(selectedNode, selectedData, selectedGroups);
+				addNode(selectedNode, selectedData, selectedGroups, true);
 				
 				//If the node has children, add all of them
 				if(selectedNode.hasChildren()){
-					addAllChildren(selectedNode, selectedData, selectedGroups);
+					addAllChildren(selectedNode, selectedData, selectedGroups,
+							false);
 				}
 				
 				projectSelection.addToSelection(selectedProject,
@@ -356,21 +367,22 @@ public class ProjectExplorer implements IPropertiesProvider{
 	 */
 	private void addAllChildren(ProjectExplorerNode parentNode,
 			LinkedList<IProjectData> childData,
-			LinkedList<ProjectGroup> childGroups){
+			LinkedList<ProjectGroup> childGroups, boolean shouldAddGroups){
 		
 		for(ProjectExplorerNode childNode: parentNode.getChildren()){
-			addNode(childNode, childData, childGroups);
+			addNode(childNode, childData, childGroups, shouldAddGroups);
 			
 			if(childNode.hasChildren()){
-				addAllChildren(childNode, childData, childGroups);
+				addAllChildren(childNode, childData, childGroups,
+						shouldAddGroups);
 			}
 		}
 	}
 	
 	private void addNode(ProjectExplorerNode node, LinkedList<IProjectData> data,
-			LinkedList<ProjectGroup> groups){
+			LinkedList<ProjectGroup> groups, boolean shouldAddGroups){
 		
-		if(node instanceof ProjectExplorerGroupNode){
+		if(node instanceof ProjectExplorerGroupNode && shouldAddGroups){
 			ProjectExplorerGroupNode groupNode = (ProjectExplorerGroupNode)node;
 			
 			groups.add(groupNode.getNodeGroup());
