@@ -332,26 +332,53 @@ public class ProjectExplorer implements IPropertiesProvider{
 						(ProjectExplorerNode)selected;
 				Project selectedProject = ((ProjectExplorerTree)
 						selectedNode.getRootNode()).getProject();
-				List<IProjectData> selectedData = new LinkedList<IProjectData>();
+				LinkedList<IProjectData> selectedData =
+						new LinkedList<IProjectData>();
+				LinkedList<ProjectGroup> selectedGroups =
+						new LinkedList<ProjectGroup>();
+				
+				addNode(selectedNode, selectedData, selectedGroups);
 				
 				//If the node has children, add all of them
 				if(selectedNode.hasChildren()){
-					for(ProjectExplorerNode childNode:
-						selectedNode.getChildren()){
-						
-						selectedData.add(((ProjectExplorerDataNode)
-								childNode).getNodeData());
-					}
-				}
-				//Otherwise just add the node's ProjectData
-				else if(selectedNode instanceof ProjectExplorerDataNode){
-					selectedData.add(((ProjectExplorerDataNode)selectedNode).
-							getNodeData());
+					addAllChildren(selectedNode, selectedData, selectedGroups);
 				}
 				
 				projectSelection.addToSelection(selectedProject,
-						selectedData);
+						selectedData, selectedGroups);
 			}
+		}
+	}
+	
+	/**
+	 * Adds all ProjectData and ProjectGroups in the subtree with parentNode at
+	 * its root to the given lists.
+	 */
+	private void addAllChildren(ProjectExplorerNode parentNode,
+			LinkedList<IProjectData> childData,
+			LinkedList<ProjectGroup> childGroups){
+		
+		for(ProjectExplorerNode childNode: parentNode.getChildren()){
+			addNode(childNode, childData, childGroups);
+			
+			if(childNode.hasChildren()){
+				addAllChildren(childNode, childData, childGroups);
+			}
+		}
+	}
+	
+	private void addNode(ProjectExplorerNode node, LinkedList<IProjectData> data,
+			LinkedList<ProjectGroup> groups){
+		
+		if(node instanceof ProjectExplorerGroupNode){
+			ProjectExplorerGroupNode groupNode = (ProjectExplorerGroupNode)node;
+			
+			groups.add(groupNode.getNodeGroup());
+		}
+		else if(node instanceof ProjectExplorerDataNode){
+			ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
+			
+			data.add(dataNode.getNodeData());
 		}
 	}
 	
@@ -453,7 +480,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 				ProjectExplorerNode parentNode){
 			
 			ProjectExplorerNode newGroupNode = parentNode.addChild(
-					group.getName());
+					group.getName(), group);
 			
 			//Add child groups
 			for(ProjectGroup childGroup: group.getChildren()){
@@ -462,7 +489,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 			
 			//Add child data
 			for(IProjectData data: proj.getDataInGroup(group)){
-				newGroupNode.addDataChild(data.getName(), data);
+				newGroupNode.addChild(data.getName(), data);
 			}
 		}
 	}
@@ -516,8 +543,25 @@ public class ProjectExplorer implements IPropertiesProvider{
 		 * 
 		 * @return	The node that was created.
 		 */
-		public ProjectExplorerNode addDataChild(String name, IProjectData data){
+		public ProjectExplorerNode addChild(String name, IProjectData data){
 			ProjectExplorerNode newNode = new ProjectExplorerDataNode(name, this, data);
+			children.add(newNode);
+			
+			return newNode;
+		}
+		
+		/**
+		 * Creates a new ProjectExplorerGroupNode child with the given name, the
+		 * given ProjectGroup, and with this node as its parent.
+		 * 
+		 * @param name	The name of the new node to be created.
+		 * @param group	The ProjectGroup the new node is to be given at
+		 * 				creation.
+		 * 
+		 * @return	The node that was created.
+		 */
+		public ProjectExplorerNode addChild(String name, ProjectGroup group){
+			ProjectExplorerNode newNode = new ProjectExplorerGroupNode(name, this, group);
 			children.add(newNode);
 			
 			return newNode;
@@ -580,6 +624,20 @@ public class ProjectExplorer implements IPropertiesProvider{
 			}
 			
 			return rootNode;
+		}
+		
+		/**
+		 * Returns whether or not this node should have an icon.
+		 */
+		public boolean hasIcon(){
+			return false;
+		}
+		
+		/**
+		 * Returns the name of the icon file to be used as this node's icon.
+		 */
+		public String getIconFileName(){
+			return null;
 		}
 
 		@Override
@@ -656,6 +714,16 @@ public class ProjectExplorer implements IPropertiesProvider{
 		}
 
 		@Override
+		public boolean hasIcon(){
+			return true;
+		}
+		
+		@Override
+		public String getIconFileName(){
+			return "prj_obj.gif";
+		}
+		
+		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = super.hashCode();
@@ -722,6 +790,16 @@ public class ProjectExplorer implements IPropertiesProvider{
 		}
 
 		@Override
+		public boolean hasIcon(){
+			return true;
+		}
+		
+		@Override
+		public String getIconFileName(){
+			return "file_obj.gif";
+		}
+		
+		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = super.hashCode();
@@ -757,6 +835,82 @@ public class ProjectExplorer implements IPropertiesProvider{
 	}
 	
 	/**
+	 * A child node for a Project Explorer tree which has a ProjectGroup object
+	 * associated with it.
+	 * 
+	 * @author Kyle Mullins
+	 */
+	class ProjectExplorerGroupNode extends ProjectExplorerNode{
+		private ProjectGroup nodeGroup;
+		
+		/**
+		 * Creates a new ProjectExplorerGroupNode with the given name, the given
+		 * parent node, and the given ProjectGroup.
+		 * 
+		 * @param name		The name of this node.
+		 * @param parent	The node's parent node.
+		 * @param group		The ProjectGroup to be associated with this node.
+		 */
+		public ProjectExplorerGroupNode(String name, ProjectExplorerNode parent,
+				ProjectGroup group){
+			
+			super(name, parent);
+			nodeGroup = group;
+		}
+		
+		/**
+		 * Returns the ProjectGroup associated with this node.
+		 */
+		public ProjectGroup getNodeGroup(){
+			return nodeGroup;
+		}
+
+		@Override
+		public boolean hasIcon(){
+			return true;
+		}
+		
+		@Override
+		public String getIconFileName(){
+			return "packagefolder_obj.gif";
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+
+			result = prime * result
+					+ ((nodeGroup == null) ? 0 : nodeGroup.hashCode());
+			
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(this == obj) {
+				return true;
+			}
+			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerGroupNode)) {
+				return false;
+			}
+
+			ProjectExplorerGroupNode other = (ProjectExplorerGroupNode)obj;
+			
+			if(nodeGroup == null) {
+				if(other.nodeGroup != null) {
+					return false;
+				}
+			}
+			else if(!nodeGroup.equals(other.nodeGroup)) {
+				return false;
+			}
+			
+			return true;
+		}
+	}
+	
+	/**
 	 * Simple label provider which returns the name of a ProjectExplorerNode
 	 * to be used as a label.
 	 * 
@@ -771,7 +925,6 @@ public class ProjectExplorer implements IPropertiesProvider{
 		public void update(ViewerCell cell){
 			ProjectExplorerNode node = (ProjectExplorerNode)cell.getElement();
 			StyledString label = new StyledString(node.getName());
-			String nodeIconName;
 			
 			if(node instanceof ProjectExplorerDataNode){
 				ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
@@ -782,22 +935,20 @@ public class ProjectExplorer implements IPropertiesProvider{
 				if(parentProject.isAnnotated(dataNode.getNodeData())){
 					label.append(" (Annotated)", StyledString.COUNTER_STYLER);
 				}
-				
-				nodeIconName = "file_obj.gif";
-			}
-			else{
-				nodeIconName = "prj_obj.gif";
 			}
 			
 			cell.setText(label.toString());
 			cell.setStyleRanges(label.getStyleRanges());
 			
 			try {
-				URL iconFolderURL = new URL("platform:/plugin/LinGUIne/icons/" +
-						nodeIconName);
-				
-				cell.setImage(new Image(Display.getCurrent(),
-						iconFolderURL.openStream()));
+				if(node.hasIcon()){
+					String nodeIconFileName = node.getIconFileName();
+					URL iconFolderURL = new URL("platform:/plugin/LinGUIne/icons/" +
+							nodeIconFileName);
+					
+					cell.setImage(new Image(Display.getCurrent(),
+							iconFolderURL.openStream()));
+				}
 			}
 			catch(IOException e) {
 				e.printStackTrace();
