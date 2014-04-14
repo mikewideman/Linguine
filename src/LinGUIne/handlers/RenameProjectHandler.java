@@ -12,13 +12,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
+import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 
-public class RemoveProjectHandler {
+public class RenameProjectHandler {
 	
 	private static final String TARGET_PROJECT_PARAM = "linguine.command."
-			+ "removeProject.parameter.targetProject";
+			+ "renameProject.parameter.targetProject";
 	
 	@Inject
 	private ProjectManager projectMan;
@@ -36,6 +38,7 @@ public class RemoveProjectHandler {
 					"Delete Project contents on disk (cannot be undone).");
 			
 			boolean confirmed = dialog.open() == Window.OK;
+			System.out.println(dialog.wasOptionChosen());
 			
 			if(confirmed){
 				try {

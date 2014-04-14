@@ -439,25 +439,35 @@ public class ProjectExplorer implements IPropertiesProvider{
 							getSelectedProjectNodes().getFirst().getProject();
 				
 					params.put("linguine.command.removeProject.parameter."
-							+ "projectForRemoval", selectedProject.getName());
+							+ "targetProject", selectedProject.getName());
 					
 					commandId = "linguine.command.remove.project";
 				}
 				else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
-					ProjectGroup selectedGroup = nodeSelection.
-							getSelectedGroupNodes().getFirst().getNodeGroup();
+					GroupNode node = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					ProjectGroup selectedGroup = node.getNodeGroup();
 					
 					params.put("linguine.command.removeGroup.parameter."
-							+ "groupForRemoval", selectedGroup.getName());
+							+ "targetGroup", selectedGroup.getName());
+					
+					params.put("linguine.command.removeGroup.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
 					
 					commandId = "linguine.command.remove.group";
 				}
 				else{
-					IProjectData selectedData = nodeSelection.
-							getAllSelectedDataNodes().getFirst().getNodeData();
+					ProjectDataNode node = nodeSelection.
+							getAllSelectedDataNodes().getFirst();
+					IProjectData selectedData = node.getNodeData();
 					
 					params.put("linguine.command.removeProjectData.parameter."
-							+ "projectDataForRemoval", selectedData.getName());
+							+ "targetProjectData", selectedData.getName());
+					
+					params.put("linguine.command.removeProjectData.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
 					
 					commandId = "linguine.command.remove.projectData";
 				}
@@ -465,6 +475,59 @@ public class ProjectExplorer implements IPropertiesProvider{
 				executeParameterizedCommand(commandId, params);
 			}
 			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem rename = new MenuItem(contextMenu, SWT.NONE);
+		rename.setText("Rename");
+		rename.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				String commandId;
+
+				if(!nodeSelection.getSelectedProjectNodes().isEmpty()){
+					Project selectedProject = nodeSelection.
+							getSelectedProjectNodes().getFirst().getProject();
+				
+					params.put("linguine.command.renameProject.parameter."
+							+ "targetProject", selectedProject.getName());
+					
+					commandId = "linguine.command.rename.project";
+				}
+				else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+					GroupNode node = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					ProjectGroup selectedGroup = node.getNodeGroup();
+					
+					params.put("linguine.command.renameGroup.parameter."
+							+ "targetGroup", selectedGroup.getName());
+					
+					params.put("linguine.command.renameGroup.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.rename.group";
+				}
+				else{
+					ProjectDataNode node = nodeSelection.
+							getAllSelectedDataNodes().getFirst();
+					IProjectData selectedData = node.getNodeData();
+					
+					params.put("linguine.command.renameProjectData.parameter."
+							+ "targetProjectData", selectedData.getName());
+					
+					params.put("linguine.command.renameProjectData.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.rename.projectData";
+				}
+				
+				executeParameterizedCommand(commandId, params);
+			}
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
@@ -478,13 +541,24 @@ public class ProjectExplorer implements IPropertiesProvider{
 			@Override
 			public void menuShown(MenuEvent e) {
 				remove.setEnabled(false);
+				rename.setEnabled(false);
 				export.setEnabled(false);
 				
 				if(nodeSelection.getSelectionCount() == 1){
 					remove.setEnabled(true);
+					rename.setEnabled(true);
 					
 					if(!nodeSelection.getSelectedResultNodes().isEmpty()){
 						export.setEnabled(true);
+					}
+					else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+						GroupNode node = nodeSelection.getSelectedGroupNodes().
+								getFirst();
+						
+						if(node.getNodeGroup() instanceof RootProjectGroup){
+							remove.setEnabled(false);
+							rename.setEnabled(false);
+						}
 					}
 				}
 			}

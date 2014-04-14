@@ -128,6 +128,11 @@
   <handlers xmi:id="_l6cQ4LoIEeOI6M-uodZr5Q" elementId="linguine.handler.import" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportGeneralHandler" command="_qikdoDxIEeOsebD9DszETw"/>
   <handlers xmi:id="_kexusLoJEeOI6M-uodZr5Q" elementId="linguine.handler.export.file" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ExportFileHandler" command="_YZiNYLhXEeOPZ-IS4_9pnA"/>
   <handlers xmi:id="_kbi_ELoKEeOI6M-uodZr5Q" elementId="linguine.handler.import.project" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ImportProjectHandler" command="_U45YMLhXEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_GsW34MQGEeOGW6ncd9sqEQ" elementId="linguine.handler.remove.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RemoveGroupHandler" command="_k0IrIMQDEeOGW6ncd9sqEQ"/>
+  <handlers xmi:id="_J7tv0MQGEeOGW6ncd9sqEQ" elementId="linguine.handler.remove.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RemoveProjectDataHandler" command="_wSwDgMQDEeOGW6ncd9sqEQ"/>
+  <handlers xmi:id="_hYS5kMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.project" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectHandler" command="_29O-gMQDEeOGW6ncd9sqEQ"/>
+  <handlers xmi:id="_lfsMwMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameGroupHandler" command="_FIPrsMQEEeOGW6ncd9sqEQ"/>
+  <handlers xmi:id="_oYTYoMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectDataHandler" command="_eF3m4MQEEeOGW6ncd9sqEQ"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.exit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvBTdzEeOR8_lurf-ldg" elementId="linguine.keybinding.save" keySequence="M1+S" command="_5qnvAzdzEeOR8_lurf-ldg"/>
@@ -162,7 +167,7 @@
   <commands xmi:id="_d6y2kJ8pEeOA0_QUQheDyA" elementId="linguine.command.switchToAdvancedPerspective" commandName="switchToAdvancedPerspectiveCommand" description="Switches to the advanced perspective"/>
   <commands xmi:id="_2LJRcLhWEeOPZ-IS4_9pnA" elementId="linguine.command.switchToBasicPerspective" commandName="switchToBasicPerspectiveCommand" description="Switches to the basic perspective"/>
   <commands xmi:id="_j2Z5YJ8pEeOA0_QUQheDyA" elementId="linguine.command.remove.project" commandName="removeProjectCommand">
-    <parameters xmi:id="_pf6r0KfKEeOMR-0rpH044Q" elementId="linguine.command.removeProject.parameter.projectForRemoval" name="projectForRemoval" optional="false"/>
+    <parameters xmi:id="_pf6r0KfKEeOMR-0rpH044Q" elementId="linguine.command.removeProject.parameter.targetProject" name="targetProject" optional="false"/>
   </commands>
   <commands xmi:id="_nJT0gLhXEeOPZ-IS4_9pnA" elementId="linguine.command.install" commandName="installCommand" description="Starts the process for installing new plugins"/>
   <commands xmi:id="_rI5PgLhXEeOPZ-IS4_9pnA" elementId="linguine.command.preferences" commandName="preferencesCommand" description="Starts the process of displaying preferences"/>
@@ -171,6 +176,25 @@
   <commands xmi:id="_pxqE4LhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.quickAnalysisView" commandName="viewQuickAnalysisViewCommand" description="Toggles the quick analysis view"/>
   <commands xmi:id="_uc_LkLhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.settings" commandName="viewSettingsCommand" description="Toggles the settings pane"/>
   <commands xmi:id="_yNCVwLhZEeOPZ-IS4_9pnA" elementId="linguine.command.view.properties" commandName="viewPropertiesCommand" description="Toggles the properties pane"/>
+  <commands xmi:id="_k0IrIMQDEeOGW6ncd9sqEQ" elementId="linguine.command.remove.group" commandName="removeGroupCommand">
+    <parameters xmi:id="_ndKi4MQDEeOGW6ncd9sqEQ" elementId="linguine.command.removeGroup.parameter.targetGroup" name="targetGroup" optional="false"/>
+    <parameters xmi:id="_Sv_60MQEEeOGW6ncd9sqEQ" elementId="linguine.command.removeGroup.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_wSwDgMQDEeOGW6ncd9sqEQ" elementId="linguine.command.remove.projectData" commandName="removeProjectDataCommand">
+    <parameters xmi:id="_zH4dkMQDEeOGW6ncd9sqEQ" elementId="linguine.command.removeProjectData.parameter.targetProjectData" name="targetProjectData" optional="false"/>
+    <parameters xmi:id="_WYK7YMQEEeOGW6ncd9sqEQ" elementId="linguine.command.removeProjectData.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_29O-gMQDEeOGW6ncd9sqEQ" elementId="linguine.command.rename.project" commandName="renameProjectCommand">
+    <parameters xmi:id="_CP2iQMQEEeOGW6ncd9sqEQ" elementId="linguine.command.renameProject.parameter.targetProject" name="targetProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_FIPrsMQEEeOGW6ncd9sqEQ" elementId="linguine.command.rename.group" commandName="renameGroupCommand">
+    <parameters xmi:id="_JD0wcMQEEeOGW6ncd9sqEQ" elementId="linguine.command.renameGroup.parameter.targetGroup" name="targetGroup" optional="false"/>
+    <parameters xmi:id="_axJt0MQEEeOGW6ncd9sqEQ" elementId="linguine.command.renameGroup.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_eF3m4MQEEeOGW6ncd9sqEQ" elementId="linguine.command.rename.projectData" commandName="renameProjectDataCommand">
+    <parameters xmi:id="_3uJBkMQEEeOGW6ncd9sqEQ" elementId="linguine.command.renameProjectData.parameter.targetProjectData" name="targetProjectData" optional="false"/>
+    <parameters xmi:id="_KMqyYMQFEeOGW6ncd9sqEQ" elementId="linguine.command.renameProjectData.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_5qnu8zdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_5qnu9DdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

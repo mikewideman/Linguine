@@ -1,5 +1,8 @@
 package LinGUIne.wizards;
 
+import java.io.IOException;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.Project;
@@ -48,6 +51,15 @@ public class NewGroupWizard extends Wizard {
 				wizardData.getParentGroup());
 		
 		wizardData.getDestProject().addGroup(newGroup);
+		
+		try{
+			newGroup.createGroupDirectory(wizardData.getDestProject().
+					getProjectDirectory());			
+		}
+		catch(IOException ioe){
+			MessageDialog.openError(getShell(), "Error",
+					"Could not create Group folder.");
+		}
 		
 		return true;
 	}
