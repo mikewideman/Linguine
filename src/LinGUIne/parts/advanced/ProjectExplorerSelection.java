@@ -120,7 +120,7 @@ public class ProjectExplorerSelection {
 		
 		selectedProjectData.addAll(selectedProject.getOriginalData());
 		selectedProjectData.addAll(selectedProject.getResults());
-//		selectedProjectGroups.addAll(selectedProject.getGroups());
+		selectedProjectGroups.addAll(selectedProject.getGroups());
 		
 		addToSelection(selectedProject, selectedProjectData, selectedProjectGroups);
 	}
