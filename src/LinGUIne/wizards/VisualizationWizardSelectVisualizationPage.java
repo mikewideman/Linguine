@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.eclipse.jface.dialogs.IPageChangeProvider;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -27,7 +31,7 @@ import LinGUIne.model.VisualizationPluginManager;
  * 
  * @author Peter Dimou
  */
-public class VisualizationWizardSelectVisualizationPage extends WizardPage {
+public class VisualizationWizardSelectVisualizationPage extends WizardPage implements IPageChangedListener {
 
 	private VisualizationPluginManager visualizationPluginMan;
 	private VisualizationData wizardData;
@@ -66,6 +70,10 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
+		  final IWizardContainer wizContainer = this.getContainer();
+		  if (wizContainer instanceof IPageChangeProvider) {
+		    ((IPageChangeProvider)wizContainer).addPageChangedListener(this);
+		  }
 		Composite container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
@@ -81,12 +89,6 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 		lstVisualizations = new List(grpVisualizations, SWT.BORDER
 				| SWT.V_SCROLL);
 		lstVisualizations.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		// TODO: FOR DEMONSTRATION PURPOSES ONLY! Remove in the final version!
-		Collection<Result> testResults = new LinkedList<Result>();
-		KeyValueResult testKVResult = new KeyValueResult(new File(""));
-		testResults.add(testKVResult);
-		wizardData.setChosenResults(testResults);
 
 		// Populate the list of visualizations based on result types
 		for (IVisualization visualization : visualizationPluginMan
@@ -135,5 +137,15 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 
 		setControl(container);
 		setPageComplete(false);
+	}
+
+	@Override
+	public void pageChanged(PageChangedEvent event) {
+		// Populate the list of visualizations based on result types
+		for (IVisualization visualization : visualizationPluginMan
+				.getVisualizationsBySupportedResultTypeSet(wizardData
+						.getChosenResultTypes())) {
+			lstVisualizations.add(visualization.getName());
+		}
 	}
 }

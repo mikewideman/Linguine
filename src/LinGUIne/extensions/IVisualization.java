@@ -38,7 +38,7 @@ public interface IVisualization {
 	 *         with
 	 */
 	Collection<Class<? extends Result>> getSupportedResultTypes();
-	
+
 	/**
 	 * Set the results that this visualization needs in order to run.
 	 * 
@@ -46,6 +46,14 @@ public interface IVisualization {
 	 */
 	boolean setResults(Collection<Result> results);
 
+	/**
+	 * Returns the results that this visualization is currently holding on to.
+	 * 
+	 * @return A collection of results if the visualization has results, null
+	 *         otherwise
+	 */
+	Collection<Result> getResults();
+	
 	/**
 	 * Returns whether this visualization has a wizard.
 	 * 

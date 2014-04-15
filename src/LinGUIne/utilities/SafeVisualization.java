@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -53,7 +54,8 @@ public class SafeVisualization implements ISafeRunnable {
 	 * any part listening for the event
 	 */
 	@Override
-	public void run() throws Exception {
+	public void run() throws Exception {	
+		visualization.setResults(results);
 		VisualizationView view = visualization.runVisualization();
 
 		VisualizationViewEvent viewEvent = new VisualizationViewEvent(view,

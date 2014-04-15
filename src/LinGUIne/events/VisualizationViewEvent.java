@@ -1,7 +1,7 @@
 package LinGUIne.events;
 
+import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.extensions.IVisualization;
-import LinGUIne.extensions.VisualizationSettings;
 import LinGUIne.extensions.VisualizationView;
 
 /**
@@ -13,7 +13,7 @@ import LinGUIne.extensions.VisualizationView;
 public class VisualizationViewEvent {
 
 	private VisualizationView view;
-	private VisualizationSettings settings;
+	private IEditorSettings settings;
 	private IVisualization visualization;
 
 	/**
@@ -27,7 +27,7 @@ public class VisualizationViewEvent {
 	 *            The visualization that generated the view
 	 */
 	public VisualizationViewEvent(VisualizationView view,
-			VisualizationSettings settings, IVisualization visualization) {
+			IEditorSettings settings, IVisualization visualization) {
 		this.view = view;
 		this.settings = settings;
 		this.visualization = visualization;
@@ -56,7 +56,7 @@ public class VisualizationViewEvent {
 	 * 
 	 * @return The broadcasted VisualizationSettings
 	 */
-	public VisualizationSettings getSettings() {
+	public IEditorSettings getSettings() {
 		return settings;
 	}
 }
