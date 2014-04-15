@@ -102,9 +102,10 @@ public class DataEditorPart implements SelectionListener, CTabFolder2Listener{
 		ProjectDataEditorTab newTab;
 		
 		if(projectData instanceof TextData){
-			if(openEvent.hasAnnotation()){
+			if(openEvent.getParentProject().isAnnotated(projectData)){
 				newTab = new AnnotatedTextDataEditorTab(tabFolder, SWT.CLOSE,
-						(TextData)projectData, openEvent.getAnnotationSet());
+						(TextData)projectData, openEvent.getParentProject().
+						getAnnotation(projectData));
 			}
 			else{
 				newTab = new TextDataEditorTab(tabFolder, SWT.CLOSE,

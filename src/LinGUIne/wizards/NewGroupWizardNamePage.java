@@ -2,8 +2,8 @@ package LinGUIne.wizards;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +19,8 @@ public class NewGroupWizardNamePage extends WizardPage {
 	
 	public NewGroupWizardNamePage(NewGroupData data){
 		super("New Group Wizard");
+		setTitle("New Group Wizard");
+		setDescription("Choose a name for the new Group.");
 		
 		wizardData = data;
 	}
@@ -29,16 +31,13 @@ public class NewGroupWizardNamePage extends WizardPage {
 		container.setLayout(new GridLayout(2, false));
 		
 		lblGroupName = new Label(container, SWT.NONE);
-		lblGroupName.setText("Enter name for the new Group.");
+		lblGroupName.setText("Enter name for the new Group:");
 		
 		txtGroupName = new Text(container, SWT.BORDER | SWT.SINGLE);
 		txtGroupName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		txtGroupName.addKeyListener(new KeyListener(){
+		txtGroupName.addModifyListener(new ModifyListener(){
 			@Override
-			public void keyPressed(KeyEvent e) {}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
+			public void modifyText(ModifyEvent e) {
 				if(isGroupNameValid(txtGroupName.getText())){
 					wizardData.setGroupName(txtGroupName.getText());
 					setPageComplete(true);
@@ -49,6 +48,7 @@ public class NewGroupWizardNamePage extends WizardPage {
 			}
 		});
 		
+		setControl(container);
 		setPageComplete(false);
 	}
 	

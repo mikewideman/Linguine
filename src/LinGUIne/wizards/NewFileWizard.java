@@ -13,6 +13,7 @@ import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.model.Project;
 import LinGUIne.model.Project.Subdirectory;
+import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.TextData;
 
@@ -30,7 +31,8 @@ public class NewFileWizard extends Wizard {
 	private IEventBroker eventBroker;
 	
 	private NewFileData wizardData;
-	private NewFileWizardPage newFilePage;
+	private NewFileWizardSelectProjectPage selectProjectPage;
+	private NewFileWizardNamePage namePage;
 	
 	public NewFileWizard(){
 		super();
@@ -38,11 +40,25 @@ public class NewFileWizard extends Wizard {
 		wizardData = new NewFileData();
 	}
 	
+	public void addStartingData(Project project, ProjectGroup group){		
+		wizardData.setChosenProject(project);
+		wizardData.setParentGroup(group);
+	}
+	
 	@Override
 	public void addPages(){
-		newFilePage = new NewFileWizardPage(wizardData, projectMan);
+		selectProjectPage = new NewFileWizardSelectProjectPage(wizardData,
+				projectMan);
+		namePage = new NewFileWizardNamePage(wizardData);
 		
-		addPage(newFilePage);
+		//Only add the first page if the Project and Group haven't been chosen
+		if(wizardData.getChosenProject() == null ||
+				wizardData.getParentGroup() == null){
+
+			addPage(selectProjectPage);
+		}
+		
+		addPage(namePage);
 	}
 	
 	@Override
@@ -56,9 +72,10 @@ public class NewFileWizard extends Wizard {
 		try {
 			Files.createFile(newFile.toPath());
 			chosenProject.addProjectData(newTextData);
+			chosenProject.addDataToGroup(newTextData, wizardData.getParentGroup());
 			
 			eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
-					new OpenProjectDataEvent(newTextData));
+					new OpenProjectDataEvent(newTextData, chosenProject));
 		}
 		catch(IOException e) {
 			e.printStackTrace();

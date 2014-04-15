@@ -33,7 +33,7 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 	private TextDataContents projectDataContents;
 	private AnnotationSet annotationSet;
 	private AnnotationSetContents annotationSetContents;
-	private AnnotatedTextDataSettings editorSettings;
+	private TextAnnotationSetSettings editorSettings;
 	
 	public AnnotatedTextDataEditorTab(CTabFolder parent, int style,
 			TextData projData, AnnotationSet annotation){
@@ -47,8 +47,8 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 		
 		super.createComposite();
 		
-		editorSettings = new AnnotatedTextDataSettings(this, projectDataContents,
-				annotationSetContents);
+//		editorSettings = new TextAnnotationSetSettings(this, projectDataContents,
+//				annotationSetContents);
 		
 		textArea.addCaretListener(new CaretListener(){
 			@Override
@@ -87,7 +87,8 @@ public class AnnotatedTextDataEditorTab extends ProjectDataEditorTab {
 	
 	@Override
 	public boolean hasEditorSettings() {
-		return true;
+//		return true;
+		return false;
 	}
 
 	@Override

@@ -13,21 +13,27 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 
-public class RemoveProjectHandler {
+public class RenameGroupHandler {
 	
-	private static final String TARGET_PROJECT_PARAM = "linguine.command."
-			+ "removeProject.parameter.targetProject";
+	private static final String TARGET_GROUP_PARAM = "linguine.command."
+			+ "renameGroup.parameter.targetGroup";
+	
+	private static final String PARENT_PROJECT_PARAM = "linguine.command."
+			+ "renameGroup.parameter.parentProject";
 	
 	@Inject
 	private ProjectManager projectMan;
 	
 	@Execute
-	public void execute(@Named(TARGET_PROJECT_PARAM) String targetProject,
+	public void execute(@Named(TARGET_GROUP_PARAM) String targetGroup,
+			@Named(PARENT_PROJECT_PARAM) String parentProject,
 			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		
-		Project project = projectMan.getProject(targetProject);
+		Project project = projectMan.getProject(parentProject);
+		ProjectGroup group = project.getGroup(targetGroup);
 		
 		if(project != null){
 			ConfirmWithOptionDialog dialog = new ConfirmWithOptionDialog(shell,
@@ -36,6 +42,7 @@ public class RemoveProjectHandler {
 					"Delete Project contents on disk (cannot be undone).");
 			
 			boolean confirmed = dialog.open() == Window.OK;
+			System.out.println(dialog.wasOptionChosen());
 			
 			if(confirmed){
 				try {
