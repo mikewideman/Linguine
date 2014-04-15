@@ -2,16 +2,12 @@ package LinGUIne.utilities;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.events.IEventBroker;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
-import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.VisualizationViewEvent;
 import LinGUIne.extensions.IVisualization;
 import LinGUIne.extensions.VisualizationView;
@@ -24,13 +20,20 @@ import LinGUIne.model.Result;
  */
 public class SafeVisualization implements ISafeRunnable {
 
-	@Inject
-	private IEventBroker eventBroker;
-
 	private Shell shell;
 	private IVisualization visualization;
 	private Collection<Result> results;
 
+	/**
+	 * Constructs the object with necessary parameters for execution.
+	 * 
+	 * @param shell
+	 *            The current shell
+	 * @param visualization
+	 *            The visualization to be ran
+	 * @param results
+	 *            The results to be used to run the visualization
+	 */
 	public SafeVisualization(Shell shell, IVisualization visualization,
 			Collection<Result> results) {
 		this.shell = shell;
@@ -49,19 +52,17 @@ public class SafeVisualization implements ISafeRunnable {
 	}
 
 	/**
-	 * Runs the visualization over the results and then provides the output
-	 * VisualizationWizard through a broadcasted event that can be picked up by
-	 * any part listening for the event
+	 * Runs the visualization with the results supplied. VisualResults and
+	 * VisualResultContents are then created and saved to the project to be
+	 * displayed later to the user.
 	 */
 	@Override
-	public void run() throws Exception {	
+	public void run() throws Exception {
+		// TODO: refactor to conform to VisualResult/VisualResultContents design
 		visualization.setResults(results);
 		VisualizationView view = visualization.runVisualization();
 
 		VisualizationViewEvent viewEvent = new VisualizationViewEvent(view,
-				view.getSettings(), visualization);
-
-		eventBroker.post(LinGUIneEvents.UILifeCycle.VISUALIZATION_VIEW,
-				viewEvent);
+				visualization);
 	}
 }

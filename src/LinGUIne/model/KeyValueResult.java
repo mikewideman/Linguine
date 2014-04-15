@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import LinGUIne.serialization.KeyValueResultTranslator;
 
 /**
- * Represents a result that's data is formatted in a typical key and value 
+ * Represents a result whose data is formatted in a typical key and value 
  * fashion.
  * 
  * @author Peter Dimou
@@ -32,6 +32,9 @@ public class KeyValueResult extends Result {
 		contents = null;
 	}
 
+	/**
+	 * Reads the contents from disk using a JSON parser.
+	 */
 	@Override
 	public IProjectDataContents getContents() {
 		if(contents == null){
@@ -64,6 +67,9 @@ public class KeyValueResult extends Result {
 		return contents.copy();
 	}
 
+	/**
+	 * Writes the new contents to disk in JSON format
+	 */
 	@Override
 	public boolean updateContents(IProjectDataContents newContents) {
 		if(newContents == null){

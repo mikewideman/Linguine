@@ -21,12 +21,13 @@ public class VisualizationWizard extends Wizard {
 
 	private VisualizationWizardSelectResultPage selectFilePage;
 	private VisualizationWizardSelectVisualizationPage selectVisualizationPage;
+	private VisualizationData wizardData;
 
 	@Inject
 	private ProjectManager projectMan;
 	@Inject
 	private VisualizationPluginManager visualizationPluginMan;
-	private VisualizationData wizardData;
+	
 
 	/**
 	 * Constructs the VisualizationWizard with new data that is to be carried
@@ -64,7 +65,7 @@ public class VisualizationWizard extends Wizard {
 				wizardData.getChosenResults());
 
 		SafeRunner.run(safeVisualization);
-		return false;
+		return true;
 	}
 
 }

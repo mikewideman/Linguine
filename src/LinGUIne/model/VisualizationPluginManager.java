@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.Platform;
 
 import LinGUIne.extensions.IVisualization;
 
-
 /**
  * Container for all visualization plugins currently loaded in order to easily
  * provide information about them to other parts of the application.
@@ -23,16 +22,10 @@ public class VisualizationPluginManager {
 
 	/**
 	 * Creates a new instance and populates it using the ExtensionRegistry.
+	 * Builds the internal list of visualizations from the extension point
+	 * schema definition.
 	 */
 	public VisualizationPluginManager() {
-		initializeVisualizations();
-	}
-
-	/**
-	 * Builds the internal list of visualizations from the extension point
-	 * schema definition
-	 */
-	private void initializeVisualizations() {
 		visualizations = new HashMap<IVisualization, String>();
 
 		IConfigurationElement[] visualizationElements = Platform
@@ -48,15 +41,15 @@ public class VisualizationPluginManager {
 
 				String description = visualizationElement
 						.getAttribute("description");
-				
+
 				visualizations.put(visualization, description);
 			} catch (CoreException e) {
 				// TODO: Error handling
 				e.printStackTrace();
 			}
 		}
-
 	}
+
 
 	/**
 	 * Returns all visualizations currently loaded from plugins
@@ -113,7 +106,7 @@ public class VisualizationPluginManager {
 	 * 
 	 * @param name
 	 *            The name of the visualization.
-	 * @return The visualization provider
+	 * @return The visualization
 	 */
 	public IVisualization getVisualizationByName(String name) {
 		for (IVisualization visualization : visualizations.keySet()) {
@@ -142,5 +135,4 @@ public class VisualizationPluginManager {
 		}
 		return null;
 	}
-
 }

@@ -1,7 +1,7 @@
 package LinGUIne.model;
 
 /**
- * Generic data node that is used in KeyValueResult objects.
+ * Generic data node.
  * 
  * @author Peter Dimou
  */
