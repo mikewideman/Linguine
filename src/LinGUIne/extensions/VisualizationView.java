@@ -37,5 +37,4 @@ public abstract class VisualizationView extends ViewPart {
 	 * @return The settings pane this visualization provides
 	 */
 	public abstract IEditorSettings getSettings();
-
 }

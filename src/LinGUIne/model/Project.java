@@ -411,6 +411,7 @@ public class Project {
 		
 		groups.put(newGroup, id);
 		groupContents.put(id, new HashSet<Integer>());
+		notifyListeners();
 		
 		return true;
 	}
@@ -432,14 +433,7 @@ public class Project {
 		if(containsGroup(group) && containsProjectData(projData)){
 			int projDataId = projectData.get(projData);
 
-			//Remove ProjectData from other group if any
-			for(HashSet<Integer> contents: groupContents.values()){
-				for(int dataId: contents){
-					if(dataId == projDataId){
-						contents.remove(projDataId);
-					}
-				}
-			}
+			removeProjectDataFromGroup(projDataId);			
 			
 			groupContents.get(groups.get(group)).add(projDataId);
 			//TODO: Move the ProjectData File as needed
@@ -461,7 +455,10 @@ public class Project {
 	public boolean removeProjectData(IProjectData projData){
 		//TODO: Should this function also remove associated Results/Annotations?
 		if(containsProjectData(projData)){
-			projectData.remove(projData);
+			int projDataId = projectData.remove(projData);
+			removeProjectDataFromGroup(projDataId);
+			
+			notifyListeners();
 			
 			return true;
 		}
@@ -513,7 +510,8 @@ public class Project {
 	}
 	
 	/**
-	 * Removes from this Project the given ProjectGroup if it exists.
+	 * Removes from this Project the given ProjectGroup and all of its child
+	 * groups.
 	 * 
 	 * @param group	The ProjectGroup to be removed.
 	 * 
@@ -524,6 +522,13 @@ public class Project {
 		if(containsGroup(group)){
 			int id = groups.remove(group);
 			groupContents.remove(id);
+			group.removeParent();
+			
+			for(ProjectGroup childGroup: group.getChildren()){
+				removeGroup(childGroup);
+			}
+			
+			notifyListeners();
 			
 			return true;
 		}
@@ -629,6 +634,20 @@ public class Project {
 		}
 		
 		return new HashSet<IProjectData>();
+	}
+	
+	/**
+	 * Returns the Project Data associated with the given AnnotationSet object
+	 * or null if the AnnotationSet is not in this Project.
+	 */
+	public IProjectData getDataForAnnotation(AnnotationSet annotation){
+		for(Entry<Integer, AnnotationSet> pair: annotationSets.entrySet()){
+			if(annotation.compareTo(pair.getValue()) == 0){
+				return getProjectDataById(pair.getKey());
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -878,12 +897,12 @@ public class Project {
 				projData.deleteContentsOnDisk();
 			}
 			
+			deleteProjectFiles();
+			
 			//Delete all ProjectGroups
 			for(ProjectGroup group: groups.keySet()){
 				group.deleteGroupDirectory(getProjectDirectory());
 			}
-			
-			deleteProjectFiles();
 			
 			hasProjectFiles = false;
 			return true;
@@ -972,11 +991,6 @@ public class Project {
 		//Delete project file
 		Files.delete(getProjectFile().toFile().toPath());
 		
-		//Delete sub-directories
-//		Files.delete(getSubdirectory(Subdirectory.Data).toFile().toPath());
-//		Files.delete(getSubdirectory(Subdirectory.Results).toFile().toPath());
-//		Files.delete(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
-		
 		//Delete root project directory
 		Files.delete(projectDir.toFile().toPath());
 	}
@@ -1005,6 +1019,23 @@ public class Project {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Removes the Project Data with the given id from its parent ProjectGroup.
+	 * Note: This function leaves the Project Data in an invalid state, as it is
+	 * not belonging to at least one ProjectGroup.
+	 */
+	private void removeProjectDataFromGroup(int projDataId){
+		for(HashSet<Integer> contents: groupContents.values()){
+			for(int dataId: contents){
+				if(dataId == projDataId){
+					contents.remove(projDataId);
+					
+					return;
+				}
+			}
+		}
 	}
 	
 	private int getNextId(){

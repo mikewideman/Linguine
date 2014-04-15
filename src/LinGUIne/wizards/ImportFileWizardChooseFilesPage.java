@@ -37,7 +37,7 @@ public class ImportFileWizardChooseFilesPage extends WizardPage {
 	public ImportFileWizardChooseFilesPage(ImportFileData data){
 		super("Import File Wizard");
 		setTitle("Import File Wizard");
-		setDescription("Choose the files you wish to import.");//TODO: pick a description
+		setDescription("Choose the files you wish to import.");
 		setControl(lstFiles);
 		
 		wizardData = data;

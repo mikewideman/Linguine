@@ -8,7 +8,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
-import LinGUIne.events.VisualizationViewEvent;
 import LinGUIne.extensions.IVisualization;
 import LinGUIne.extensions.VisualizationView;
 import LinGUIne.model.Result;
@@ -61,8 +60,5 @@ public class SafeVisualization implements ISafeRunnable {
 		// TODO: refactor to conform to VisualResult/VisualResultContents design
 		visualization.setResults(results);
 		VisualizationView view = visualization.runVisualization();
-
-		VisualizationViewEvent viewEvent = new VisualizationViewEvent(view,
-				visualization);
 	}
 }

@@ -1,6 +1,7 @@
 package LinGUIne.wizards;
 
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectGroup;
 
 /**
  * Data object used to carry data through the NewFileWizard.
@@ -10,6 +11,7 @@ import LinGUIne.model.Project;
 public class NewFileData {
 	
 	private Project chosenProject;
+	private ProjectGroup parentGroup;
 	private String newFileName;
 	
 	public void setChosenProject(Project chosenProj){
@@ -18,6 +20,14 @@ public class NewFileData {
 	
 	public Project getChosenProject(){
 		return chosenProject;
+	}
+	
+	public void setParentGroup(ProjectGroup chosenGroup){
+		parentGroup = chosenGroup;
+	}
+	
+	public ProjectGroup getParentGroup(){
+		return parentGroup;
 	}
 	
 	public void setNewFileName(String fileName){
@@ -29,7 +39,7 @@ public class NewFileData {
 	}
 	
 	public boolean isComplete(){
-		return chosenProject != null && newFileName != null &&
-				!newFileName.isEmpty();
+		return chosenProject != null && parentGroup != null &&
+				newFileName != null;
 	}
 }

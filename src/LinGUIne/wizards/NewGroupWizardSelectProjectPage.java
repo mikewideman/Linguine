@@ -9,11 +9,13 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
+import LinGUIne.model.RootProjectGroup;
 
 public class NewGroupWizardSelectProjectPage extends WizardPage {
 
@@ -26,6 +28,8 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 	public NewGroupWizardSelectProjectPage(ProjectManager projects,
 			NewGroupData data){
 		super("New Group Wizard");
+		setTitle("New Group Wizard");
+		setDescription("Select where the new Group should go.");
 		
 		projectMan = projects;
 		wizardData = data;
@@ -35,6 +39,12 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new GridLayout(2, true));
+		
+		Label lblProjects = new Label(container, SWT.NONE);
+		lblProjects.setText("Select the Project to put the Group in:");
+		
+		Label lblGroups = new Label(container, SWT.NONE);
+		lblGroups.setText("Select the new Group's parent Group:");
 		
 		lstProjects = new List(container, SWT.BORDER | SWT.V_SCROLL | 
 				SWT.H_SCROLL);
@@ -69,10 +79,9 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 					Project destProject = wizardData.getDestProject();
 					String groupName = lstGroups.getSelection()[0];
 					
-					//TODO: Ensure this works as expected
 					if(groupName.contains("/")){
 						groupName = groupName.substring(
-								groupName.lastIndexOf("/"));
+								groupName.lastIndexOf("/") + 1);
 					}
 					
 					wizardData.setParentGroup(destProject.getGroup(groupName));
@@ -84,14 +93,28 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		setControl(container);
 		setPageComplete(false);
+		
+		//If there is a Project already selected (in wizardData), select it
+		if(wizardData.getDestProject() != null){
+			lstProjects.setSelection(
+					new String[]{wizardData.getDestProject().getName()});
+			populateGroupList();
+		}
 	}
 	
 	private void populateGroupList(){
 		TreeSet<String> sortedGroups = new TreeSet<String>();
 		
 		for(ProjectGroup group: wizardData.getDestProject().getGroups()){
-			sortedGroups.add(group.getGroupPath());
+			if(group instanceof RootProjectGroup){
+				if(((RootProjectGroup)group).isHidden()){
+					continue;
+				}
+			}
+			
+			sortedGroups.add(group.getDisplayGroupPath());
 		}
 		
 		lstGroups.removeAll();

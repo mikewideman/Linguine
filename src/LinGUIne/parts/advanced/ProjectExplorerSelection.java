@@ -8,6 +8,7 @@ import java.util.List;
 
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
+import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.Result;
 
 /**
@@ -20,6 +21,7 @@ public class ProjectExplorerSelection {
 	private List<String> selectedProjects;
 	private HashMap<Integer, HashSet<String>> selectedOriginalData;
 	private HashMap<Integer, HashSet<String>> selectedResults;
+	private HashMap<Integer, HashSet<String>> selectedGroups;
 	
 	/**
 	 * Creates a new empty ProjectExplorerSelection.
@@ -28,6 +30,7 @@ public class ProjectExplorerSelection {
 		selectedProjects = new LinkedList<String>();
 		selectedOriginalData = new HashMap<Integer, HashSet<String>>();
 		selectedResults = new HashMap<Integer, HashSet<String>>();
+		selectedGroups = new HashMap<Integer, HashSet<String>>();
 	}
 	
 	/**
@@ -97,17 +100,29 @@ public class ProjectExplorerSelection {
 		return new LinkedList<String>();
 	}
 	
+	public Collection<String> getSelectedGroups(String projectName){
+		int projectId = selectedProjects.indexOf(projectName);
+		
+		if(projectId >= 0){
+			return selectedGroups.get(projectId);
+		}
+	
+		return new LinkedList<String>();
+	}
+	
 	/**
 	 * Adds all ProjectData from the given Project to this
 	 * ProjectExplorerSelection.
 	 */
 	public void addToSelection(Project selectedProject){
 		List<IProjectData> selectedProjectData = new LinkedList<IProjectData>();
+		List<ProjectGroup> selectedProjectGroups = new LinkedList<ProjectGroup>();
 		
 		selectedProjectData.addAll(selectedProject.getOriginalData());
 		selectedProjectData.addAll(selectedProject.getResults());
+		selectedProjectGroups.addAll(selectedProject.getGroups());
 		
-		addToSelection(selectedProject, selectedProjectData);
+		addToSelection(selectedProject, selectedProjectData, selectedProjectGroups);
 	}
 	
 	/**
@@ -120,7 +135,9 @@ public class ProjectExplorerSelection {
 	 * 								within the given Project.
 	 */
 	public void addToSelection(Project parentProject,
-			List<IProjectData> selectedProjectData){
+			List<IProjectData> selectedProjectData,
+			List<ProjectGroup> selectedProjectGroups){
+		
 		int projectId;
 		
 		if(!selectedProjects.contains(parentProject.getName())){
@@ -129,6 +146,7 @@ public class ProjectExplorerSelection {
 			selectedProjects.add(parentProject.getName());
 			selectedOriginalData.put(projectId, new HashSet<String>());
 			selectedResults.put(projectId, new HashSet<String>());
+			selectedGroups.put(projectId, new HashSet<String>());
 		}
 		else{
 			projectId = selectedProjects.indexOf(parentProject.getName());
@@ -145,6 +163,10 @@ public class ProjectExplorerSelection {
 				originalDataSet.add(data.getName());
 			}
 		}
+		
+		for(ProjectGroup group: selectedProjectGroups){
+			selectedGroups.get(projectId).add(group.getName());
+		}
 	}
 	
 	/**
@@ -156,5 +178,6 @@ public class ProjectExplorerSelection {
 		selectedProjects.clear();
 		selectedOriginalData.clear();
 		selectedResults.clear();
+		selectedGroups.clear();
 	}
 }
