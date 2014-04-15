@@ -47,15 +47,13 @@ public class DataEditorManager {
 		partStack = (MPartStack)modelService.find("linguine.partstack.advanced."
 				+ "dataEditorPartStack", application);
 		
-//		System.out.println("In setup");
-		
 		eventBroker.subscribe(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
 				new EventHandler(){
 			@Override
 			public void handleEvent(Event event) {
 				if(event != null){
 					for(String propName: event.getPropertyNames()){
-//						System.out.println(propName);
+						//Does nothing, but I'm afraid to get rid of it
 					}
 				}
 			}
@@ -68,8 +66,6 @@ public class DataEditorManager {
 	@Inject
 	public void fileOpenEvent(@Optional @UIEventTopic(LinGUIneEvents.
 			UILifeCycle.OPEN_PROJECT_DATA) OpenProjectDataEvent openEvent){
-		
-//		System.out.println("In fileOpenEvent");
 		
 		if(openEvent != null){
 			IProjectData projData = openEvent.getProjectData();
@@ -97,6 +93,9 @@ public class DataEditorManager {
 				}
 				else if(new TextDataEditor().canOpenData(projData, project)){
 					dataEditor = new TextDataEditor();
+				}
+				else if(new VisualResultViewEditor().canOpenData(projData, project)){
+					dataEditor = new VisualResultViewEditor();
 				}
 				else{
 					return;
