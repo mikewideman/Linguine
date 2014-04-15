@@ -150,9 +150,12 @@
   <commands xmi:id="_Ea1_cLhZEeOPZ-IS4_9pnA" elementId="linguine.command.saveall" commandName="saveAllCommand" description="Context aware save all"/>
   <commands xmi:id="_5qnvBjdzEeOR8_lurf-ldg" elementId="linguine.commands.about" commandName="aboutCommand" description="Shows a description of the application"/>
   <commands xmi:id="_KqIBoLhYEeOPZ-IS4_9pnA" elementId="linguine.command.new" commandName="newGeneralCommand" description="Starts the process of creating something new"/>
-  <commands xmi:id="_BLZoAJ8rEeOA0_QUQheDyA" elementId="linguine.command.new.file" commandName="newFileCommand" description="Initiates the process to create a new file"/>
+  <commands xmi:id="_BLZoAJ8rEeOA0_QUQheDyA" elementId="linguine.command.new.file" commandName="newFileCommand" description="Initiates the process to create a new file">
+    <parameters xmi:id="_t9efUMQxEeOGW6ncd9sqEQ" elementId="linguine.command.newFile.parameter.destProject" name="destProject"/>
+    <parameters xmi:id="_zY4YEMQxEeOGW6ncd9sqEQ" elementId="linguine.command.newFile.parameter.parentGroup" name="parentGroup"/>
+  </commands>
   <commands xmi:id="_EgcjELhXEeOPZ-IS4_9pnA" elementId="linguine.command.new.group" commandName="newGroupCommand" description="Initiaties the process to create a new group">
-    <parameters xmi:id="_J-HCAMAgEeOJvZWPOU87lA" elementId="linguine.command.newGroup.parameter.destinationProject" name="destinationProject"/>
+    <parameters xmi:id="_J-HCAMAgEeOJvZWPOU87lA" elementId="linguine.command.newGroup.parameter.destProject" name="destProject"/>
     <parameters xmi:id="_VMV1AMAgEeOJvZWPOU87lA" elementId="linguine.command.newGroup.parameter.parentGroup" name="parentGroup"/>
   </commands>
   <commands xmi:id="_oQ1w8DxbEeOsebD9DszETw" elementId="linguine.command.new.project" commandName="newProjectCommand" description="Starts the process of creating a new project"/>

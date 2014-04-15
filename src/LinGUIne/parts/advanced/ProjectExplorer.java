@@ -261,7 +261,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		newCascade.setMenu(newMenu);
 		
 		final MenuItem newFile = new MenuItem(newMenu, SWT.NONE);
-		newFile.setText("New File...");
+		newFile.setText("File");
 		newFile.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -285,7 +285,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 				
 				if(selectedProject != null){
 					params.put("linguine.command.newFile.parameter." +
-							"destinationProject", selectedProject.getName());
+							"destProject", selectedProject.getName());
 				}
 				
 				if(selectedGroup != null){
@@ -301,7 +301,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		});
 		
 		final MenuItem newGroup = new MenuItem(newMenu, SWT.NONE);
-		newGroup.setText("New Group...");
+		newGroup.setText("Group");
 		newGroup.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -324,7 +324,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 				
 				if(selectedProject != null){
 					params.put("linguine.command.newGroup.parameter." +
-							"destinationProject", selectedProject.getName());
+							"destProject", selectedProject.getName());
 				}
 				
 				if(selectedGroup != null){
@@ -341,7 +341,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		});
 		
 		final MenuItem newProject = new MenuItem(newMenu, SWT.NONE);
-		newProject.setText("New Project...");
+		newProject.setText("Project");
 		newProject.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {

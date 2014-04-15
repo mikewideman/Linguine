@@ -79,10 +79,9 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 					Project destProject = wizardData.getDestProject();
 					String groupName = lstGroups.getSelection()[0];
 					
-					//TODO: Ensure this works as expected
 					if(groupName.contains("/")){
 						groupName = groupName.substring(
-								groupName.lastIndexOf("/"));
+								groupName.lastIndexOf("/") + 1);
 					}
 					
 					wizardData.setParentGroup(destProject.getGroup(groupName));
