@@ -362,7 +362,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		importCascade.setMenu(importMenu);
 		
 		final MenuItem importFile = new MenuItem(importMenu, SWT.NONE);
-		importFile.setText("Import File...");
+		importFile.setText("File");
 		importFile.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -374,7 +374,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		});
 		
 		final MenuItem importProject = new MenuItem(importMenu, SWT.NONE);
-		importProject.setText("Import Project...");
+		importProject.setText("Project");
 		importProject.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -390,7 +390,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		 */
 		
 		final MenuItem export = new MenuItem(contextMenu, SWT.NONE);
-		export.setText("Export...");
+		export.setText("Export");
 		export.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -532,6 +532,68 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		final MenuItem openFile = new MenuItem(contextMenu, SWT.NONE);
+		openFile.setText("Open");
+		openFile.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ProjectDataNode node = nodeSelection.getAllSelectedDataNodes().
+						getFirst();
+				IProjectData data = node.getNodeData();
+				Project parentProj = ((ProjectNode)node.getRootNode()).getProject();
+				
+				eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
+						new OpenProjectDataEvent(data, parentProj));
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem move = new MenuItem(contextMenu, SWT.NONE);
+		move.setText("Move...");
+		move.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				String commandId;
+				
+				if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+					GroupNode node = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					ProjectGroup selectedGroup = node.getNodeGroup();
+					
+					params.put("linguine.command.moveGroup.parameter."
+							+ "targetGroup", selectedGroup.getName());
+					
+					params.put("linguine.command.moveGroup.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.move.group";
+				}
+				else{
+					ProjectDataNode node = nodeSelection.
+							getAllSelectedDataNodes().getFirst();
+					IProjectData selectedData = node.getNodeData();
+					
+					params.put("linguine.command.moveProjectData.parameter."
+							+ "targetProjectData", selectedData.getName());
+					
+					params.put("linguine.command.moveProjectData.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.move.projectData";
+				}
+				
+				executeParameterizedCommand(commandId, params);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
 		tree.getTree().setMenu(contextMenu);
 		
 		contextMenu.addMenuListener(new MenuListener(){
@@ -543,13 +605,23 @@ public class ProjectExplorer implements IPropertiesProvider{
 				remove.setEnabled(false);
 				rename.setEnabled(false);
 				export.setEnabled(false);
+				openFile.setEnabled(false);
+				move.setEnabled(false);
 				
 				if(nodeSelection.getSelectionCount() == 1){
 					remove.setEnabled(true);
-					rename.setEnabled(true);
+//					rename.setEnabled(true);
 					
 					if(!nodeSelection.getSelectedResultNodes().isEmpty()){
 						export.setEnabled(true);
+						openFile.setEnabled(true);
+//						move.setEnabled(true);
+					}
+					else if(!nodeSelection.getSelectedOriginalDataNodes().
+							isEmpty()){
+						
+						openFile.setEnabled(true);
+//						move.setEnabled(true);
 					}
 					else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
 						GroupNode node = nodeSelection.getSelectedGroupNodes().
@@ -558,6 +630,9 @@ public class ProjectExplorer implements IPropertiesProvider{
 						if(node.getNodeGroup() instanceof RootProjectGroup){
 							remove.setEnabled(false);
 							rename.setEnabled(false);
+						}
+						else{
+//							move.setEnabled(true);
 						}
 					}
 				}
