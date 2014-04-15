@@ -15,6 +15,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.extensions.IAnalysisPlugin;
+import LinGUIne.extensions.IVisualization;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
@@ -58,6 +61,9 @@ public class BasicMainPart {
 	private Label lblAnalyses;
 	private List lstAnalyses;
 	private Display display;
+	
+	private Button analysisButton;
+	private Button visButton;
 
 	
 	@Inject
@@ -177,14 +183,6 @@ public class BasicMainPart {
 		
 	}
 	
-	/**
-	 * Returns whether or not the given name is a valid Project name. An empty
-	 * name is invalid and Projects cannot have duplicate names.
-	 * 
-	 * @param name	The prospective Project name the user has entered.
-	 * 
-	 * @return	True iff the given name is valid, false otherwise.
-	 */
 
 	
 	public void openSelectFileTab(){
@@ -268,7 +266,7 @@ public class BasicMainPart {
 			softwareModuleList.addAll(softwareModuleMan.getSoftwareModuleNames());
 			CTabItem analysisTabItem = new CTabItem(tabFolder, SWT.NONE);
 			analysisTabItem.setText(ANALYSIS_TAB);
-			Composite container = new Composite(tabFolder, SWT.NONE);
+			Composite container = new Composite(tabFolder, SWT.SCROLLBAR_OVERLAY);
 			 GridLayout layout = new GridLayout();
 			 	layout.numColumns = 2;
 			    layout.marginTop = 15;
@@ -282,41 +280,72 @@ public class BasicMainPart {
 //			Composite basicContainer = new Composite(innerFolder, SWT.NONE);
 			
 			Group grpBasicAnalyses = new Group(container, SWT.NONE);
-			grpBasicAnalyses.setLayout(new GridLayout(1, false));
-			GridData gData = new GridData(400,400);
+			grpBasicAnalyses.setLayout(new GridLayout(2, true));
+			GridData gData = new GridData(600,500);
 			gData.horizontalSpan = 2;
 		    grpBasicAnalyses.setLayoutData(gData);
 		    grpBasicAnalyses.setText("Analyses");
 			lblAnalyses = new Label(grpBasicAnalyses, SWT.NONE);
 			lblAnalyses.setText("Select an Analysis to use:");
+		    FontData[] fdLbl = lblAnalyses.getFont().getFontData();
+		    fdLbl[0].setHeight(14);
+		    lblAnalyses.setFont( new Font(getDisplay(),fdLbl[0]));
+			gData = new GridData(210,100);
+			gData.horizontalSpan = 2;
+			lblAnalyses.setLayoutData(gData);
 			
-			lstAnalyses = new List(grpBasicAnalyses, SWT.BORDER | SWT.V_SCROLL);
-			lstAnalyses.setLayoutData(new GridData(370,370));
-			lstAnalyses.setEnabled(true);
-			
-			lstAnalyses.addSelectionListener(new SelectionListener(){
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if(lstAnalyses.getSelectionCount() > 0){
-						String analysisName = lstAnalyses.getSelection()[0];
-						String selectedModule = softModMap.get(analysisName);
-		
-						
-						IAnalysisPlugin analysis = softwareModuleMan.getAnalysisByName(
-								selectedModule, analysisName);
-						
-						if(analysis != null){
-							analysisData.setChosenAnalysis(analysis);
+			for( String name : softwareModuleMan.getSoftwareModuleNames()){
+				for( IAnalysisPlugin plug : softwareModuleMan.getAnalyses(name)){
+					softModMap.put(plug.getName(), name);
+					Button button = new Button(grpBasicAnalyses, SWT.TOGGLE);
+					button.setText(plug.getName());
+				    FontData[] fdButton = button.getFont().getFontData();
+				    fdButton[0].setHeight(14);
+				    button.setFont( new Font(getDisplay(),fdButton[0]));
+					GridData buttonsGridData = new GridData(235,150);
+					
+					button.setLayoutData(buttonsGridData);
+					button.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e){
+							if(analysisButton !=null && !analysisButton.equals(e.widget)){
+								analysisButton.setSelection(false);
+							}
+							analysisButton = (Button) e.widget;
+							analysisData.setChosenAnalysis(softwareModuleMan.getAnalysisByName(softModMap.get(analysisButton.getText()), analysisButton.getText()));
+							
 						}
-					}
+					});
 				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {}
-			});
+			}
 			
-			updateAnalysisList();
+//			lstAnalyses = new List(grpBasicAnalyses, SWT.BORDER | SWT.V_SCROLL);
+//			lstAnalyses.setLayoutData(new GridData(370,370));
+//			lstAnalyses.setEnabled(true);
+//			
+//			lstAnalyses.addSelectionListener(new SelectionListener(){
+//
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					if(lstAnalyses.getSelectionCount() > 0){
+//						String analysisName = lstAnalyses.getSelection()[0];
+//						String selectedModule = softModMap.get(analysisName);
+//		
+//						
+//						IAnalysisPlugin analysis = softwareModuleMan.getAnalysisByName(
+//								selectedModule, analysisName);
+//						
+//						if(analysis != null){
+//							analysisData.setChosenAnalysis(analysis);
+//						}
+//					}
+//				}
+//
+//				@Override
+//				public void widgetDefaultSelected(SelectionEvent e) {}
+//			});
+			
+//			updateAnalysisList();
 //			advancedAnalysis.setText("Advanced Analysis Set");
 //			basicAnalysis.setControl(innerFolder);
 //			innerFolder.setLayoutData(new GridData(800, 300));
@@ -357,23 +386,41 @@ public class BasicMainPart {
 			layout.marginHeight = 15;
 			container.setLayout(layout);
 			Group grpVisualizations = new Group(container, SWT.NONE);
-			grpVisualizations.setLayout(new GridLayout(1, false));
-			GridData vData = new GridData(400,400);
+			grpVisualizations.setLayout(new GridLayout(2, false));
+			GridData vData = new GridData(600,500);
 			vData.horizontalSpan = 2;
 			grpVisualizations.setLayoutData(vData);
 			grpVisualizations.setText("Visualizations");
 
 			Label lblVisualizations = new Label(grpVisualizations, SWT.NONE);
 			lblVisualizations.setText("Select a Visualization for your data:");
+			GridData lblVisData = new GridData(210,100);
+			lblVisData.horizontalSpan = 2;
+			lblVisualizations.setLayoutData(lblVisData);
 
-			List lstVisualizations = new List(grpVisualizations, SWT.BORDER
-					| SWT.V_SCROLL);
-			lstVisualizations.setLayoutData(new GridData(370,370));
 			
-			for (String visualization : visualizationPluginMan.getVisualizationNames()) {
-				lstVisualizations.add(visualization);
+			for( String visualization : visualizationPluginMan.getVisualizationNames()){
+			
+					Button button = new Button(grpVisualizations, SWT.TOGGLE);
+					button.setText(visualization);
+				    FontData[] fdButton = button.getFont().getFontData();
+				    fdButton[0].setHeight(14);
+				    button.setFont( new Font(getDisplay(),fdButton[0]));
+					GridData buttonsGridData = new GridData(235,150);
+					
+					button.setLayoutData(buttonsGridData);
+					button.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e){
+							if(visButton !=null && !visButton.equals(e.widget)){
+								visButton.setSelection(false);
+							}
+							visButton = (Button) e.widget;
+							visualizationData.setChosenVisualization(visualizationPluginMan.getVisualizationByName(visButton.getText()));
+							
+						}
+					});
 			}
-			lstVisualizations.update();
 			visualizationPluginMan.getVisualizationNames();
 			Button bButton = new Button(container, SWT.NONE);
 			Button fButton = new Button(container, SWT.NONE);
@@ -413,7 +460,6 @@ public class BasicMainPart {
 		lstAnalyses.removeAll();
 		
 		
-		IAnalysisPlugin tokenization;
 		for( String name : softwareModuleMan.getSoftwareModuleNames()){
 			System.out.println(name);
 			for( IAnalysisPlugin plug : softwareModuleMan.getAnalyses(name)){
