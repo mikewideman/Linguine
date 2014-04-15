@@ -20,6 +20,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
+import LinGUIne.wizards.AboutDialog;
+
 public class AboutHandler {
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
@@ -29,5 +31,7 @@ public class AboutHandler {
 		for(int i = 0; i < bundles.length; i++){
 			System.out.println(bundles[i].toString());
 		}
+		AboutDialog dia = new AboutDialog(shell);
+		dia.open();
 	}
 }
