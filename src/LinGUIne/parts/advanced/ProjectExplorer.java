@@ -73,7 +73,7 @@ import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 import LinGUIne.model.RootProjectGroup;
-import LinGUIne.model.VisualizationResult;
+import LinGUIne.model.VisualResult;
 import LinGUIne.parts.advanced.projects.ProjectDataNode;
 import LinGUIne.parts.advanced.projects.GroupNode;
 import LinGUIne.parts.advanced.projects.ProjectExplorerNode;
@@ -399,7 +399,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 						getSelectedResultNodes().getFirst().getNodeData();
 				String commandId;				
 				
-				if(selectedData instanceof VisualizationResult){
+				if(selectedData instanceof VisualResult){
 					params.put("linguine.command.exportVisualization.parameter."
 							+ "dataForExport", selectedData.getName());
 					
