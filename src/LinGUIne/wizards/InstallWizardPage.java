@@ -1,5 +1,6 @@
 package LinGUIne.wizards;
 
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -129,12 +130,10 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 				int index = contentTable.indexOf((TableItem)e.item);
 				//If the checked index is present in selectedIUs, remove it
 				if(data.getSelectedIUs().contains(data.getRepositoryIUs().get(index))){
-					System.out.println("Removing " + data.getRepositoryIUs().get(index).getId());
 					data.getSelectedIUs().remove(data.getRepositoryIUs().get(index));
 				}
 				//Otherwise add it to selectedIUs
 				else{
-					System.out.println("Adding " + data.getRepositoryIUs().get(index).getId());
 					data.getSelectedIUs().add(data.getRepositoryIUs().get(index));
 				}
 				if(data.getSelectedIUs().size() > 0){
@@ -153,9 +152,12 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 	public void setDisplayData(){
 		contentTable.removeAll();
 		for(int i = 0; i < data.getRepositoryIUs().size(); i++){
-			TableItem item = new TableItem(contentTable,SWT.NONE);
-			item.setText(0,data.getRepositoryIUs().get(i).getId());
-			item.setText(1,data.getRepositoryIUs().get(i).getVersion().toString());
+			IInstallableUnit currentIU = data.getRepositoryIUs().get(i);
+			if(currentIU.getId().contains(".feature.group")){
+				TableItem item = new TableItem(contentTable,SWT.NONE);
+				item.setText(0,data.getRepositoryIUs().get(i).getId());
+				item.setText(1,data.getRepositoryIUs().get(i).getVersion().toString());
+			}
 		}
 		idColumn.pack();
 		versionColumn.pack();
