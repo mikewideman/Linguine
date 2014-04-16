@@ -133,6 +133,8 @@
   <handlers xmi:id="_hYS5kMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.project" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectHandler" command="_29O-gMQDEeOGW6ncd9sqEQ"/>
   <handlers xmi:id="_lfsMwMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameGroupHandler" command="_FIPrsMQEEeOGW6ncd9sqEQ"/>
   <handlers xmi:id="_oYTYoMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectDataHandler" command="_eF3m4MQEEeOGW6ncd9sqEQ"/>
+  <handlers xmi:id="_3UOSYMTYEeOwW6CcOLgumg" elementId="linguine.handler.move.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.moveGroupHandler" command="_TJatEMTYEeOwW6CcOLgumg"/>
+  <handlers xmi:id="_EL1eAMTZEeOwW6CcOLgumg" elementId="linguine.handler.move.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.MoveProjectDataHandler" command="_WAdLoMTYEeOwW6CcOLgumg"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.exit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvBTdzEeOR8_lurf-ldg" elementId="linguine.keybinding.save" keySequence="M1+S" command="_5qnvAzdzEeOR8_lurf-ldg"/>
@@ -197,6 +199,14 @@
   <commands xmi:id="_eF3m4MQEEeOGW6ncd9sqEQ" elementId="linguine.command.rename.projectData" commandName="renameProjectDataCommand">
     <parameters xmi:id="_3uJBkMQEEeOGW6ncd9sqEQ" elementId="linguine.command.renameProjectData.parameter.targetProjectData" name="targetProjectData" optional="false"/>
     <parameters xmi:id="_KMqyYMQFEeOGW6ncd9sqEQ" elementId="linguine.command.renameProjectData.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_TJatEMTYEeOwW6CcOLgumg" elementId="linguine.command.move.group" commandName="moveGroupCommand">
+    <parameters xmi:id="_YYGYcMTYEeOwW6CcOLgumg" elementId="linguine.command.moveGroup.parameter.targetGroup" name="targetGroup" optional="false"/>
+    <parameters xmi:id="_ddascMTYEeOwW6CcOLgumg" elementId="linguine.command.moveGroup.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_WAdLoMTYEeOwW6CcOLgumg" elementId="linguine.command.move.projectData" commandName="moveProjectDataCommand">
+    <parameters xmi:id="_fv_zEMTYEeOwW6CcOLgumg" elementId="linguine.command.moveProjectData.parameter.targetData" name="targetData" optional="false"/>
+    <parameters xmi:id="_oNNP8MTYEeOwW6CcOLgumg" elementId="linguine.command.moveProjectData.parameter.parentProject" name="parentProject" optional="false"/>
   </commands>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_5qnu8zdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
