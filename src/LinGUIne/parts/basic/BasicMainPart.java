@@ -49,18 +49,14 @@ public class BasicMainPart {
 	private CTabItem analysisTab;
 	private CTabItem visualTab;
 	private CTabFolder tabFolder;
-	private Text txtName;
-	private Project newProject;
 	private Label lblProjects;
 	private List lstProjects;
-	private Label lblFiles;
 	private List lstFiles;
 	private HashMap<String,String> softModMap;
 	private AnalysisData analysisData;
 	private VisualizationData visualizationData;
 	private Label lblAnalyses;
 	private List lstAnalyses;
-	private Display display;
 	
 	private Button analysisButton;
 	private Button visButton;
@@ -77,6 +73,7 @@ public class BasicMainPart {
 	
 	@Inject
 	private VisualizationPluginManager visualizationPluginMan;
+	private Display display;
 	
 
 	
@@ -106,7 +103,6 @@ public class BasicMainPart {
 		});
 		analysisData = new AnalysisData();
 		visualizationData = new VisualizationData();
-	    newProject = new Project();
 	    CTabItem projTabItem = new CTabItem(tabFolder, SWT.NONE);
 	    projTabItem.setText(PROJECT_TAB);
 //	    FontData[] fD = projTabItem.getFont().getFontData();
@@ -280,8 +276,8 @@ public class BasicMainPart {
 //			Composite basicContainer = new Composite(innerFolder, SWT.NONE);
 			
 			Group grpBasicAnalyses = new Group(container, SWT.NONE);
-			grpBasicAnalyses.setLayout(new GridLayout(2, true));
-			GridData gData = new GridData(600,500);
+			grpBasicAnalyses.setLayout(new GridLayout(2, false));
+			GridData gData = new GridData(500,500);
 			gData.horizontalSpan = 2;
 		    grpBasicAnalyses.setLayoutData(gData);
 		    grpBasicAnalyses.setText("Analyses");
@@ -294,11 +290,15 @@ public class BasicMainPart {
 			gData.horizontalSpan = 2;
 			lblAnalyses.setLayoutData(gData);
 			
+			GridData descData = new GridData(300,100);
+			descData.horizontalSpan = 2;
+			descData.horizontalAlignment = SWT.FILL;
+			
 			for( String name : softwareModuleMan.getSoftwareModuleNames()){
 				for( IAnalysisPlugin plug : softwareModuleMan.getAnalyses(name)){
 					softModMap.put(plug.getName(), name);
-					Button button = new Button(grpBasicAnalyses, SWT.TOGGLE);
-					button.setText(plug.getName());
+					Button button = new Button(grpBasicAnalyses, SWT.TOGGLE | SWT.WRAP);
+					button.setText(plug.getName() +"\n" + plug.getAnalysisDescription());
 				    FontData[] fdButton = button.getFont().getFontData();
 				    fdButton[0].setHeight(14);
 				    button.setFont( new Font(getDisplay(),fdButton[0]));
@@ -312,12 +312,17 @@ public class BasicMainPart {
 								analysisButton.setSelection(false);
 							}
 							analysisButton = (Button) e.widget;
-							analysisData.setChosenAnalysis(softwareModuleMan.getAnalysisByName(softModMap.get(analysisButton.getText()), analysisButton.getText()));
+							IAnalysisPlugin plug = softwareModuleMan.getAnalysisByName(softModMap.get(analysisButton.getText()), analysisButton.getText());
+							analysisData.setChosenAnalysis(plug);
 							
 						}
 					});
+					
+					
+					
 				}
 			}
+
 			
 //			lstAnalyses = new List(grpBasicAnalyses, SWT.BORDER | SWT.V_SCROLL);
 //			lstAnalyses.setLayoutData(new GridData(370,370));
@@ -387,13 +392,16 @@ public class BasicMainPart {
 			container.setLayout(layout);
 			Group grpVisualizations = new Group(container, SWT.NONE);
 			grpVisualizations.setLayout(new GridLayout(2, false));
-			GridData vData = new GridData(600,500);
+			GridData vData = new GridData(500,500);
 			vData.horizontalSpan = 2;
 			grpVisualizations.setLayoutData(vData);
 			grpVisualizations.setText("Visualizations");
 
 			Label lblVisualizations = new Label(grpVisualizations, SWT.NONE);
 			lblVisualizations.setText("Select a Visualization for your data:");
+		    FontData[] fdLbl = lblVisualizations.getFont().getFontData();
+		    fdLbl[0].setHeight(14);
+		    lblVisualizations.setFont( new Font(getDisplay(),fdLbl[0]));
 			GridData lblVisData = new GridData(210,100);
 			lblVisData.horizontalSpan = 2;
 			lblVisualizations.setLayoutData(lblVisData);
