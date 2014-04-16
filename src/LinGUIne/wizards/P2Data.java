@@ -54,7 +54,7 @@ public class P2Data {
 	 * 
 	 * @param repoLocation the string representation of a valid p2 repository
 	 */
-	public void initializeRepositoryData(String repoLocation){
+	public boolean initializeRepositoryData(String repoLocation){
 		File f = new File(repoLocation);
 		repositoryURI = f.toURI();
 		repositoryIUs = new ArrayList<IInstallableUnit>();
@@ -63,8 +63,10 @@ public class P2Data {
 			repositoryIUs = InstallUtils.generateIUList(metaRepo);
 		}
 		catch(ProvisionException pe){
-			pe.printStackTrace();
+			return false;
+			//pe.printStackTrace();
 		}
+		return true;
 	}
 	
 	//Getters
