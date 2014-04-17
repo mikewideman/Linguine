@@ -27,7 +27,6 @@ public class VisualizationWizard extends Wizard {
 	private ProjectManager projectMan;
 	@Inject
 	private VisualizationPluginManager visualizationPluginMan;
-	
 
 	/**
 	 * Constructs the VisualizationWizard with new data that is to be carried
@@ -62,7 +61,7 @@ public class VisualizationWizard extends Wizard {
 	public boolean performFinish() {
 		SafeVisualization safeVisualization = new SafeVisualization(getShell(),
 				wizardData.getChosenVisualization(),
-				wizardData.getChosenResults());
+				wizardData.getChosenResults(), wizardData.getChosenProject());
 
 		SafeRunner.run(safeVisualization);
 		return true;

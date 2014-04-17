@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.Result;
+import LinGUIne.model.VisualResultContents;
 
 /**
  * Represents an individual visualization.
@@ -32,7 +33,7 @@ public interface IVisualization {
 	 * 
 	 * @return The view to be displayed to the user.
 	 */
-	VisualizationView runVisualization();
+	VisualResultContents runVisualization();
 
 	/**
 	 * Returns the Result types that this visualization supports.

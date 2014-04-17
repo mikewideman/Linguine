@@ -45,9 +45,10 @@ public class ResultData implements Comparable<ResultData>{
 		if(data instanceof Integer) {
 			return (Integer)data;
 		}
-		else {
-			return null;
+		else if (data instanceof Double) {
+			return ((Double)data).intValue();
 		}
+		return null;
 	}
 
 	/**
@@ -59,9 +60,10 @@ public class ResultData implements Comparable<ResultData>{
 		if(data instanceof Double) {
 			return (Double)data;
 		}
-		else {
-			return null;
+		else if(data instanceof Integer) {
+			return ((Integer)data).doubleValue();
 		}
+		return null;
 	}
 	
 	@Override
