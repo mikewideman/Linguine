@@ -79,20 +79,14 @@ public class ImportFileWizard extends Wizard {
 			TwitDataWizard twitterWizard = new TwitDataWizard(wizardData);
 			WizardDialog tWizDialog = new WizardDialog(getShell(), twitterWizard);
 			
-			int retval = tWizDialog.open();
-			
-			if(retval == WizardDialog.OK){
-				//do stuff to run the query and put it in a file.
-				System.out.println("WEEEE");
-				
-			}
+			tWizDialog.open();
 			
 		}
 		
 		if(wizardData.getChosenProject() != null){
 			SafeImporter safeImporter = new SafeImporter(getShell(),
 					wizardData.getChosenImporter(), wizardData.getChosenFiles(),
-					wizardData.getChosenProject());
+					wizardData.getChosenProject(),wizardData.getInterneSourceQuery());
 			
 			SafeRunner.run(safeImporter);
 			
