@@ -52,7 +52,7 @@ public class TextData implements ITypedProjectData<TextDataContents> {
 	public TextDataContents getContents() {
 		if(contents == null){
 			try(BufferedReader reader = Files.newBufferedReader(dataFile.toPath(),
-					Charset.defaultCharset())){
+					Charset.forName("UTF-8"))){
 				
 				String contentStr = "";
 				
@@ -87,13 +87,13 @@ public class TextData implements ITypedProjectData<TextDataContents> {
 			
 			//Only write to disk if the two contents are different
 			if(contents == null || contents.compareTo(newTextContents) != 0){
+				Charset cs = Charset.defaultCharset();
 				try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(),
-							Charset.defaultCharset())){
+							Charset.forName("UTF-8"))){
 					
 					writer.write(newTextContents.getText());
 				}
 				catch(IOException e){
-					System.out.println("HEY I FOUND A PROBLEM " + e);
 					return false;
 				}
 			}
