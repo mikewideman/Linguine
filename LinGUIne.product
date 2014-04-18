@@ -3,6 +3,7 @@
 
 <product name="LinGUIne" id="LinGUIne.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -12,6 +13,19 @@
    </launcherArgs>
 
    <windowImages/>
+
+
+   <launcher name="LinGUIne">
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+
+   <vm>
+   </vm>
+
 
    <plugins>
       <plugin id="CloudioVisualizationPlugin"/>
@@ -191,7 +205,9 @@
 
    <configurations>
       <plugin id="LinGUIne" autoStart="false" startLevel="7" />
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="6" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.p2.core" autoStart="true" startLevel="5" />
    </configurations>
 
