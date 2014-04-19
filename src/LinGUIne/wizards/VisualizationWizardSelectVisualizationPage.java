@@ -143,6 +143,7 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage
 	 */
 	@Override
 	public void pageChanged(PageChangedEvent event) {
+		lstVisualizations.removeAll();
 		// Populate the list of visualizations based on result types
 		for (IVisualization visualization : visualizationPluginMan
 				.getVisualizationsBySupportedResultTypeSet(wizardData
