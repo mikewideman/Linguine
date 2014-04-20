@@ -135,6 +135,7 @@
   <handlers xmi:id="_oYTYoMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectDataHandler" command="_eF3m4MQEEeOGW6ncd9sqEQ"/>
   <handlers xmi:id="_3UOSYMTYEeOwW6CcOLgumg" elementId="linguine.handler.move.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.moveGroupHandler" command="_TJatEMTYEeOwW6CcOLgumg"/>
   <handlers xmi:id="_EL1eAMTZEeOwW6CcOLgumg" elementId="linguine.handler.move.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.MoveProjectDataHandler" command="_WAdLoMTYEeOwW6CcOLgumg"/>
+  <handlers xmi:id="_9tw8UMjTEeOXMMFZjrhIUA" elementId="linguine.handler.0" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.InstallHandler" command="_nJT0gLhXEeOPZ-IS4_9pnA"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.exit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvBTdzEeOR8_lurf-ldg" elementId="linguine.keybinding.save" keySequence="M1+S" command="_5qnvAzdzEeOR8_lurf-ldg"/>

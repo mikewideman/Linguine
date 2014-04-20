@@ -28,7 +28,7 @@ public class PlaintextImporter implements IFileImporter {
 	}
 
 	@Override
-	public IProjectDataContents importFile(File rawFile) throws IOException {
+	public IProjectDataContents importFile(File rawFile, String searchQuery) throws IOException {
 		BufferedReader reader = Files.newBufferedReader(rawFile.toPath(),
 				Charset.defaultCharset());
 		String contentStr = "";

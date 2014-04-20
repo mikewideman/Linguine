@@ -28,9 +28,11 @@ public interface IFileImporter {
 	 * 
 	 * @param rawFile	The File to be imported into the workspace.
 	 * 
+	 * @param searchQuery The search query to be run generate a non-local file into the workspace
+	 * 
 	 * @return	An in-memory version of the data contained in the rawFile.
 	 * 
 	 * @throws IOException
 	 */
-	IProjectDataContents importFile(File rawFile) throws IOException;
+	IProjectDataContents importFile(File rawFile, String searchQuery) throws IOException;
 }

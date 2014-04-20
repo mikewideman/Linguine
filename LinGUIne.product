@@ -13,11 +13,18 @@
 
    <windowImages/>
 
+   <launcher name="LinGUIne">
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
    <plugins>
-      <plugin id="CloudioVisualizationPlugin"/>
       <plugin id="LinGUIne"/>
-      <plugin id="NLTKBinaryPlugin"/>
-      <plugin id="NLTKTokenizerAnalysis"/>
       <plugin id="com.google.gson"/>
       <plugin id="com.google.guava"/>
       <plugin id="com.ibm.icu"/>
@@ -191,7 +198,9 @@
 
    <configurations>
       <plugin id="LinGUIne" autoStart="false" startLevel="7" />
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="6" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.p2.core" autoStart="true" startLevel="5" />
    </configurations>
 
