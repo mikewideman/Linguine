@@ -3,7 +3,6 @@
 
 <product name="LinGUIne" id="LinGUIne.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -14,7 +13,6 @@
 
    <windowImages/>
 
-
    <launcher name="LinGUIne">
       <solaris/>
       <win useIco="false">
@@ -22,16 +20,11 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
 
-
    <plugins>
-      <plugin id="CloudioVisualizationPlugin"/>
       <plugin id="LinGUIne"/>
-      <plugin id="NLTKBinaryPlugin"/>
-      <plugin id="NLTKTokenizerAnalysis"/>
       <plugin id="com.google.gson"/>
       <plugin id="com.google.guava"/>
       <plugin id="com.ibm.icu"/>
