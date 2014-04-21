@@ -24,7 +24,7 @@ public class NewGeneralHandler {
 		TreeMap<String, String> commands = new TreeMap<String, String>();
 		
 		commands.put("New File", "linguine.command.new.file");
-		commands.put("New Group", "linguine.command.new.group");
+		commands.put("New Folder", "linguine.command.new.group");
 		commands.put("New Project", "linguine.command.new.project");
 		
 		SelectCommandWizard selectCommandWizard = new SelectCommandWizard(

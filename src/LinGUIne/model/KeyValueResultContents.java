@@ -16,7 +16,7 @@ import java.util.Set;
  * @author Kyle Mullins
  */
 public class KeyValueResultContents implements IProjectDataContents,
-		Iterable<HashMap<String, ResultData>> {
+		Iterable<HashMap<String, ResultData>>, ITextViewable {
 	
 	private List<HashMap<String, ResultData>> contents;
 	
@@ -136,5 +136,11 @@ public class KeyValueResultContents implements IProjectDataContents,
 	@Override
 	public Iterator<HashMap<String, ResultData>> iterator(){
 		return contents.iterator();
+	}
+
+	@Override
+	public String getAsText() {
+		//TODO: Actually implement this
+		return "Key Value Result";
 	}
 }
