@@ -2,8 +2,11 @@ package LinGUIne.wizards;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -14,6 +17,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -42,13 +46,12 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		setTitle("Twitter Data Wizard");
 		setControl(container);
 		wizardData = wData;
-		//So there's no index exceptions in listeners
-		wizardData.getInternetSourceDetails().add("");
-		wizardData.getInternetSourceDetails().add("");
+		//So there's no index exceptions in listeners or plugin
+		wizardData.getInternetSourceDetails().addAll(Arrays.asList("","","","","",""));
 		
 		
 	}
-
+	
 	@Override
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
@@ -99,13 +102,12 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		Label lblCount = new Label(container, SWT.NONE);
 		lblCount.setText("Enter the number of tweets(maximum of 100) you would like to receive.");
 		txtCount = new Text(container, SWT.BORDER | SWT.SINGLE);
-		txtCount.setText("25");
 		txtCount.setLayoutData(grid);
 		txtCount.addModifyListener(new ModifyListener(){
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-
+					
 
 					wizardData.getInternetSourceDetails().set(1, txtCount.getText());
 				
@@ -113,15 +115,17 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 			
 		});
 		
+		txtCount.setText("25");
+		
 		Link link = new Link(container, SWT.NONE);
 		GridData linkData = new GridData();
 		linkData.horizontalSpan = 2;
 		link.setLayoutData(linkData);
-	    String message = "Please follow the link to set up a twitter developer account and receive authorization tokens <a href=\"apps.twitter.com\">Twitter Apps</a>";
+	    String message = "Follow <a href=\"http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps\">instructions</a> for account and credentials";
 	    link.setText(message);
 	    link.setSize(400, 200);
 	    link.addSelectionListener(new SelectionAdapter(){
-
+	    	//Need a way to execute the link
 	    });
 		
 		Label lblConKey = new Label(container, SWT.NONE);
@@ -129,21 +133,57 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		consumerKey = new Text(container, SWT.BORDER | SWT.SINGLE);
 		consumerKey.setText("");
 		consumerKey.setLayoutData(grid);
+		consumerKey.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				wizardData.getInternetSourceDetails().set(2, consumerKey.getText());
+				
+			}
+			
+		});
 		Label lblConSecKey = new Label(container, SWT.NONE);
 		lblConSecKey.setText("Enter Consumer Secret Key");
 		consumerSecret = new Text(container, SWT.BORDER | SWT.SINGLE);
 		consumerSecret.setText("");
 		consumerSecret.setLayoutData(grid);
+		consumerSecret.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				wizardData.getInternetSourceDetails().set(3, consumerSecret.getText());
+				
+			}
+			
+		});
 		Label lblAccessTok = new Label(container, SWT.NONE);
 		lblAccessTok.setText("Enter Access Token");
 		accessTok = new Text(container, SWT.BORDER | SWT.SINGLE);
 		accessTok.setText("");
 		accessTok.setLayoutData(grid);
+		accessTok.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				wizardData.getInternetSourceDetails().set(4, accessTok.getText());
+				
+			}
+			
+		});
 		Label lblAccessTokSecret = new Label(container, SWT.NONE);
 		lblAccessTokSecret.setText("Enter Access Token Secret");
 		accessTokSecret = new Text(container, SWT.BORDER | SWT.SINGLE);
 		accessTokSecret.setText("");
 		accessTokSecret.setLayoutData(grid);
+		accessTokSecret.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				wizardData.getInternetSourceDetails().set(5, accessTokSecret.getText());
+				
+			}
+			
+		});
 		setControl(container);
 		setPageComplete(isPageComplete());
 		
@@ -199,6 +239,17 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		}
 		else{
 			return false;
+		}
+	}
+	
+	public boolean isCredentialFilled(){
+		if(consumerKey.getText().isEmpty() || consumerSecret.getText().isEmpty() || accessTok.getText().isEmpty() 
+				|| accessTokSecret.getText().isEmpty()){
+			
+			return false;
+		}
+		else{
+			return true;
 		}
 	}
 }
