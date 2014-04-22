@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.List;
 
 import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.TextDataContents;
@@ -28,7 +29,7 @@ public class PlaintextImporter implements IFileImporter {
 	}
 
 	@Override
-	public IProjectDataContents importFile(File rawFile, String searchQuery) throws IOException {
+	public IProjectDataContents importFile(File rawFile, List<String> searchQuery) throws IOException {
 		BufferedReader reader = Files.newBufferedReader(rawFile.toPath(),
 				Charset.defaultCharset());
 		String contentStr = "";

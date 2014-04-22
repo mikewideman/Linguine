@@ -1,16 +1,25 @@
 package LinGUIne.wizards;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import LinGUIne.utilities.FileUtils;
 
@@ -20,6 +29,11 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 	private Composite container;
 	private Text txtSearch;
 	private Text txtName;
+	private Text txtCount;
+	private Text consumerKey;
+	private Text consumerSecret;
+	private Text accessTok;
+	private Text accessTokSecret;
 	
 	private final static String QUERY_TOO_SHORT = "Invalid Query Input";
 	
@@ -28,6 +42,9 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		setTitle("Twitter Data Wizard");
 		setControl(container);
 		wizardData = wData;
+		//So there's no index exceptions in listeners
+		wizardData.getInternetSourceDetails().add("");
+		wizardData.getInternetSourceDetails().add("");
 		
 		
 	}
@@ -52,7 +69,7 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(isValidQueryInput()){
-					wizardData.setInternetSourceQuery(txtSearch.getText());
+						wizardData.getInternetSourceDetails().set(0, txtSearch.getText());
 				}
 				setPageComplete(isPageComplete());
 			}
@@ -79,9 +96,58 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 			
 		});
 		
+		Label lblCount = new Label(container, SWT.NONE);
+		lblCount.setText("Enter the number of tweets(maximum of 100) you would like to receive.");
+		txtCount = new Text(container, SWT.BORDER | SWT.SINGLE);
+		txtCount.setText("25");
+		txtCount.setLayoutData(grid);
+		txtCount.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+
+
+					wizardData.getInternetSourceDetails().set(1, txtCount.getText());
+				
+			}
+			
+		});
 		
+		Link link = new Link(container, SWT.NONE);
+		GridData linkData = new GridData();
+		linkData.horizontalSpan = 2;
+		link.setLayoutData(linkData);
+	    String message = "Please follow the link to set up a twitter developer account and receive authorization tokens <a href=\"apps.twitter.com\">Twitter Apps</a>";
+	    link.setText(message);
+	    link.setSize(400, 200);
+	    link.addSelectionListener(new SelectionAdapter(){
+
+	    });
+		
+		Label lblConKey = new Label(container, SWT.NONE);
+		lblConKey.setText("Enter Consumer Key");
+		consumerKey = new Text(container, SWT.BORDER | SWT.SINGLE);
+		consumerKey.setText("");
+		consumerKey.setLayoutData(grid);
+		Label lblConSecKey = new Label(container, SWT.NONE);
+		lblConSecKey.setText("Enter Consumer Secret Key");
+		consumerSecret = new Text(container, SWT.BORDER | SWT.SINGLE);
+		consumerSecret.setText("");
+		consumerSecret.setLayoutData(grid);
+		Label lblAccessTok = new Label(container, SWT.NONE);
+		lblAccessTok.setText("Enter Access Token");
+		accessTok = new Text(container, SWT.BORDER | SWT.SINGLE);
+		accessTok.setText("");
+		accessTok.setLayoutData(grid);
+		Label lblAccessTokSecret = new Label(container, SWT.NONE);
+		lblAccessTokSecret.setText("Enter Access Token Secret");
+		accessTokSecret = new Text(container, SWT.BORDER | SWT.SINGLE);
+		accessTokSecret.setText("");
+		accessTokSecret.setLayoutData(grid);
 		setControl(container);
 		setPageComplete(isPageComplete());
+		
+		
 		
 	}
 	

@@ -3,6 +3,7 @@ package LinGUIne.wizards;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import LinGUIne.extensions.IFileImporter;
 import LinGUIne.model.Project;
@@ -19,7 +20,7 @@ public class ImportFileData {
 	private boolean createNewProject;
 	private boolean internetSource;
 	private String internetSourceFileName;//Used when importing non-local files into project
-	private String internetSourceQuery; //Used when importing non-local files into project
+	private List<String> internetSourceDetails; //Used when importing non-local files into project
 	
 	/**
 	 * Creates a default empty instance.
@@ -30,6 +31,7 @@ public class ImportFileData {
 		chosenFiles = new ArrayList<File>();
 		createNewProject = false;
 		internetSource = false;
+		internetSourceDetails = new ArrayList<String>();
 	}
 	
 	/**
@@ -176,11 +178,11 @@ public class ImportFileData {
 		return internetSourceFileName;
 	}
 	
-	public void setInternetSourceQuery(String query){
-		internetSourceQuery = query;
+	public void setInternetSourceDetails(List<String> details){
+		internetSourceDetails = details;
 	}
 	
-	public String getInterneSourceQuery(){
-		return internetSourceQuery;
+	public List<String> getInternetSourceDetails(){
+		return internetSourceDetails;
 	}
 }

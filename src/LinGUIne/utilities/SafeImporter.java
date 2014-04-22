@@ -2,6 +2,7 @@ package LinGUIne.utilities;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,7 +25,7 @@ public class SafeImporter implements ISafeRunnable {
 	private IFileImporter fileImporter;
 	private Collection<File> sourceFiles;
 	private Project destProject;
-	private String searchQuery; //For importers that don't use local file system
+	private List<String> searchDetails; //For importers that don't use local file system
 
 	/**
 	 * Creates a new SafeImporter using the given importer, importing the given
@@ -36,13 +37,13 @@ public class SafeImporter implements ISafeRunnable {
 	 * @param proj		The Project into which the File(s) are to be imported.
 	 */
 	public SafeImporter(Shell theShell, IFileImporter importer,
-			Collection<File> sources, Project proj, String query) {
+			Collection<File> sources, Project proj, List<String> details) {
 		
 		shell = theShell;
 		fileImporter = importer;
 		sourceFiles = sources;
 		destProject = proj;
-		searchQuery = query;
+		searchDetails = details;
 	}
 
 	/**
@@ -62,7 +63,7 @@ public class SafeImporter implements ISafeRunnable {
 		for(File sourceFile: sourceFiles){
 			
 			IProjectDataContents importedData =
-					fileImporter.importFile(sourceFile, searchQuery);
+					fileImporter.importFile(sourceFile, searchDetails);
 			
 			File newFile = destProject.getSubdirectory(Project.Subdirectory.Data).
 					append(sourceFile.getName()).toFile();

@@ -86,7 +86,7 @@ public class ImportFileWizard extends Wizard {
 		if(wizardData.getChosenProject() != null){
 			SafeImporter safeImporter = new SafeImporter(getShell(),
 					wizardData.getChosenImporter(), wizardData.getChosenFiles(),
-					wizardData.getChosenProject(),wizardData.getInterneSourceQuery());
+					wizardData.getChosenProject(),wizardData.getInternetSourceDetails());
 			
 			SafeRunner.run(safeImporter);
 			

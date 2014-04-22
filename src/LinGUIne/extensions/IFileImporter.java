@@ -2,6 +2,7 @@ package LinGUIne.extensions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import LinGUIne.model.IProjectDataContents;
 
@@ -34,5 +35,5 @@ public interface IFileImporter {
 	 * 
 	 * @throws IOException
 	 */
-	IProjectDataContents importFile(File rawFile, String searchQuery) throws IOException;
+	IProjectDataContents importFile(File rawFile, List<String> searchDetails) throws IOException;
 }
