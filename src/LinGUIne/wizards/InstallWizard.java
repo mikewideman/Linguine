@@ -23,6 +23,7 @@ public class InstallWizard extends Wizard{
 	 */
 	public InstallWizard(IProvisioningAgent agent, P2Data d){
 		super();
+		setWindowTitle("Install New Software");
 		data = d;
 		setNeedsProgressMonitor(true);
 	}

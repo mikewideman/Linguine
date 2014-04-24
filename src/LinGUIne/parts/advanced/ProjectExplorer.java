@@ -1,5 +1,11 @@
 package LinGUIne.parts.advanced;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,6 +22,7 @@ import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -25,7 +32,10 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -34,19 +44,25 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Table;
 
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
@@ -57,17 +73,21 @@ import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 import LinGUIne.model.RootProjectGroup;
+import LinGUIne.model.VisualResult;
+import LinGUIne.parts.advanced.projects.ProjectDataNode;
+import LinGUIne.parts.advanced.projects.GroupNode;
+import LinGUIne.parts.advanced.projects.ProjectExplorerNode;
+import LinGUIne.parts.advanced.projects.ProjectExplorerNodeSelection;
+import LinGUIne.parts.advanced.projects.ProjectNode;
+import LinGUIne.utilities.FileUtils;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
  * 
  * @author Kyle Mullins
  */
-public class ProjectExplorer {
+public class ProjectExplorer implements IPropertiesProvider{
 
-	private ProjectExplorerSelection projectSelection;
-	private TreeViewer tree;
-	
 	@Inject
 	ProjectManager projectMan;
 	
@@ -81,11 +101,18 @@ public class ProjectExplorer {
 	private EHandlerService handlerService;
 	
 	@Inject
-	ESelectionService selectionService;
+	private ESelectionService selectionService;
+	
+	private TreeViewer tree;
+	private ProjectExplorerProperties propertiesView;
+	
+	private ProjectExplorerSelection projectSelection;
+	private ProjectExplorerNodeSelection nodeSelection;
 	
 	@Inject
 	public ProjectExplorer(){
 		projectSelection = new ProjectExplorerSelection();
+		nodeSelection = new ProjectExplorerNodeSelection();
 	}
 	
 	/**
@@ -94,7 +121,7 @@ public class ProjectExplorer {
 	 * @param parent	The parent component.
 	 */
 	@PostConstruct
-	public void createComposite(Composite parent){
+	public void createComposite(Composite parent, MApplication application){
 		parent.setData("org.eclipse.e4.ui.css.id", "projExplorerPart");
 		parent.setLayout(new GridLayout());
 
@@ -105,7 +132,7 @@ public class ProjectExplorer {
 		
 		tree.setInput(projectMan);
 		
-		createContextMenu();
+		createContextMenu(application);
 		
 		/*
 		 * Add listeners to TreeViewer
@@ -115,12 +142,20 @@ public class ProjectExplorer {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				projectSelection = new ProjectExplorerSelection();
+				nodeSelection.clearNodeSelection();
 				
 				IStructuredSelection selection = (IStructuredSelection)
 						tree.getSelection();
 				
 				buildProjectExplorerSelection(selection);
 				
+				for(Object node: selection.toList()){
+					if(node instanceof ProjectExplorerNode){
+						nodeSelection.addSelectedNode((ProjectExplorerNode)node);
+					}
+				}
+				
+				updatePropertiesView();
 				selectionService.setSelection(projectSelection);
 			}
 		});
@@ -133,15 +168,15 @@ public class ProjectExplorer {
 						(IStructuredSelection)event.getSelection();
 				Object selectedNode = selection.getFirstElement();
 				
-				if(selectedNode instanceof ProjectExplorerDataNode){
+				if(selectedNode instanceof ProjectDataNode){
 					//If user double clicks a file, post an event for the editor
-					ProjectExplorerDataNode dataNode =
-							(ProjectExplorerDataNode)selectedNode;
-					IProjectData data = dataNode.getNodeData();
-					Project containingProject = ((ProjectExplorerTree)
-							dataNode.getRootNode()).getProject();
+					ProjectDataNode projectDataNode =
+							(ProjectDataNode)selectedNode;
+					IProjectData data = projectDataNode.getNodeData();
+					Project containingProject = ((ProjectNode)
+							projectDataNode.getRootNode()).getProject();
 					OpenProjectDataEvent openEvent = new OpenProjectDataEvent(
-							data, containingProject.getAnnotation(data));
+							data, containingProject);
 					
 					eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA, openEvent);
 				}
@@ -194,129 +229,514 @@ public class ProjectExplorer {
 		tree.getTree().setFocus();
 	}
 
-	@PreDestroy
-	public void dispose() {}
+	@Override
+	public Composite getProperties(Composite parent){
+		if(propertiesView == null){
+			propertiesView = new ProjectExplorerProperties(projectMan);
+			propertiesView.createComposite(parent);
+		}
+		
+		return propertiesView.getComposite();
+	}
+	
+	private void updatePropertiesView(){
+		propertiesView.setInput(projectSelection);
+		eventBroker.post(LinGUIneEvents.UILifeCycle.PROPERTIES_VIEW_CHANGED,
+				this);
+	}
 	
 	/**
 	 * Builds the ProjectExplorer's context menu
 	 */
-	private void createContextMenu(){
-		Menu contextMenu = new Menu(tree.getTree());
+	private void createContextMenu(MApplication application){
+		Menu contextMenu = new Menu(tree.getTree());	
 		
-		MenuItem newProject = new MenuItem(contextMenu, SWT.NONE);
-		newProject.setText("New Project...");
-		newProject.addSelectionListener(new SelectionListener(){
-
+		/*
+		 * New Menu
+		 */
+		
+		Menu newMenu = new Menu(contextMenu);
+		final MenuItem newCascade = new MenuItem(contextMenu, SWT.CASCADE);
+		newCascade.setText("New");
+		newCascade.setMenu(newMenu);
+		
+		final MenuItem newFile = new MenuItem(newMenu, SWT.NONE);
+		newFile.setText("File");
+		newFile.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Command newProjectCommand = commandService.getCommand(
-						"linguine.command.new.project");
-				
-				try {
-					newProjectCommand.executeWithChecks(new ExecutionEvent());
-				}
-				catch(ExecutionException | NotDefinedException
-						| NotEnabledException | NotHandledException e1) {
-					//TODO: Oh no the command is not defined!
-					e1.printStackTrace();
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
-		
-		MenuItem removeProject = new MenuItem(contextMenu, SWT.NONE);
-		removeProject.setText("Remove Project");
-		removeProject.addSelectionListener(new SelectionListener(){
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//TODO: Make this more robust and only enable command when a Project is selected
-				String selectedProjectName = projectSelection.
-						getSelectedProjects().iterator().next();
-				
 				HashMap<String, String> params = new HashMap<String, String>();
-				params.put("linguine.command.removeProject.parameter."
-						+ "projectForRemoval", selectedProjectName);
 				
-				Command removeProjectCommand = commandService.getCommand(
-						"linguine.command.remove.project");
-				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
-						generateCommand(removeProjectCommand, params);
+				Project selectedProject = null;
+				ProjectGroup selectedGroup = null;
 				
-				handlerService.executeHandler(parameterizedCmd);
+				if(nodeSelection.getSelectedProjectNodes().size() == 1){
+					selectedProject = nodeSelection.getSelectedProjectNodes().
+							getFirst().getProject();
+				}
+				else if(nodeSelection.getSelectedGroupNodes().size() == 1){
+					GroupNode groupNode = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					
+					selectedGroup = groupNode.getNodeGroup();
+					selectedProject = ((ProjectNode)groupNode.getRootNode()).
+							getProject();
+				}
+				
+				if(selectedProject != null){
+					params.put("linguine.command.newFile.parameter." +
+							"destProject", selectedProject.getName());
+				}
+				
+				if(selectedGroup != null){
+					params.put("linguine.command.newFile.parameter.parentGroup",
+							selectedGroup.getName());
+				}
+				
+				executeParameterizedCommand("linguine.command.new.file", params);
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
-		MenuItem newGroup = new MenuItem(contextMenu, SWT.NONE);
-		newGroup.setText("New Group...");
+		final MenuItem newGroup = new MenuItem(newMenu, SWT.NONE);
+		newGroup.setText("Group");
 		newGroup.addSelectionListener(new SelectionListener(){
-			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: Make this more robust and only enable command when a Project is selected
-				String selectedProjectName = projectSelection.
-						getSelectedProjects().iterator().next();
-				
 				HashMap<String, String> params = new HashMap<String, String>();
-				params.put("linguine.command.newGroup.parameter.destProject",
-						selectedProjectName);
+				Project selectedProject = null;
+				ProjectGroup selectedGroup = null;
 				
-				//TODO: Add other parameter
+				if(nodeSelection.getSelectedProjectNodes().size() == 1){
+					selectedProject = nodeSelection.getSelectedProjectNodes().
+							getFirst().getProject();
+				}
+				else if(nodeSelection.getSelectedGroupNodes().size() == 1){
+					GroupNode groupNode = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					
+					selectedGroup = groupNode.getNodeGroup();
+					selectedProject = ((ProjectNode)groupNode.getRootNode()).
+							getProject();
+				}
 				
-				Command newGroupCommand = commandService.getCommand(
-						"linguine.command.new.group");
-				ParameterizedCommand parameterizedCmd = ParameterizedCommand.
-						generateCommand(newGroupCommand, params);
+				if(selectedProject != null){
+					params.put("linguine.command.newGroup.parameter." +
+							"destProject", selectedProject.getName());
+				}
 				
-				handlerService.executeHandler(parameterizedCmd);
+				if(selectedGroup != null){
+					params.put("linguine.command.newGroup.parameter.parentGroup",
+							selectedGroup.getName());
+				}
+				
+				executeParameterizedCommand("linguine.command.new.group",
+						params);
 			}
 			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem newProject = new MenuItem(newMenu, SWT.NONE);
+		newProject.setText("Project");
+		newProject.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				executeCommand("linguine.command.new.project");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+	
+		/*
+		 * Import Menu
+		 */
+		
+		Menu importMenu = new Menu(contextMenu);
+		final MenuItem importCascade = new MenuItem(contextMenu, SWT.CASCADE);
+		importCascade.setText("Import");
+		importCascade.setMenu(importMenu);
+		
+		final MenuItem importFile = new MenuItem(importMenu, SWT.NONE);
+		importFile.setText("File");
+		importFile.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				executeCommand("linguine.command.import.file");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem importProject = new MenuItem(importMenu, SWT.NONE);
+		importProject.setText("Project");
+		importProject.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				executeCommand("linguine.command.import.project");
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		/*
+		 * Export
+		 */
+		
+		final MenuItem export = new MenuItem(contextMenu, SWT.NONE);
+		export.setText("Export");
+		export.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				IProjectData selectedData = nodeSelection.
+						getSelectedResultNodes().getFirst().getNodeData();
+				String commandId;				
+				
+				if(selectedData instanceof VisualResult){
+					params.put("linguine.command.exportVisualization.parameter."
+							+ "dataForExport", selectedData.getName());
+					
+					commandId = "linguine.command.export.visualization";
+				}
+				else{
+					params.put("linguine.command.exportResult.parameter."
+							+ "dataForExport", selectedData.getName());
+					
+					commandId = "linguine.command.export.result";
+				}
+				
+				executeParameterizedCommand(commandId, params);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		//Add Separator
+		new MenuItem(contextMenu, SWT.SEPARATOR);
+		
+		/*
+		 * Remove
+		 */
+		
+		final MenuItem remove = new MenuItem(contextMenu, SWT.NONE);
+		remove.setText("Remove");
+		remove.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				String commandId;
+
+				if(!nodeSelection.getSelectedProjectNodes().isEmpty()){
+					Project selectedProject = nodeSelection.
+							getSelectedProjectNodes().getFirst().getProject();
+				
+					params.put("linguine.command.removeProject.parameter."
+							+ "targetProject", selectedProject.getName());
+					
+					commandId = "linguine.command.remove.project";
+				}
+				else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+					GroupNode node = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					ProjectGroup selectedGroup = node.getNodeGroup();
+					
+					params.put("linguine.command.removeGroup.parameter."
+							+ "targetGroup", selectedGroup.getName());
+					
+					params.put("linguine.command.removeGroup.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.remove.group";
+				}
+				else{
+					ProjectDataNode node = nodeSelection.
+							getAllSelectedDataNodes().getFirst();
+					IProjectData selectedData = node.getNodeData();
+					
+					params.put("linguine.command.removeProjectData.parameter."
+							+ "targetProjectData", selectedData.getName());
+					
+					params.put("linguine.command.removeProjectData.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.remove.projectData";
+				}
+				
+				executeParameterizedCommand(commandId, params);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem rename = new MenuItem(contextMenu, SWT.NONE);
+		rename.setText("Rename");
+		rename.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				String commandId;
+
+				if(!nodeSelection.getSelectedProjectNodes().isEmpty()){
+					Project selectedProject = nodeSelection.
+							getSelectedProjectNodes().getFirst().getProject();
+				
+					params.put("linguine.command.renameProject.parameter."
+							+ "targetProject", selectedProject.getName());
+					
+					commandId = "linguine.command.rename.project";
+				}
+				else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+					GroupNode node = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					ProjectGroup selectedGroup = node.getNodeGroup();
+					
+					params.put("linguine.command.renameGroup.parameter."
+							+ "targetGroup", selectedGroup.getName());
+					
+					params.put("linguine.command.renameGroup.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.rename.group";
+				}
+				else{
+					ProjectDataNode node = nodeSelection.
+							getAllSelectedDataNodes().getFirst();
+					IProjectData selectedData = node.getNodeData();
+					
+					params.put("linguine.command.renameProjectData.parameter."
+							+ "targetProjectData", selectedData.getName());
+					
+					params.put("linguine.command.renameProjectData.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.rename.projectData";
+				}
+				
+				executeParameterizedCommand(commandId, params);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem openFile = new MenuItem(contextMenu, SWT.NONE);
+		openFile.setText("Open");
+		openFile.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ProjectDataNode node = nodeSelection.getAllSelectedDataNodes().
+						getFirst();
+				IProjectData data = node.getNodeData();
+				Project parentProj = ((ProjectNode)node.getRootNode()).getProject();
+				
+				eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
+						new OpenProjectDataEvent(data, parentProj));
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+		
+		final MenuItem move = new MenuItem(contextMenu, SWT.NONE);
+		move.setText("Move...");
+		move.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				String commandId;
+				
+				if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+					GroupNode node = nodeSelection.getSelectedGroupNodes().
+							getFirst();
+					ProjectGroup selectedGroup = node.getNodeGroup();
+					
+					params.put("linguine.command.moveGroup.parameter."
+							+ "targetGroup", selectedGroup.getName());
+					
+					params.put("linguine.command.moveGroup.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.move.group";
+				}
+				else{
+					ProjectDataNode node = nodeSelection.
+							getAllSelectedDataNodes().getFirst();
+					IProjectData selectedData = node.getNodeData();
+					
+					params.put("linguine.command.moveProjectData.parameter."
+							+ "targetProjectData", selectedData.getName());
+					
+					params.put("linguine.command.moveProjectData.parameter."
+							+ "parentProject", ((ProjectNode)node.getRootNode()).
+							getProject().getName());
+					
+					commandId = "linguine.command.move.projectData";
+				}
+				
+				executeParameterizedCommand(commandId, params);
+			}
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
 		tree.getTree().setMenu(contextMenu);
+		
+		contextMenu.addMenuListener(new MenuListener(){
+			@Override
+			public void menuHidden(MenuEvent e) {}
+
+			@Override
+			public void menuShown(MenuEvent e) {
+				remove.setEnabled(false);
+				rename.setEnabled(false);
+				export.setEnabled(false);
+				openFile.setEnabled(false);
+				move.setEnabled(false);
+				
+				if(nodeSelection.getSelectionCount() == 1){
+					remove.setEnabled(true);
+//					rename.setEnabled(true);
+					
+					if(!nodeSelection.getSelectedResultNodes().isEmpty()){
+						export.setEnabled(true);
+						openFile.setEnabled(true);
+//						move.setEnabled(true);
+					}
+					else if(!nodeSelection.getSelectedOriginalDataNodes().
+							isEmpty()){
+						
+						openFile.setEnabled(true);
+//						move.setEnabled(true);
+					}
+					else if(!nodeSelection.getSelectedGroupNodes().isEmpty()){
+						GroupNode node = nodeSelection.getSelectedGroupNodes().
+								getFirst();
+						
+						if(node.getNodeGroup() instanceof RootProjectGroup){
+							remove.setEnabled(false);
+							rename.setEnabled(false);
+						}
+						else{
+//							move.setEnabled(true);
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Attempts to execute the command with the given Id.
+	 */
+	private void executeCommand(String commandId){
+		Command command = commandService.getCommand(commandId);
+		
+		try {
+			command.executeWithChecks(new ExecutionEvent());
+		}
+		catch(ExecutionException | NotDefinedException
+				| NotEnabledException | NotHandledException exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Attempts to execute the command with the given Id using the given params.
+	 */
+	private void executeParameterizedCommand(String commandId,
+			HashMap<String, String> params){
+		
+		Command command = commandService.getCommand(commandId);
+		ParameterizedCommand parameterizedCmd = ParameterizedCommand.
+				generateCommand(command, params);
+		
+		handlerService.executeHandler(parameterizedCmd);
 	}
 
+	/**
+	 * Assembles the ProjectExplorerSelection object for the current state of
+	 * the ProjectExplorer.
+	 * 
+	 * @param selection	The current selection for the TreeViewer.
+	 */
 	private void buildProjectExplorerSelection(IStructuredSelection selection){
 		for(Object selected: selection.toList()){
 			//If the node is a root node, add it's Project
-			if(selected instanceof ProjectExplorerTree){
+			if(selected instanceof ProjectNode){
 				Project selectedProject =
-						((ProjectExplorerTree)selected).getProject();
+						((ProjectNode)selected).getProject();
 				
 				projectSelection.addToSelection(selectedProject);
 			}
 			else{
 				ProjectExplorerNode selectedNode =
 						(ProjectExplorerNode)selected;
-				Project selectedProject = ((ProjectExplorerTree)
+				Project selectedProject = ((ProjectNode)
 						selectedNode.getRootNode()).getProject();
-				List<IProjectData> selectedData = new LinkedList<IProjectData>();
+				LinkedList<IProjectData> selectedData =
+						new LinkedList<IProjectData>();
+				LinkedList<ProjectGroup> selectedGroups =
+						new LinkedList<ProjectGroup>();
+				
+				addNode(selectedNode, selectedData, selectedGroups, true);
 				
 				//If the node has children, add all of them
 				if(selectedNode.hasChildren()){
-					for(ProjectExplorerNode childNode:
-						selectedNode.getChildren()){
-						
-						selectedData.add(((ProjectExplorerDataNode)
-								childNode).getNodeData());
-					}
-				}
-				//Otherwise just add the node's ProjectData
-				else if(selectedNode instanceof ProjectExplorerDataNode){
-					selectedData.add(((ProjectExplorerDataNode)selectedNode).
-							getNodeData());
+					addAllChildren(selectedNode, selectedData, selectedGroups,
+							true);
 				}
 				
 				projectSelection.addToSelection(selectedProject,
-						selectedData);
+						selectedData, selectedGroups);
 			}
+		}
+	}
+	
+	/**
+	 * Adds all ProjectData and ProjectGroups in the subtree with parentNode at
+	 * its root to the given lists.
+	 */
+	private void addAllChildren(ProjectExplorerNode parentNode,
+			LinkedList<IProjectData> childData,
+			LinkedList<ProjectGroup> childGroups, boolean shouldAddGroups){
+		
+		for(ProjectExplorerNode childNode: parentNode.getChildren()){
+			addNode(childNode, childData, childGroups, shouldAddGroups);
+			
+			if(childNode.hasChildren()){
+				addAllChildren(childNode, childData, childGroups,
+						shouldAddGroups);
+			}
+		}
+	}
+	
+	private void addNode(ProjectExplorerNode node, LinkedList<IProjectData> data,
+			LinkedList<ProjectGroup> groups, boolean shouldAddGroups){
+		
+		if(node instanceof GroupNode && shouldAddGroups){
+			GroupNode groupNode = (GroupNode)node;
+			
+			groups.add(groupNode.getNodeGroup());
+		}
+		else if(node instanceof ProjectDataNode){
+			ProjectDataNode projectDataNode = (ProjectDataNode)node;
+			
+			data.add(projectDataNode.getNodeData());
 		}
 	}
 	
@@ -328,13 +748,13 @@ public class ProjectExplorer {
 	 */
 	class ProjectExplorerContentProvider implements ITreeContentProvider {
 		
-		private ArrayList<ProjectExplorerTree> projectTrees;
+		private ArrayList<ProjectNode> projectTrees;
 		
 		/**
 		 * Creates a new empty ProjectExplorerContentProvider.
 		 */
 		public ProjectExplorerContentProvider(){
-			projectTrees = new ArrayList<ProjectExplorerTree>();
+			projectTrees = new ArrayList<ProjectNode>();
 		}
 		
 		/**
@@ -342,10 +762,10 @@ public class ProjectExplorer {
 		 * given ProjectManager.
 		 */
 		public void inputChanged(ProjectManager projectMan){
-			projectTrees = new ArrayList<ProjectExplorerTree>();
+			projectTrees = new ArrayList<ProjectNode>();
 			
 			for(Project proj: projectMan.getProjects()){
-				ProjectExplorerTree newRoot = new ProjectExplorerTree(proj);
+				ProjectNode newRoot = new ProjectNode(proj);
 
 				for(ProjectGroup group: proj.getGroups()){
 					if(group instanceof RootProjectGroup &&
@@ -418,7 +838,7 @@ public class ProjectExplorer {
 				ProjectExplorerNode parentNode){
 			
 			ProjectExplorerNode newGroupNode = parentNode.addChild(
-					group.getName());
+					group.getName(), group);
 			
 			//Add child groups
 			for(ProjectGroup childGroup: group.getChildren()){
@@ -427,297 +847,8 @@ public class ProjectExplorer {
 			
 			//Add child data
 			for(IProjectData data: proj.getDataInGroup(group)){
-				newGroupNode.addDataChild(data.getName(), data);
+				newGroupNode.addChild(data.getName(), data);
 			}
-		}
-	}
-	
-	/**
-	 * A tree node within the Project Explorer with an arbitrary number of
-	 * children, 0-1 parents, and a name.
-	 * 
-	 * @author Kyle Mullins
-	 */
-	class ProjectExplorerNode{
-		
-		protected String nodeName;
-		protected ProjectExplorerNode parentNode;
-		protected ArrayList<ProjectExplorerNode> children;
-		
-		/**
-		 * Creates a new ProjectExplorerNode with a name and a parent node.
-		 * 
-		 * @param name		The name of this node.
-		 * @param parent	This node's parent node.
-		 */
-		public ProjectExplorerNode(String name, ProjectExplorerNode parent){
-			nodeName = name;
-			parentNode = parent;
-			children = new ArrayList<ProjectExplorerNode>();
-		}
-		
-		/**
-		 * Creates a new ProjectExplorerNode child with the given name and with
-		 * this node as its parent.
-		 * 
-		 * @param name	The name of the new node to be created.
-		 * 
-		 * @return	The node that was created.
-		 */
-		public ProjectExplorerNode addChild(String name){
-			ProjectExplorerNode newNode = new ProjectExplorerNode(name, this);
-			children.add(newNode);
-			
-			return newNode;
-		}
-		
-		/**
-		 * Creates a new ProjectExplorerDataNode child with the given name, the
-		 * given ProjectData, and with this node as its parent.
-		 * 
-		 * @param name	The name of the new node to be created.
-		 * @param data	The ProjectData the new node is to be given at
-		 * 				creation.
-		 * 
-		 * @return	The node that was created.
-		 */
-		public ProjectExplorerNode addDataChild(String name, IProjectData data){
-			ProjectExplorerNode newNode = new ProjectExplorerDataNode(name, this, data);
-			children.add(newNode);
-			
-			return newNode;
-		}
-		
-		/**
-		 * Returns the node's name.
-		 */
-		public String getName(){
-			return nodeName;
-		}
-		
-		/**
-		 * Returns whether or not the node has any child nodes.
-		 */
-		public boolean hasChildren(){
-			return !children.isEmpty();
-		}
-		
-		/**
-		 * Returns a list of all of this ProjectExplorerNode's child nodes.
-		 */
-		public ProjectExplorerNode[] getChildren(){
-			return children.toArray(new ProjectExplorerNode[]{});
-		}
-		
-		/**
-		 * Returns whether or not this node has a parent node.
-		 */
-		public boolean hasParent(){
-			return parentNode != null;
-		}
-		
-		/**
-		 * Returns this node's parent node, or null if it does not have one.
-		 */
-		public ProjectExplorerNode getParent(){
-			return parentNode;
-		}
-		
-		/**
-		 * Returns this node's name.
-		 */
-		public String toString(){
-			return nodeName;
-		}
-		
-		/**
-		 * Traces through this node's parents (if any) until the root node is
-		 * found for the tree this node belongs to.
-		 * 
-		 * @return	The root node of this node's tree, or this node if it is the
-		 * 			root of the tree.
-		 */
-		public ProjectExplorerNode getRootNode(){
-			ProjectExplorerNode rootNode = this;
-			
-			while(rootNode.hasParent()){
-				rootNode = rootNode.getParent();
-			}
-			
-			return rootNode;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-
-			result = prime * result
-					+ ((nodeName == null) ? 0 : nodeName.hashCode());
-			result = prime * result
-					+ ((parentNode == null) ? 0 : parentNode.hashCode());
-			
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if(this == obj) {
-				return true;
-			}
-			else if(obj == null || !(obj instanceof ProjectExplorerNode)) {
-				return false;
-			}
-
-			ProjectExplorerNode other = (ProjectExplorerNode)obj;
-			
-			if(nodeName == null) {
-				if(other.nodeName != null) {
-					return false;
-				}
-			}
-			if(!nodeName.equals(other.nodeName)) {
-				return false;
-			}
-			else if(parentNode == null) {
-				if(other.parentNode != null) {
-					return false;
-				}
-			}
-			else if(!parentNode.equals(other.parentNode)) {
-				return false;
-			}
-			
-			return true;
-		}
-	}
-	
-	/**
-	 * A root node for a Project Explorer tree which has no parents and a
-	 * Project object associated with it.
-	 * 
-	 * @author Kyle Mullins
-	 */
-	class ProjectExplorerTree extends ProjectExplorerNode{
-		private Project project;
-		
-		/**
-		 * Creates a new ProjectExplorerTree to be used as the root for a tree
-		 * of the given Project. The Project name is used as the name for this
-		 * node.
-		 * 
-		 * @param proj	The Project object for which this is the root node.
-		 */
-		public ProjectExplorerTree(Project proj){
-			super(proj.getName(), null);
-			project = proj;
-		}
-		
-		/**
-		 * Returns the associated Project object.
-		 */
-		public Project getProject(){
-			return project;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = super.hashCode();
-			
-			result = prime * result
-					+ ((project == null) ? 0 : project.hashCode());
-			
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if(this == obj) {
-				return true;
-			}
-			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerTree)) {
-				return false;
-			}
-			
-			ProjectExplorerTree other = (ProjectExplorerTree)obj;
-			
-			if(project == null) {
-				if(other.project != null) {
-					return false;
-				}
-			}
-			else if(!project.equals(other.project)) {
-				return false;
-			}
-			
-			return true;
-		}
-	}
-	
-	/**
-	 * A child node for a Project Explorer tree which has an IProjectData
-	 * object associated with it.
-	 * 
-	 * @author Kyle Mullins
-	 */
-	class ProjectExplorerDataNode extends ProjectExplorerNode{
-		private IProjectData nodeData;
-		
-		/**
-		 * Creates a new ProjectExplorerDataNode with the given name, the given
-		 * parent node, and the given ProjectData.
-		 * 
-		 * @param name		The name of this node.
-		 * @param parent	This node's parent node.
-		 * @param data		The ProjectData to be associated with this node.
-		 */
-		public ProjectExplorerDataNode(String name, ProjectExplorerNode parent,
-				IProjectData data){
-			
-			super(name, parent);
-			nodeData = data;
-		}
-		
-		/**
-		 * Returns the ProjectData associated with this node.
-		 */
-		public IProjectData getNodeData(){
-			return nodeData;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = super.hashCode();
-			
-			result = prime * result
-					+ ((nodeData == null) ? 0 : nodeData.hashCode());
-
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if(this == obj) {
-				return true;
-			}
-			else if(!super.equals(obj) || !(obj instanceof ProjectExplorerDataNode)){
-				return false;
-			}
-			
-			ProjectExplorerDataNode other = (ProjectExplorerDataNode)obj;
-
-			if(nodeData == null) {
-				if(other.nodeData != null) {
-					return false;
-				}
-			}
-			else if(!nodeData.equals(other.nodeData)) {
-				return false;
-			}
-			
-			return true;
 		}
 	}
 	
@@ -737,19 +868,33 @@ public class ProjectExplorer {
 			ProjectExplorerNode node = (ProjectExplorerNode)cell.getElement();
 			StyledString label = new StyledString(node.getName());
 			
-			if(node instanceof ProjectExplorerDataNode){
-				ProjectExplorerDataNode dataNode = (ProjectExplorerDataNode)node;
+			if(node instanceof ProjectDataNode){
+				ProjectDataNode projectDataNode = (ProjectDataNode)node;
 				
 				Project parentProject =
-						((ProjectExplorerTree)node.getRootNode()).getProject();
+						((ProjectNode)node.getRootNode()).getProject();
 				
-				if(parentProject.isAnnotated(dataNode.getNodeData())){
+				if(parentProject.isAnnotated(projectDataNode.getNodeData())){
 					label.append(" (Annotated)", StyledString.COUNTER_STYLER);
 				}
 			}
 			
 			cell.setText(label.toString());
 			cell.setStyleRanges(label.getStyleRanges());
+			
+			try {
+				if(node.hasIcon()){
+					String nodeIconFileName = node.getIconFileName();
+					URL iconFolderURL = new URL("platform:/plugin/LinGUIne/icons/" +
+							nodeIconFileName);
+					
+					cell.setImage(new Image(Display.getCurrent(),
+							iconFolderURL.openStream()));
+				}
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
 			
 			super.update(cell);
 		}

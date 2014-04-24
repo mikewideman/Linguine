@@ -1,5 +1,8 @@
 package LinGUIne.wizards;
 
+import java.io.IOException;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.Project;
@@ -14,12 +17,14 @@ public class NewGroupWizard extends Wizard {
 	private NewGroupWizardSelectProjectPage selectProjectPage;
 	private NewGroupWizardNamePage namePage;
 	
-	public NewGroupWizard(ProjectManager projects, Project project,
-			ProjectGroup group){
+	public NewGroupWizard(ProjectManager projects){
 		super();
 		
 		projectMan = projects;
 		wizardData = new NewGroupData();
+	}
+	
+	public void addStartingData(Project project, ProjectGroup group){		
 		wizardData.setDestProject(project);
 		wizardData.setParentGroup(group);
 	}
@@ -31,8 +36,8 @@ public class NewGroupWizard extends Wizard {
 		namePage = new NewGroupWizardNamePage(wizardData);
 
 		//Only add the first page if the Project and Group haven't been chosen
-		if(wizardData.getDestProject() != null &&
-				wizardData.getParentGroup() != null){
+		if(wizardData.getDestProject() == null ||
+				wizardData.getParentGroup() == null){
 
 			addPage(selectProjectPage);
 		}
@@ -46,6 +51,15 @@ public class NewGroupWizard extends Wizard {
 				wizardData.getParentGroup());
 		
 		wizardData.getDestProject().addGroup(newGroup);
+		
+		try{
+			newGroup.createGroupDirectory(wizardData.getDestProject().
+					getProjectDirectory());			
+		}
+		catch(IOException ioe){
+			MessageDialog.openError(getShell(), "Error",
+					"Could not create Group folder.");
+		}
 		
 		return true;
 	}

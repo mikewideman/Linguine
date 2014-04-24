@@ -17,15 +17,17 @@ import LinGUIne.model.ProjectManager;
 
 public class RemoveProjectHandler {
 	
+	private static final String TARGET_PROJECT_PARAM = "linguine.command."
+			+ "removeProject.parameter.targetProject";
+	
 	@Inject
 	private ProjectManager projectMan;
 	
 	@Execute
-	public void execute(@Named("linguine.command.removeProject.parameter."
-			+ "projectForRemoval") String projectForRemoval,
+	public void execute(@Named(TARGET_PROJECT_PARAM) String targetProject,
 			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		
-		Project project = projectMan.getProject(projectForRemoval);
+		Project project = projectMan.getProject(targetProject);
 		
 		if(project != null){
 			ConfirmWithOptionDialog dialog = new ConfirmWithOptionDialog(shell,
@@ -34,7 +36,6 @@ public class RemoveProjectHandler {
 					"Delete Project contents on disk (cannot be undone).");
 			
 			boolean confirmed = dialog.open() == Window.OK;
-			System.out.println(dialog.wasOptionChosen());
 			
 			if(confirmed){
 				try {

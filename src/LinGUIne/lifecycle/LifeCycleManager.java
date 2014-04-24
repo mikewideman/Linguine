@@ -6,19 +6,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.LinkedList;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.widgets.Display;
 
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.model.VisualizationPluginManager;
+import LinGUIne.parts.advanced.DataEditorManager;
 import LinGUIne.utilities.FileUtils;
 
 /**
@@ -28,6 +33,8 @@ import LinGUIne.utilities.FileUtils;
  */
 public class LifeCycleManager {
 
+	private static final String REMOVE_ON_EXIT_TAG = "RemoveOnExit";
+	
 	private String projectManagerProjectList;
 	
 	/**
@@ -109,11 +116,14 @@ public class LifeCycleManager {
 		
 		VisualizationPluginManager visualisationPluginMan = new VisualizationPluginManager();
 		
+		DataEditorManager dataEditorMan = new DataEditorManager();
+		
 		context.set(SoftwareModuleManager.class, softwareModuleMan);
 		context.set(ProjectManager.class, projectMan);
 		context.set(VisualizationPluginManager.class, visualisationPluginMan);
 		
 		ContextInjectionFactory.inject(projectMan, context);
+		ContextInjectionFactory.inject(dataEditorMan, context);
 	}
 	
 	/**
@@ -121,9 +131,22 @@ public class LifeCycleManager {
 	 * closing.
 	 * 
 	 * @param application	The application.
+	 * @param modelService	
+	 * @param partService	
 	 */
 	@PreSave
-	public void preSave(MApplication application){}
+	public void preSave(MApplication application, EModelService modelService,
+			EPartService partService){
+		
+		LinkedList<String> tags = new LinkedList<String>();
+		tags.add(REMOVE_ON_EXIT_TAG);
+		
+		//Remove all Parts from the model which have the REMOVE_ON_EXIT_TAG
+		for(MPart part: modelService.findElements(application, null,
+				MPart.class, tags)){
+			part.getParent().getChildren().remove(part);
+		}
+	}
 	
 	private void readPersistedStateFromWorkbench(BufferedReader reader)
 			throws IOException{

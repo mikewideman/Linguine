@@ -1,10 +1,14 @@
 package LinGUIne.extensions;
 
 import java.util.Collection;
+
+import org.eclipse.jface.wizard.Wizard;
+
 import LinGUIne.model.Result;
+import LinGUIne.model.VisualResultContents;
 
 /**
- * Represents an individual visualization (such as a bar graph or pie chart).
+ * Represents an individual visualization.
  * 
  * @author Peter Dimou
  */
@@ -25,11 +29,11 @@ public interface IVisualization {
 	String getVisualizationDescription();
 
 	/**
-	 * Runs the specified visualization and gets the view.
+	 * Runs the specified visualization and returns the corresponding view.
 	 * 
 	 * @return The view to be displayed to the user.
 	 */
-	VisualizationView runVisualization();
+	VisualResultContents runVisualization();
 
 	/**
 	 * Returns the Result types that this visualization supports.
@@ -39,6 +43,21 @@ public interface IVisualization {
 	 */
 	Collection<Class<? extends Result>> getSupportedResultTypes();
 
+	/**
+	 * Set the results that this visualization needs in order to run.
+	 * 
+	 * @return True if the results were accepted, false otherwise
+	 */
+	boolean setResults(Collection<Result> results);
+
+	/**
+	 * Returns the results that this visualization is currently holding on to.
+	 * 
+	 * @return A collection of results if the visualization has results, null
+	 *         otherwise
+	 */
+	Collection<Result> getResults();
+	
 	/**
 	 * Returns whether this visualization has a wizard.
 	 * 
@@ -53,5 +72,5 @@ public interface IVisualization {
 	 * 
 	 * @return The wizard this visualization provides
 	 */
-	VisualizationWizard getWizard();
+	Wizard getWizard();
 }

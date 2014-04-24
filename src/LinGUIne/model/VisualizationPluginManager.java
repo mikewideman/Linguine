@@ -2,20 +2,13 @@ package LinGUIne.model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.swt.widgets.Composite;
 
-import LinGUIne.extensions.IAnalysisPlugin;
 import LinGUIne.extensions.IVisualization;
-import LinGUIne.extensions.IVisualizationProvider;
-import LinGUIne.extensions.VisualizationView;
-import LinGUIne.extensions.VisualizationWizard;
 
 /**
  * Container for all visualization plugins currently loaded in order to easily
@@ -25,187 +18,29 @@ import LinGUIne.extensions.VisualizationWizard;
  */
 public class VisualizationPluginManager {
 
-	HashMap<String, IVisualizationProvider> visualizationProviders;
 	HashMap<IVisualization, String> visualizations;
 
 	/**
 	 * Creates a new instance and populates it using the ExtensionRegistry.
+	 * Builds the internal list of visualizations from the extension point
+	 * schema definition.
 	 */
 	public VisualizationPluginManager() {
-
-		initializeProviders();
-		initializeVisualizations();
-
-		setupMockVisualizations();
-	}
-
-	/**
-	 * Internal test function that provides mock visualizations for UI testing
-	 * purposes. This function should be removed before release.
-	 */
-	private void setupMockVisualizations() {
-		final IVisualization vis1 = new IVisualization() {
-			@Override
-			public String getName() {
-				return "Test Visualization 1";
-			}
-
-			@Override
-			public String getVisualizationDescription() {
-				return "This is a test for visualization 1";
-			}
-
-			@Override
-			public VisualizationView runVisualization() {
-				return new VisualizationView() {
-
-					@Override
-					public void createPartControl(Composite parent) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					@Override
-					public void setFocus() {
-						// TODO Auto-generated method stub
-						
-					}
-
-				};
-			}
-
-			@Override
-			public Collection<Class<? extends Result>> getSupportedResultTypes() {
-				Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
-				retVal.add(KeyValueResult.class);
-				return retVal;
-			}
-
-			@Override
-			public boolean hasWizard() {
-				return false;
-			}
-
-			@Override
-			public VisualizationWizard getWizard() {
-				return null;
-			}
-		};
-
-		final IVisualization vis2 = new IVisualization() {
-			@Override
-			public String getName() {
-				return "Test Visualization 2";
-			}
-
-			@Override
-			public String getVisualizationDescription() {
-				return "This is a test for visualization 2";
-			}
-
-			@Override
-			public VisualizationView runVisualization() {
-				return new VisualizationView() {
-					@Override
-					public void createPartControl(Composite parent) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					@Override
-					public void setFocus() {
-						// TODO Auto-generated method stub
-						
-					}
-
-				};
-			}
-
-			@Override
-			public Collection<Class<? extends Result>> getSupportedResultTypes() {
-				Collection<Class<? extends Result>> retVal = new LinkedList<Class<? extends Result>>();
-				return retVal;
-			}
-
-			@Override
-			public boolean hasWizard() {
-				return false;
-			}
-
-			@Override
-			public VisualizationWizard getWizard() {
-				return null;
-			}
-		};
-
-		visualizations.put(vis1, "Description of Visualization 1");
-		visualizations.put(vis2, "Description of Visualization 2");
-
-		visualizationProviders.put("Test Provider",
-				new IVisualizationProvider() {
-					@Override
-					public String getName() {
-						return "Test Provider";
-					}
-
-					@Override
-					public Collection<IVisualization> getVisualizations() {
-
-						Collection<IVisualization> retVal = new LinkedList<IVisualization>();
-						retVal.add(vis1);
-						retVal.add(vis2);
-						return retVal;
-					}
-				});
-	}
-
-	/**
-	 * Build the internal list of visualization providers from the extension
-	 * point schema definition
-	 */
-	private void initializeProviders() {
-		visualizationProviders = new HashMap<String, IVisualizationProvider>();
-
-		IConfigurationElement[] visualizationProviderElements = Platform
-				.getExtensionRegistry().getConfigurationElementsFor(
-						"LinGUIne.extensions.IVisualizationProvider");
-
-		// Iterate over the providers
-		for (IConfigurationElement providerElement : visualizationProviderElements) {
-			String providerName = providerElement.getAttribute("name");
-
-			try {
-				IVisualizationProvider provider = (IVisualizationProvider) providerElement
-						.createExecutableExtension("class");
-
-				visualizationProviders.put(providerName, provider);
-
-			} catch (CoreException e) {
-				// TODO: Error handling
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Builds the internal list of visualizations from the extension point
-	 * schema definition
-	 */
-	private void initializeVisualizations() {
 		visualizations = new HashMap<IVisualization, String>();
 
 		IConfigurationElement[] visualizationElements = Platform
 				.getExtensionRegistry().getConfigurationElementsFor(
-						"LinGUIne.extensions.IVisualization");
+						"LinGUIne.LinGUIne.extensions.IVisualization");
 
 		// Iterate over the visualizations
 		for (IConfigurationElement visualizationElement : visualizationElements) {
-			String description = visualizationElement
-					.getAttribute("description");
 
 			try {
 				IVisualization visualization = (IVisualization) visualizationElement
 						.createExecutableExtension("class");
+
+				String description = visualizationElement
+						.getAttribute("description");
 
 				visualizations.put(visualization, description);
 			} catch (CoreException e) {
@@ -213,37 +48,8 @@ public class VisualizationPluginManager {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
-	/**
-	 * Returns all of the visualization providers currently loaded into the
-	 * application.
-	 * 
-	 * @return The list of visualization providers as a collection of Strings.
-	 */
-	public Collection<String> getVisualizationProviderNames() {
-		return visualizationProviders.keySet();
-	}
-
-	/**
-	 * Returns the visualization provider based on the name provided. If the
-	 * provider isn't found then null is returned.
-	 * 
-	 * @param providerName
-	 *            The name of the visualization provider. This MUST match the
-	 *            'name' attribute in the extension point.
-	 * @return The visualization provider
-	 */
-	public IVisualizationProvider getProviderByName(String providerName) {
-
-		for (String provider : visualizationProviders.keySet()) {
-			if (providerName.equals(provider)) {
-				return visualizationProviders.get(provider);
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * Returns all visualizations currently loaded from plugins
@@ -300,7 +106,7 @@ public class VisualizationPluginManager {
 	 * 
 	 * @param name
 	 *            The name of the visualization.
-	 * @return The visualization provider
+	 * @return The visualization
 	 */
 	public IVisualization getVisualizationByName(String name) {
 		for (IVisualization visualization : visualizations.keySet()) {
@@ -329,5 +135,4 @@ public class VisualizationPluginManager {
 		}
 		return null;
 	}
-
 }

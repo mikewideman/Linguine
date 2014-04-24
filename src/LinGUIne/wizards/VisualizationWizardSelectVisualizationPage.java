@@ -1,9 +1,9 @@
 package LinGUIne.wizards;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.LinkedList;
-
+import org.eclipse.jface.dialogs.IPageChangeProvider;
+import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -16,8 +16,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 import LinGUIne.extensions.IVisualization;
-import LinGUIne.model.KeyValueResult;
-import LinGUIne.model.Result;
 import LinGUIne.model.VisualizationPluginManager;
 
 /**
@@ -27,7 +25,8 @@ import LinGUIne.model.VisualizationPluginManager;
  * 
  * @author Peter Dimou
  */
-public class VisualizationWizardSelectVisualizationPage extends WizardPage {
+public class VisualizationWizardSelectVisualizationPage extends WizardPage
+		implements IPageChangedListener {
 
 	private VisualizationPluginManager visualizationPluginMan;
 	private VisualizationData wizardData;
@@ -66,10 +65,15 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
+		final IWizardContainer wizContainer = this.getContainer();
+		if (wizContainer instanceof IPageChangeProvider) {
+			((IPageChangeProvider) wizContainer).addPageChangedListener(this);
+		}
 		Composite container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
 
+		// Create the visualization section
 		Group grpVisualizations = new Group(container, SWT.NONE);
 		grpVisualizations.setLayout(new GridLayout(1, false));
 		grpVisualizations.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -81,12 +85,6 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 		lstVisualizations = new List(grpVisualizations, SWT.BORDER
 				| SWT.V_SCROLL);
 		lstVisualizations.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		// TODO: FOR DEMONSTRATION PURPOSES ONLY! Remove in the final version!
-		Collection<Result> testResults = new LinkedList<Result>();
-		KeyValueResult testKVResult = new KeyValueResult(new File(""));
-		testResults.add(testKVResult);
-		wizardData.setChosenResults(testResults);
 
 		// Populate the list of visualizations based on result types
 		for (IVisualization visualization : visualizationPluginMan
@@ -110,9 +108,12 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 							.getVisualizationDescriptionByName(visualization
 									.getName());
 
-					wizardData.setChosenVisualization(visualization);
-					lblDescription.setText(description);
-					lblDescription.update();
+					if (visualization != null) {
+						wizardData.setChosenVisualization(visualization);
+						lblDescription.setText(description);
+						lblDescription.update();
+						setPageComplete(true);
+					}
 				}
 			}
 
@@ -132,5 +133,22 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage {
 
 		setControl(container);
 		setPageComplete(false);
+	}
+
+	/**
+	 * Called whenever a page in the wizard is changed. Since all wizard pages
+	 * are constructed and added to the wizard on launch, this page won't know
+	 * about result types selected by the user. This listener will update the
+	 * list of result types once this page is shown to the user.
+	 */
+	@Override
+	public void pageChanged(PageChangedEvent event) {
+		lstVisualizations.removeAll();
+		// Populate the list of visualizations based on result types
+		for (IVisualization visualization : visualizationPluginMan
+				.getVisualizationsBySupportedResultTypeSet(wizardData
+						.getChosenResultTypes())) {
+			lstVisualizations.add(visualization.getName());
+		}
 	}
 }

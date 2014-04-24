@@ -19,7 +19,8 @@ import LinGUIne.model.Result;
 
 /**
  * Currently the first page in the wizard, it allows the user to select multiple
- * results from a single project to run a visualization.
+ * results from a single project to run a visualization. The chosen results will
+ * be used to determine which visualizations can be ran by the user.
  * 
  * @author Peter Dimou
  */
@@ -67,6 +68,7 @@ public class VisualizationWizardSelectResultPage extends WizardPage {
 		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
 
+		// Create the project selection section
 		Group grpProjects = new Group(container, SWT.NONE);
 		grpProjects.setLayout(new GridLayout(1, false));
 		grpProjects.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -123,9 +125,8 @@ public class VisualizationWizardSelectResultPage extends WizardPage {
 		lstResults.setEnabled(false);
 		lstResults.addSelectionListener(new SelectionListener() {
 
-			/**
-			 * Sets which results are currently selected.
-			 */
+
+			// Sets which results are currently selected.
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				LinkedList<Result> selectedResults = new LinkedList<Result>();
@@ -144,7 +145,6 @@ public class VisualizationWizardSelectResultPage extends WizardPage {
 			}
 		});
 
-		// Required to avoid an error in the system
 		setControl(container);
 		setPageComplete(false);
 	}
