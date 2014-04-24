@@ -58,7 +58,7 @@ public class NewGroupWizard extends Wizard {
 		}
 		catch(IOException ioe){
 			MessageDialog.openError(getShell(), "Error",
-					"Could not create Group folder.");
+					"Could not create new Folder.");
 		}
 		
 		return true;

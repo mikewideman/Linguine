@@ -1,18 +1,12 @@
 package LinGUIne.parts.advanced;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.Command;
@@ -22,20 +16,14 @@ import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -44,7 +32,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -62,7 +49,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Table;
 
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
@@ -71,15 +57,13 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
-import LinGUIne.model.Result;
 import LinGUIne.model.RootProjectGroup;
 import LinGUIne.model.VisualResult;
-import LinGUIne.parts.advanced.projects.ProjectDataNode;
 import LinGUIne.parts.advanced.projects.GroupNode;
+import LinGUIne.parts.advanced.projects.ProjectDataNode;
 import LinGUIne.parts.advanced.projects.ProjectExplorerNode;
 import LinGUIne.parts.advanced.projects.ProjectExplorerNodeSelection;
 import LinGUIne.parts.advanced.projects.ProjectNode;
-import LinGUIne.utilities.FileUtils;
 
 /**
  * View which displays Project contents to the user as a collapsable tree.
@@ -301,7 +285,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		});
 		
 		final MenuItem newGroup = new MenuItem(newMenu, SWT.NONE);
-		newGroup.setText("Group");
+		newGroup.setText("Folder");
 		newGroup.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {

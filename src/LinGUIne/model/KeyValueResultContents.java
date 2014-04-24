@@ -16,7 +16,7 @@ import java.util.Set;
  * @author Kyle Mullins
  */
 public class KeyValueResultContents implements IProjectDataContents,
-		Iterable<HashMap<String, ResultData>> {
+		Iterable<HashMap<String, ResultData>>, IPlaintextViewable {
 	
 	private List<HashMap<String, ResultData>> contents;
 	
@@ -136,5 +136,22 @@ public class KeyValueResultContents implements IProjectDataContents,
 	@Override
 	public Iterator<HashMap<String, ResultData>> iterator(){
 		return contents.iterator();
+	}
+
+	@Override
+	public String getAsPlaintext() {
+		String resultText = "";
+		
+		for(HashMap<String, ResultData> pairs: contents){
+			for(Entry<String, ResultData> pair: pairs.entrySet()){
+				resultText += pair.getKey() + " = " + pair.getValue().getAsString();
+//				resultText += ", ";
+				resultText += "\n"; //TODO: Remove this, it's only here to support the (outdated) word frequency format
+			}
+			
+//			resultText += "\n";
+		}
+		
+		return resultText;
 	}
 }

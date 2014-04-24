@@ -27,9 +27,9 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 	
 	public NewGroupWizardSelectProjectPage(ProjectManager projects,
 			NewGroupData data){
-		super("New Group Wizard");
-		setTitle("New Group Wizard");
-		setDescription("Select where the new Group should go.");
+		super("New Folder Wizard");
+		setTitle("New Folder Wizard");
+		setDescription("Select where the new Folder should go.");
 		
 		projectMan = projects;
 		wizardData = data;
@@ -41,10 +41,10 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 		container.setLayout(new GridLayout(2, true));
 		
 		Label lblProjects = new Label(container, SWT.NONE);
-		lblProjects.setText("Select the Project to put the Group in:");
+		lblProjects.setText("Select the Project to put the Folder in:");
 		
 		Label lblGroups = new Label(container, SWT.NONE);
-		lblGroups.setText("Select the new Group's parent Group:");
+		lblGroups.setText("Select the new Folder's parent Folder:");
 		
 		lstProjects = new List(container, SWT.BORDER | SWT.V_SCROLL | 
 				SWT.H_SCROLL);

@@ -1,6 +1,8 @@
 package LinGUIne.utilities;
 
 import java.io.File;
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.ISafeRunnable;
@@ -67,16 +69,17 @@ public class SafeAnalysis implements ISafeRunnable {
 		
 		resultContents = analysisPlugin.runAnalysis(sourceData);
 		
+		String resultFileName = analysisPlugin.getName() + "_" +
+				Calendar.getInstance().getTimeInMillis();
 		int contentsCount = 1;
 		
 		for(IProjectDataContents contents: resultContents){
-			String resultFileName = returnedResult.getSimpleName();
-			
 			if(contentsCount > 1){
 				resultFileName += " (" + contentsCount + ")";
 			}
+			
+			resultFileName += ".res";
 
-			//TODO: Properly generate File names and File extensions
 			File resultFile = destProject.getSubdirectory(Subdirectory.Results).append(resultFileName).toFile();
 			Result result = Result.createResult(returnedResult, resultFile);
 			

@@ -34,7 +34,7 @@
       <children xsi:type="menu:Menu" xmi:id="_5qnvCjdzEeOR8_lurf-ldg" elementId="linguine.menu.file" label="File">
         <children xsi:type="menu:Menu" xmi:id="_hFZyULhMEeOPZ-IS4_9pnA" elementId="linguine.menu.file.new" label="New" iconURI="platform:/plugin/LinGUIne/icons/new_wiz.gif">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_jHhbELhMEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.file" label="File" iconURI="platform:/plugin/LinGUIne/icons/new_con.gif" tooltip="New File" command="_BLZoAJ8rEeOA0_QUQheDyA"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_LYIYILhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.group" label="Group" iconURI="platform:/plugin/LinGUIne/icons/newfolder_wiz.gif" tooltip="New Group" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_LYIYILhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.group" label="Folder" iconURI="platform:/plugin/LinGUIne/icons/newfolder_wiz.gif" tooltip="New Folder" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_Tm_3ALhNEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.new.project" label="Project" iconURI="platform:/plugin/LinGUIne/icons/newprj_wiz.gif" tooltip="New Project" command="_oQ1w8DxbEeOsebD9DszETw"/>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_XW1ecLhQEeOPZ-IS4_9pnA" elementId="linguine.menu.import" label="Import" iconURI="platform:/plugin/LinGUIne/icons/import_wiz.gif">
@@ -81,7 +81,7 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_B9YHMLhIEeO9ur9GVZ_f2A" elementId="linguine.handledtoolitem.new" iconURI="platform:/plugin/LinGUIne/icons/new_wiz.gif" tooltip="Create a new file, project or group" command="_KqIBoLhYEeOPZ-IS4_9pnA">
           <menu xmi:id="_GRWd0LhIEeO9ur9GVZ_f2A" elementId="linguine.menu.new" label="">
             <children xsi:type="menu:HandledMenuItem" xmi:id="_IlozoLhTEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.File" label="File" iconURI="platform:/plugin/LinGUIne/icons/new_con.gif" tooltip="Create a file" command="_BLZoAJ8rEeOA0_QUQheDyA"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_P9GwcLhTEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.group" label="Group" iconURI="platform:/plugin/LinGUIne/icons/newfolder_wiz.gif" tooltip="Create a new group" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_P9GwcLhTEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.group" label="Folder" iconURI="platform:/plugin/LinGUIne/icons/newfolder_wiz.gif" tooltip="Create a new folder" command="_EgcjELhXEeOPZ-IS4_9pnA"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_MJPdQLhTEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.project" label="Project" iconURI="platform:/plugin/LinGUIne/icons/newprj_wiz.gif" tooltip="Create a new project" command="_oQ1w8DxbEeOsebD9DszETw"/>
           </menu>
         </children>
@@ -133,7 +133,9 @@
   <handlers xmi:id="_hYS5kMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.project" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectHandler" command="_29O-gMQDEeOGW6ncd9sqEQ"/>
   <handlers xmi:id="_lfsMwMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameGroupHandler" command="_FIPrsMQEEeOGW6ncd9sqEQ"/>
   <handlers xmi:id="_oYTYoMQHEeOGW6ncd9sqEQ" elementId="linguine.handler.rename.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.RenameProjectDataHandler" command="_eF3m4MQEEeOGW6ncd9sqEQ"/>
-  <handlers xmi:id="_PyBiIMgHEeO0qMTy81WQlQ" elementId="linguine.handler.0" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.InstallHandler" command="_nJT0gLhXEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_3UOSYMTYEeOwW6CcOLgumg" elementId="linguine.handler.move.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.MoveGroupHandler" command="_TJatEMTYEeOwW6CcOLgumg"/>
+  <handlers xmi:id="_EL1eAMTZEeOwW6CcOLgumg" elementId="linguine.handler.move.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.MoveProjectDataHandler" command="_WAdLoMTYEeOwW6CcOLgumg"/>
+  <handlers xmi:id="_9tw8UMjTEeOXMMFZjrhIUA" elementId="linguine.handler.install" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.InstallHandler" command="_nJT0gLhXEeOPZ-IS4_9pnA"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.exit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvBTdzEeOR8_lurf-ldg" elementId="linguine.keybinding.save" keySequence="M1+S" command="_5qnvAzdzEeOR8_lurf-ldg"/>
@@ -198,6 +200,14 @@
   <commands xmi:id="_eF3m4MQEEeOGW6ncd9sqEQ" elementId="linguine.command.rename.projectData" commandName="renameProjectDataCommand">
     <parameters xmi:id="_3uJBkMQEEeOGW6ncd9sqEQ" elementId="linguine.command.renameProjectData.parameter.targetProjectData" name="targetProjectData" optional="false"/>
     <parameters xmi:id="_KMqyYMQFEeOGW6ncd9sqEQ" elementId="linguine.command.renameProjectData.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_TJatEMTYEeOwW6CcOLgumg" elementId="linguine.command.move.group" commandName="moveGroupCommand">
+    <parameters xmi:id="_YYGYcMTYEeOwW6CcOLgumg" elementId="linguine.command.moveGroup.parameter.targetGroup" name="targetGroup" optional="false"/>
+    <parameters xmi:id="_ddascMTYEeOwW6CcOLgumg" elementId="linguine.command.moveGroup.parameter.parentProject" name="parentProject" optional="false"/>
+  </commands>
+  <commands xmi:id="_WAdLoMTYEeOwW6CcOLgumg" elementId="linguine.command.move.projectData" commandName="moveProjectDataCommand">
+    <parameters xmi:id="_fv_zEMTYEeOwW6CcOLgumg" elementId="linguine.command.moveProjectData.parameter.targetData" name="targetData" optional="false"/>
+    <parameters xmi:id="_oNNP8MTYEeOwW6CcOLgumg" elementId="linguine.command.moveProjectData.parameter.parentProject" name="parentProject" optional="false"/>
   </commands>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_5qnu8zdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>

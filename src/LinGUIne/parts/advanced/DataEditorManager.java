@@ -89,13 +89,15 @@ public class DataEditorManager {
 				//TODO: Actually iterate through all choices
 				if(new TextAnnotationSetEditor().canOpenData(projData, project)){
 					dataEditor = new TextAnnotationSetEditor();
-					
 				}
 				else if(new TextDataEditor().canOpenData(projData, project)){
 					dataEditor = new TextDataEditor();
 				}
 				else if(new VisualResultViewEditor().canOpenData(projData, project)){
 					dataEditor = new VisualResultViewEditor();
+				}
+				else if(new UneditableTextViewer().canOpenData(projData, project)){
+					dataEditor = new UneditableTextViewer();
 				}
 				else{
 					return;
