@@ -166,14 +166,8 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 				item.setText(1,currentIU.getVersion().toString());
 			}
 		}
-		idColumn.pack();
-		versionColumn.pack();
 	}
 
 	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void widgetDefaultSelected(SelectionEvent e) {}
 }

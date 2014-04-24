@@ -43,12 +43,20 @@ public class InstallWizard extends Wizard{
 	@Override
 	public boolean performFinish() {
 		boolean installComplete = InstallUtils.installIUs(data.getAgent(), data.getSelectedIUs(),data.getRepoLocation());
-		if(installComplete == true){
+		
+		if(installComplete){
 			boolean restart = MessageDialog.openQuestion(data.getParent(), "Installation Complete",
-					"In order for the newly installed plugins to start, LinGUIne needs to be restart. Restart now?");
-			if(restart == true)
+					"In order for the newly installed plugins to start, LinGUIne needs to be restarted. Restart now?");
+			
+			if(restart == true){
 				data.getWorkbench().restart();
+			}
 		}
+		else{
+			MessageDialog.openError(getShell(), "Could not install selected plugins",
+					"There was an error trying to install the selected plugins.");
+		}
+		
 		return installComplete;
 	}
 

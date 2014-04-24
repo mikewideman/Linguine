@@ -6,10 +6,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
+import LinGUIne.events.LinGUIneEvents;
+import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.extensions.IVisualization;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
@@ -29,6 +32,7 @@ public class SafeVisualization implements ISafeRunnable {
 	private IVisualization visualization;
 	private Collection<Result> results;
 	private Project project;
+	private IEventBroker eventBroker;
 
 	/**
 	 * Constructs the object with necessary parameters for execution.
@@ -45,11 +49,12 @@ public class SafeVisualization implements ISafeRunnable {
 	 *            The source and destination project
 	 */
 	public SafeVisualization(Shell shell, IVisualization visualization,
-			Collection<Result> results, Project project) {
+			Collection<Result> results, Project project, IEventBroker broker) {
 		this.shell = shell;
 		this.visualization = visualization;
 		this.results = results;
 		this.project = project;
+		eventBroker = broker;
 	}
 
 	/**
@@ -86,5 +91,8 @@ public class SafeVisualization implements ISafeRunnable {
 		Collection<IProjectData> sourceResults = new LinkedList<IProjectData>();
 		sourceResults.addAll(results);
 		project.addResult(result, sourceResults);
+		
+		eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
+				new OpenProjectDataEvent(result, project));
 	}
 }

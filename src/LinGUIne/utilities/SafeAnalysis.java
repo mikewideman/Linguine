@@ -80,7 +80,6 @@ public class SafeAnalysis implements ISafeRunnable {
 			
 			resultFileName += ".res";
 
-			//TODO: Properly generate File names and File extensions
 			File resultFile = destProject.getSubdirectory(Subdirectory.Results).append(resultFileName).toFile();
 			Result result = Result.createResult(returnedResult, resultFile);
 			
