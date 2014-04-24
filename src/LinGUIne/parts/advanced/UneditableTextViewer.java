@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Text;
 import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.extensions.IProjectDataEditor;
 import LinGUIne.model.IProjectData;
-import LinGUIne.model.ITextViewable;
+import LinGUIne.model.IPlaintextViewable;
 import LinGUIne.model.Project;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
@@ -23,11 +23,11 @@ public class UneditableTextViewer implements IProjectDataEditor {
 	
 	private Project parentProject;
 	private IProjectData projectData;
-	private ITextViewable textViewableContents;
+	private IPlaintextViewable textViewableContents;
 	
 	@Override
 	public boolean canOpenData(IProjectData data, Project proj){
-		return data.getContents() instanceof ITextViewable;
+		return data.getContents() instanceof IPlaintextViewable;
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class UneditableTextViewer implements IProjectDataEditor {
 		textArea.setEditable(false);
 		textArea.setAlwaysShowScrollBars(true);
 		
-		textArea.append(textViewableContents.getAsText());
+		textArea.append(textViewableContents.getAsPlaintext());
 	}
 	
 	@Override
@@ -58,7 +58,7 @@ public class UneditableTextViewer implements IProjectDataEditor {
 		if(canOpenData(data, parentProj)){
 			parentProject = parentProj;
 			projectData = data;
-			textViewableContents = (ITextViewable)data.getContents();
+			textViewableContents = (IPlaintextViewable)data.getContents();
 		}
 		else{
 			throw new IllegalArgumentException("This class only supports ");

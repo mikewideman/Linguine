@@ -1,6 +1,7 @@
 package LinGUIne.utilities;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -56,9 +57,6 @@ public class SafeVisualization implements ISafeRunnable {
 	 */
 	@Override
 	public void handleException(Throwable exception) {
-		// TODO: Remove
-		exception.printStackTrace();
-
 		MessageDialog.open(SWT.ERROR, shell, "Error",
 				"An error occurred while attempting to run the visualization",
 				SWT.NONE);
@@ -74,17 +72,16 @@ public class SafeVisualization implements ISafeRunnable {
 		visualization.setResults(results);
 		VisualResultContents contents = visualization.runVisualization();
 
-		// TODO: Change file name format to <original
-		// data>-<visualization>-<timestamp>
-		String resultFileName = contents.getVisualizationView().getClass()
-				.getSimpleName();
+		String resultFileName = visualization.getName() + "_" +
+				Calendar.getInstance().getTimeInMillis() + ".vis";
+		
 
 		File resultFile = project.getSubdirectory(Subdirectory.Results)
 				.append(resultFileName).toFile();
 		VisualResult result = new VisualResult(resultFile);
 		result.updateContents(contents);
 
-		// Bulid a new collection since IProjectData is generic and you cannot
+		// Build a new collection since IProjectData is generic and you cannot
 		// cast collections
 		Collection<IProjectData> sourceResults = new LinkedList<IProjectData>();
 		sourceResults.addAll(results);
