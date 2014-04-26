@@ -26,6 +26,11 @@ public class CSVExporter implements IFileExporter {
 	public String getFileType() {
 		return "Comma Separated Values (CSV)";
 	}
+	
+	@Override
+	public String getFileMask(){
+		return "*.csv";
+	}
 
 	@Override
 	public Collection<Class<? extends Result>> getSupportedSourceDataTypes() {

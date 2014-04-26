@@ -17,8 +17,9 @@ public class ExportFileWizard extends Wizard {
 	private ProjectManager projectMan;
 	
 	private ExportFileData wizardData;
-	private ExportFileWizardSetupPage setupPage;
+	private ExportFileWizardExporterPage exporterPage;
 	private ExportFileWizardChooseResultPage resultPage;
+	private ExportFileWizardChooseFilePage filePage;
 	
 	public ExportFileWizard(){
 		super();
@@ -28,11 +29,13 @@ public class ExportFileWizard extends Wizard {
 	
 	@Override
 	public void addPages(){
-		setupPage = new ExportFileWizardSetupPage(wizardData);
+		exporterPage = new ExportFileWizardExporterPage(wizardData);
 		resultPage = new ExportFileWizardChooseResultPage(wizardData, projectMan);
+		filePage = new ExportFileWizardChooseFilePage(wizardData);
 		
-		addPage(setupPage);
+		addPage(exporterPage);
 		addPage(resultPage);
+		addPage(filePage);
 	}
 	
 	@Override

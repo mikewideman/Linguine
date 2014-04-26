@@ -54,7 +54,7 @@ public class SafeExporter implements ISafeRunnable {
 	 */
 	@Override
 	public void run() throws Exception {
-			fileExporter.exportResult(sourceResult, associatedProjectData,
-					destFile);
+		fileExporter.exportResult(sourceResult, associatedProjectData,
+				destFile);
 	}
 }

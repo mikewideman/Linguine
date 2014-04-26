@@ -32,7 +32,7 @@ public class ExportFileData {
 	 * 
 	 * @param exporter	An instance of the chosen IFileExporter.
 	 */
-	public void setImporter(IFileExporter exporter){
+	public void setExporter(IFileExporter exporter){
 		chosenExporter = exporter;
 	}
 	
@@ -64,7 +64,7 @@ public class ExportFileData {
 	 * 
 	 * @param result	the chosen Result.
 	 */
-	public void setChosenResult(Result result){
+	public void setResult(Result result){
 		chosenResult = result;
 	}
 	

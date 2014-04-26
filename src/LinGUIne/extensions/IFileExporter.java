@@ -21,6 +21,12 @@ public interface IFileExporter {
 	String getFileType();
 	
 	/**
+	 * Returns a file mask used to filter files for the exporter to export to.
+	 * Ex. *.csv
+	 */
+	String getFileMask();
+	
+	/**
 	 * Returns a collection of Result types that this IFileExporter supports.
 	 * Note: The types returned should be as specific as possible.
 	 */
