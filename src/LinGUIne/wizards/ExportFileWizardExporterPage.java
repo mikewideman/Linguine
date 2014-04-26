@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.List;
 
 import LinGUIne.extensions.CSVExporter;
 import LinGUIne.extensions.IFileExporter;
+import LinGUIne.extensions.XMLExporter;
 
 public class ExportFileWizardExporterPage extends WizardPage {
 
@@ -49,13 +50,23 @@ public class ExportFileWizardExporterPage extends WizardPage {
 		
 		lstExporters = new List(grpExporter, SWT.BORDER | SWT.V_SCROLL);
 		lstExporters.setLayoutData(new GridData(GridData.FILL_BOTH));
-		lstExporters.add("Comma Separated Values (CSV) file");
 		
 		IConfigurationElement[] configElements = Platform.getExtensionRegistry().
 				getConfigurationElementsFor("LinGUIne.LinGUIne.extensions.IFileExporter");
 		
 		final HashMap<String, IConfigurationElement> exporterConfigs =
 				new HashMap<String, IConfigurationElement>();
+		final HashMap<String, IFileExporter> builtInExporters = new HashMap<
+				String, IFileExporter>();
+		
+		//Add built-in exporters to the list
+		IFileExporter csv = new CSVExporter();
+		builtInExporters.put(csv.getFileType(), csv);
+		lstExporters.add(csv.getFileType());
+		
+		IFileExporter xml = new XMLExporter();
+		builtInExporters.put(xml.getFileType(), xml);
+		lstExporters.add(xml.getFileType());
 		
 		for(IConfigurationElement configElement: configElements){
 			String fileType = configElement.getAttribute("file_type");
@@ -75,7 +86,10 @@ public class ExportFileWizardExporterPage extends WizardPage {
 					String selectedFileType = lstExporters.getSelection()[0];
 					IFileExporter exporter = null;
 					
-					if(exporterConfigs.containsKey(selectedFileType)){
+					if(builtInExporters.containsKey(selectedFileType)){
+						exporter = builtInExporters.get(selectedFileType);
+					}
+					else if(exporterConfigs.containsKey(selectedFileType)){
 						IConfigurationElement importerConfig =
 								exporterConfigs.get(selectedFileType);
 						
@@ -86,9 +100,6 @@ public class ExportFileWizardExporterPage extends WizardPage {
 						catch (CoreException e1) {
 							e1.printStackTrace();
 						}
-					}
-					else{
-						exporter = new CSVExporter();
 					}
 					
 					wizardData.setExporter(exporter);

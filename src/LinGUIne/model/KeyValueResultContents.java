@@ -145,11 +145,11 @@ public class KeyValueResultContents implements IProjectDataContents,
 		for(HashMap<String, ResultData> pairs: contents){
 			for(Entry<String, ResultData> pair: pairs.entrySet()){
 				resultText += pair.getKey() + " = " + pair.getValue().getAsString();
-//				resultText += ", ";
-				resultText += "\n"; //TODO: Remove this, it's only here to support the (outdated) word frequency format
+				resultText += ", ";
 			}
 			
-//			resultText += "\n";
+			resultText = resultText.substring(0, resultText.length() - 2);
+			resultText += "\n";
 		}
 		
 		return resultText;
