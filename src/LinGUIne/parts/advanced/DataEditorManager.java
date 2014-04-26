@@ -5,9 +5,13 @@ import java.io.File;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -39,6 +43,9 @@ public class DataEditorManager {
 	
 	@Inject
 	private MApplication application;
+	
+	@Inject
+	private Logger logger;
 	
 	private MPartStack partStack;
 	
@@ -77,31 +84,52 @@ public class DataEditorManager {
 			
 			if(existingPart != null){
 				partService.activate(existingPart);
+				
+				return;
+			}
+			
+			IProjectDataEditor dataEditor = null;
+			
+			//Handle cases for our built-in editors
+			if(new TextAnnotationSetEditor().canOpenData(projData, project)){
+				dataEditor = new TextAnnotationSetEditor();
+			}
+			else if(new TextDataEditor().canOpenData(projData, project)){
+				dataEditor = new TextDataEditor();
+			}
+			else if(new VisualResultViewEditor().canOpenData(projData, project)){
+				dataEditor = new VisualResultViewEditor();
+			}
+			else if(new UneditableTextViewer().canOpenData(projData, project)){
+				dataEditor = new UneditableTextViewer();
 			}
 			else{
+				IConfigurationElement[] configElements = Platform.
+						getExtensionRegistry().getConfigurationElementsFor(
+						"LinGUIne.LinGUIne.extensions.IProjectDataEditor");
+				
+				for(IConfigurationElement configElement: configElements){
+					try {
+						IProjectDataEditor editor = (IProjectDataEditor)
+								configElement.createExecutableExtension("class");
+						
+						if(editor.canOpenData(projData, project)){
+							dataEditor = editor;
+							break;
+						}
+					}
+					catch(CoreException ce) {
+						logger.error(ce);
+					}
+				}
+			}
+			
+			//If we found a compatible editor, create the part
+			if(dataEditor != null){
 				MPart newPart = partService.createPart(CONTAINER_PART_ID);
 				
 				partStack.getChildren().add(newPart);
 				partService.activate(newPart);
-				
-				IProjectDataEditor dataEditor;
-				
-				//TODO: Actually iterate through all choices
-				if(new TextAnnotationSetEditor().canOpenData(projData, project)){
-					dataEditor = new TextAnnotationSetEditor();
-				}
-				else if(new TextDataEditor().canOpenData(projData, project)){
-					dataEditor = new TextDataEditor();
-				}
-				else if(new VisualResultViewEditor().canOpenData(projData, project)){
-					dataEditor = new VisualResultViewEditor();
-				}
-				else if(new UneditableTextViewer().canOpenData(projData, project)){
-					dataEditor = new UneditableTextViewer();
-				}
-				else{
-					return;
-				}
 				
 				ContextInjectionFactory.inject(dataEditor, application.getContext());
 				dataEditor.setInputData(projData, project);

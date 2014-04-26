@@ -49,8 +49,7 @@ public class ImportFileWizardSetupPage extends WizardPage {
 	public ImportFileWizardSetupPage(ImportFileData data, ProjectManager projects){
 		super("Import File Wizard");
 		setTitle("Import File Wizard");
-		setDescription("");//TODO: pick a description
-		setControl(lstImporters);
+		setMessage("Select an Importer.");
 		
 		wizardData = data;
 		projectMan = projects;
@@ -77,13 +76,18 @@ public class ImportFileWizardSetupPage extends WizardPage {
 		
 		lstImporters = new List(grpImporter, SWT.BORDER | SWT.V_SCROLL);
 		lstImporters.setLayoutData(new GridData(GridData.FILL_BOTH));
-		lstImporters.add("Plaintext file");
 		
 		IConfigurationElement[] configElements = Platform.getExtensionRegistry().
 				getConfigurationElementsFor("LinGUIne.LinGUIne.extensions.IFileImporter");
 		
 		final HashMap<String, IConfigurationElement> importerConfigs =
 				new HashMap<String, IConfigurationElement>();
+		final HashMap<String, IFileImporter> builtInImporters =
+				new HashMap<String, IFileImporter>();
+		
+		IFileImporter plaintext = new PlaintextImporter();
+		builtInImporters.put(plaintext.getFileType(), plaintext);
+		lstImporters.add(plaintext.getFileType());
 		
 		for(IConfigurationElement configElement: configElements){
 			String fileType = configElement.getAttribute("file_type");
@@ -103,7 +107,11 @@ public class ImportFileWizardSetupPage extends WizardPage {
 					String selectedFileType = lstImporters.getSelection()[0];
 					IFileImporter importer = null;
 					wizardData.setInternetSource(false);
-					if(importerConfigs.containsKey(selectedFileType)){
+					
+					if(builtInImporters.containsKey(selectedFileType)){
+						importer = builtInImporters.get(selectedFileType);
+					}
+					else if(importerConfigs.containsKey(selectedFileType)){
 						IConfigurationElement importerConfig =
 								importerConfigs.get(selectedFileType);
 						
@@ -114,9 +122,6 @@ public class ImportFileWizardSetupPage extends WizardPage {
 						catch (CoreException e1) {
 							e1.printStackTrace();
 						}
-					}
-					else{
-						importer = new PlaintextImporter();
 					}
 					
 					wizardData.setImporter(importer);
