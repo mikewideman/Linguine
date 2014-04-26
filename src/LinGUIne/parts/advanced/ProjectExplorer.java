@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.events.ProjectEvent;
+import LinGUIne.extensions.IPropertiesProvider;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;

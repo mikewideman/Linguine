@@ -1,4 +1,4 @@
-package LinGUIne.parts.advanced;
+package LinGUIne.extensions;
 
 import org.eclipse.swt.widgets.Composite;
 

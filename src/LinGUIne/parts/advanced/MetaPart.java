@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import LinGUIne.events.LinGUIneEvents;
+import LinGUIne.extensions.IPropertiesProvider;
 
 /**
  * Part that shows metadata about the current selection.

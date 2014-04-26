@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.extensions.IAnalysisPlugin;
+import LinGUIne.extensions.IPropertiesProvider;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
