@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import LinGUIne.utilities.ClassUtils;
+
 /**
  * Single Result type for all Visualizations which should be saved. Supports all
  * contents objects which extend VisualResultContents.
@@ -34,9 +36,10 @@ public class VisualResult extends Result {
 					String className = reader.readLine();
 					
 					try {
-						Class<?> clazz = Class.forName(className);
+						Class<?> clazz = ClassUtils.deserializeClassName(className);
 						newContents = (VisualResultContents)clazz.
 								getDeclaredConstructor().newInstance();
+						
 					}
 					catch(InstantiationException | IllegalAccessException
 							| IllegalArgumentException
@@ -76,7 +79,7 @@ public class VisualResult extends Result {
 				try(BufferedWriter writer = Files.newBufferedWriter(
 						resultFile.toPath(), Charset.defaultCharset())){
 					
-					writer.write(newVisualContents.getClass().getName() + "\n");
+					writer.write(ClassUtils.serializeClassName(newVisualContents.getClass()) + "\n");
 					
 					if(!newVisualContents.compose(writer)){
 						return false;

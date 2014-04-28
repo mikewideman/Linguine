@@ -20,6 +20,7 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.Result;
 import LinGUIne.model.Project.Subdirectory;
+import LinGUIne.utilities.ClassUtils;
 
 public class ProjectTranslator {
 
@@ -156,7 +157,7 @@ public class ProjectTranslator {
 		
 		rootObj.addProperty(NAME_ATTRIB, projData.getName());
 		rootObj.addProperty(GROUP_ATTRIB, proj.getGroupFor(projData).getName());
-		rootObj.addProperty(TYPE_ATTRIB, projData.getClass().getName());
+		rootObj.addProperty(TYPE_ATTRIB, ClassUtils.serializeClassName(projData.getClass()));
 		
 		return rootObj;
 	}
@@ -172,7 +173,7 @@ public class ProjectTranslator {
 		
 		rootObj.addProperty(NAME_ATTRIB, annotations.getName());
 		rootObj.addProperty(GROUP_ATTRIB, proj.getGroupFor(annotations).getName());
-		rootObj.addProperty(TYPE_ATTRIB, annotations.getClass().getName());
+		rootObj.addProperty(TYPE_ATTRIB, ClassUtils.serializeClassName(annotations.getClass()));
 		rootObj.addProperty(ASSOCIATED_DATA_ATTRIB, projData.getName());
 		
 		return rootObj;
@@ -189,7 +190,7 @@ public class ProjectTranslator {
 		
 		rootObj.addProperty(NAME_ATTRIB, result.getName());
 		rootObj.addProperty(GROUP_ATTRIB, proj.getGroupFor(result).getName());
-		rootObj.addProperty(TYPE_ATTRIB, result.getClass().getName());
+		rootObj.addProperty(TYPE_ATTRIB, ClassUtils.serializeClassName(result.getClass()));
 		
 		JsonArray assocDataAry = new JsonArray();
 		rootObj.add(ASSOCIATED_DATA_ATTRIB, assocDataAry);
@@ -357,7 +358,7 @@ public class ProjectTranslator {
 			if(typeElem.isJsonPrimitive()){
 				try {
 					//TODO: Enforce Constructor taking File as param
-					Class<?> clazz = Class.forName(typeElem.getAsString());
+					Class<?> clazz = ClassUtils.deserializeClassName(typeElem.getAsString());
 					newProjData = (IProjectData)clazz.getDeclaredConstructor(
 							File.class).newInstance(dataFile);
 				}
@@ -412,7 +413,7 @@ public class ProjectTranslator {
 			//Parse type and create instance
 			if(typeElem.isJsonPrimitive()){
 				try{
-					Class<?> clazz = Class.forName(typeElem.getAsString());
+					Class<?> clazz = ClassUtils.deserializeClassName(typeElem.getAsString());
 					newAnnotationSet = (AnnotationSet)clazz.
 							getDeclaredConstructor(File.class).newInstance(
 							dataFile);
@@ -489,7 +490,7 @@ public class ProjectTranslator {
 			//Parse type and create instance
 			if(typeElem.isJsonPrimitive()){
 				try{
-					Class<?> clazz = Class.forName(typeElem.getAsString());
+					Class<?> clazz = ClassUtils.deserializeClassName(typeElem.getAsString());
 					newResult = (Result)clazz.getDeclaredConstructor(File.class).
 							newInstance(dataFile);
 				}
