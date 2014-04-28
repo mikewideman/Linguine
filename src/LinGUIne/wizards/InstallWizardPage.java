@@ -93,14 +93,12 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		contentTable.setLinesVisible(true);
 		contentTable.setHeaderVisible(true);
 		contentTable.addSelectionListener(this);
-		
 		idColumn = new TableColumn (contentTable, SWT.NONE);
 		idColumn.setText("Plugin ID");
-		idColumn.setWidth(400);
-		
 		versionColumn = new TableColumn(contentTable, SWT.NONE);
 		versionColumn.setText("Version");
-		versionColumn.setWidth(200);
+		idColumn.pack();
+		versionColumn.pack();
 		
 		parent.pack();
 		container.pack();
@@ -158,13 +156,9 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		contentTable.removeAll();
 		for(int i = 0; i < data.getRepositoryIUs().size(); i++){
 			IInstallableUnit currentIU = data.getRepositoryIUs().get(i);
-			
-			if(!currentIU.getId().endsWith("feature.group") &&
-					!currentIU.getId().endsWith("feature.jar")){
-				TableItem item = new TableItem(contentTable,SWT.NONE);
-				item.setText(0,currentIU.getId());
-				item.setText(1,currentIU.getVersion().toString());
-			}
+			TableItem item = new TableItem(contentTable,SWT.NONE);
+			item.setText(0,data.getRepositoryIUs().get(i).getId());
+			item.setText(1,data.getRepositoryIUs().get(i).getVersion().toString());
 		}
 		idColumn.pack();
 		versionColumn.pack();
