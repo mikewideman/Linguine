@@ -1,7 +1,5 @@
 package LinGUIne.wizards;
 
-import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -44,8 +42,8 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 	protected InstallWizardPage(String pageName, P2Data data) {
 		super(pageName);
 		this.data = data;
-		setTitle("Select a valid repository");
-		setDescription("A valid repository is a directory that contains both the artifacts.jar and content.jar files.");
+		setTitle("Install New Plugin");
+		setDescription("Select a valid repository directory");
 	}
 
 	/**
@@ -79,8 +77,9 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		repositoryLabel.setText("Repository:");
 		repositoryLabel.setLayoutData(new RowData(60,15));
 		
-		directoryLabel = new Label(topContainer,SWT.NONE);
-		directoryLabel.setText("");
+		directoryLabel = new Label(topContainer,SWT.BORDER);
+		directoryLabel.setText("1234567890");
+		directoryLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		directoryLabel.setLayoutData(new RowData(500, 15));
 		
 		browseButton = new Button(topContainer,SWT.NONE);
@@ -93,14 +92,12 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 		contentTable.setLinesVisible(true);
 		contentTable.setHeaderVisible(true);
 		contentTable.addSelectionListener(this);
-		
 		idColumn = new TableColumn (contentTable, SWT.NONE);
 		idColumn.setText("Plugin ID");
-		idColumn.setWidth(400);
-		
 		versionColumn = new TableColumn(contentTable, SWT.NONE);
 		versionColumn.setText("Version");
-		versionColumn.setWidth(200);
+		idColumn.pack();
+		versionColumn.pack();
 		
 		parent.pack();
 		container.pack();
@@ -122,10 +119,7 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 			directoryDialog.setMessage("Select a valid repository:");
 			String directory = directoryDialog.open();
 			directoryLabel.setText(directory);
-			boolean valid = data.initializeRepositoryData(directory);
-			if(!valid){
-				
-			}
+			data.initializeRepositoryData(directory);
 			setDisplayData();
 		}
 		
@@ -135,10 +129,12 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 				int index = contentTable.indexOf((TableItem)e.item);
 				//If the checked index is present in selectedIUs, remove it
 				if(data.getSelectedIUs().contains(data.getRepositoryIUs().get(index))){
+					System.out.println("Removing " + data.getRepositoryIUs().get(index).getId());
 					data.getSelectedIUs().remove(data.getRepositoryIUs().get(index));
 				}
 				//Otherwise add it to selectedIUs
 				else{
+					System.out.println("Adding " + data.getRepositoryIUs().get(index).getId());
 					data.getSelectedIUs().add(data.getRepositoryIUs().get(index));
 				}
 				if(data.getSelectedIUs().size() > 0){
@@ -157,17 +153,18 @@ public class InstallWizardPage extends WizardPage implements SelectionListener{
 	public void setDisplayData(){
 		contentTable.removeAll();
 		for(int i = 0; i < data.getRepositoryIUs().size(); i++){
-			IInstallableUnit currentIU = data.getRepositoryIUs().get(i);
-			
-			if(!currentIU.getId().endsWith("feature.group") &&
-					!currentIU.getId().endsWith("feature.jar")){
-				TableItem item = new TableItem(contentTable,SWT.NONE);
-				item.setText(0,currentIU.getId());
-				item.setText(1,currentIU.getVersion().toString());
-			}
+			TableItem item = new TableItem(contentTable,SWT.NONE);
+			item.setText(0,data.getRepositoryIUs().get(i).getId());
+			item.setText(1,data.getRepositoryIUs().get(i).getVersion().toString());
 		}
+		idColumn.pack();
+		versionColumn.pack();
 	}
 
 	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {}
+	public void widgetDefaultSelected(SelectionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
