@@ -3,6 +3,7 @@ package LinGUIne.wizards;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.wizard.Wizard;
 
 import LinGUIne.model.ProjectManager;
@@ -25,8 +26,12 @@ public class VisualizationWizard extends Wizard {
 
 	@Inject
 	private ProjectManager projectMan;
+	
 	@Inject
 	private VisualizationPluginManager visualizationPluginMan;
+	
+	@Inject
+	private IEventBroker eventBroker;
 
 	/**
 	 * Constructs the VisualizationWizard with new data that is to be carried
@@ -61,7 +66,8 @@ public class VisualizationWizard extends Wizard {
 	public boolean performFinish() {
 		SafeVisualization safeVisualization = new SafeVisualization(getShell(),
 				wizardData.getChosenVisualization(),
-				wizardData.getChosenResults(), wizardData.getChosenProject());
+				wizardData.getChosenResults(), wizardData.getChosenProject(),
+				eventBroker);
 
 		SafeRunner.run(safeVisualization);
 		return true;

@@ -18,9 +18,9 @@ public class NewGroupWizardNamePage extends WizardPage {
 	private NewGroupData wizardData;
 	
 	public NewGroupWizardNamePage(NewGroupData data){
-		super("New Group Wizard");
-		setTitle("New Group Wizard");
-		setDescription("Choose a name for the new Group.");
+		super("New Folder Wizard");
+		setTitle("New Folder Wizard");
+		setDescription("Choose a name for the new Folder.");
 		
 		wizardData = data;
 	}
@@ -31,7 +31,7 @@ public class NewGroupWizardNamePage extends WizardPage {
 		container.setLayout(new GridLayout(2, false));
 		
 		lblGroupName = new Label(container, SWT.NONE);
-		lblGroupName.setText("Enter name for the new Group:");
+		lblGroupName.setText("Enter name for the new Folder:");
 		
 		txtGroupName = new Text(container, SWT.BORDER | SWT.SINGLE);
 		txtGroupName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -57,11 +57,11 @@ public class NewGroupWizardNamePage extends WizardPage {
 		String errorMessage = null;
 				
 		if(newGroupName.length() == 0){
-			errorMessage = "Group name must not have length 0!";
+			errorMessage = "Folder name must not have length 0!";
 			isValid = false;
 		}
 		else if(wizardData.getDestProject().containsGroup(newGroupName)){
-			errorMessage = "A Group with that name already exists!";
+			errorMessage = "A Folder with that name already exists!";
 			isValid = false;
 		}
 		

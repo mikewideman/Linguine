@@ -1,14 +1,18 @@
 package LinGUIne.utilities;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
+import LinGUIne.events.LinGUIneEvents;
+import LinGUIne.events.OpenProjectDataEvent;
 import LinGUIne.extensions.IVisualization;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
@@ -28,6 +32,7 @@ public class SafeVisualization implements ISafeRunnable {
 	private IVisualization visualization;
 	private Collection<Result> results;
 	private Project project;
+	private IEventBroker eventBroker;
 
 	/**
 	 * Constructs the object with necessary parameters for execution.
@@ -44,11 +49,12 @@ public class SafeVisualization implements ISafeRunnable {
 	 *            The source and destination project
 	 */
 	public SafeVisualization(Shell shell, IVisualization visualization,
-			Collection<Result> results, Project project) {
+			Collection<Result> results, Project project, IEventBroker broker) {
 		this.shell = shell;
 		this.visualization = visualization;
 		this.results = results;
 		this.project = project;
+		eventBroker = broker;
 	}
 
 	/**
@@ -56,9 +62,6 @@ public class SafeVisualization implements ISafeRunnable {
 	 */
 	@Override
 	public void handleException(Throwable exception) {
-		// TODO: Remove
-		exception.printStackTrace();
-
 		MessageDialog.open(SWT.ERROR, shell, "Error",
 				"An error occurred while attempting to run the visualization",
 				SWT.NONE);
@@ -74,20 +77,22 @@ public class SafeVisualization implements ISafeRunnable {
 		visualization.setResults(results);
 		VisualResultContents contents = visualization.runVisualization();
 
-		// TODO: Change file name format to <original
-		// data>-<visualization>-<timestamp>
-		String resultFileName = contents.getVisualizationView().getClass()
-				.getSimpleName();
+		String resultFileName = visualization.getName() + "_" +
+				Calendar.getInstance().getTimeInMillis() + ".vis";
+		
 
 		File resultFile = project.getSubdirectory(Subdirectory.Results)
 				.append(resultFileName).toFile();
 		VisualResult result = new VisualResult(resultFile);
 		result.updateContents(contents);
 
-		// Bulid a new collection since IProjectData is generic and you cannot
+		// Build a new collection since IProjectData is generic and you cannot
 		// cast collections
 		Collection<IProjectData> sourceResults = new LinkedList<IProjectData>();
 		sourceResults.addAll(results);
 		project.addResult(result, sourceResults);
+		
+		eventBroker.post(LinGUIneEvents.UILifeCycle.OPEN_PROJECT_DATA,
+				new OpenProjectDataEvent(result, project));
 	}
 }

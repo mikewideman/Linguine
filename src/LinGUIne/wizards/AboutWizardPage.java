@@ -77,16 +77,20 @@ public class AboutWizardPage extends WizardPage{
 		contentTable.setLayoutData(new RowData(620,300));
 		contentTable.setLinesVisible(true);
 		contentTable.setHeaderVisible(true);
+		
 		idColumn = new TableColumn (contentTable, SWT.NONE);
 		idColumn.setText("Plugin ID");
+		idColumn.setWidth(400);
+		
 		versionColumn = new TableColumn(contentTable, SWT.NONE);
 		versionColumn.setText("Version");
-		idColumn.pack();
-		versionColumn.pack();
+		versionColumn.setWidth(200);
+		
 		setDisplayData();
 		parent.pack();
 		container.pack();
 		topContainer.pack();
+
 		setControl(parent);
 		setPageComplete(false);
 	}
@@ -103,8 +107,6 @@ public class AboutWizardPage extends WizardPage{
 			item.setText(0,installedBundles.get(i).getId());
 			item.setText(1,installedBundles.get(i).getVersion().toString());
 		}
-		idColumn.pack();
-		versionColumn.pack();
 	}
 	
 	/**
