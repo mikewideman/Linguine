@@ -67,8 +67,11 @@ public class MetaPart {
 				part.getObject() instanceof IPropertiesProvider){
 			
 			currentProvider = (IPropertiesProvider)part.getObject();
+			Composite properties = currentProvider.getProperties(mainParent);
 			
-			changeProperties(currentProvider.getProperties(mainParent));
+			if(properties != null){
+				changeProperties(properties);
+			}
 		}
 	}
 	

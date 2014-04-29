@@ -12,23 +12,28 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.extensions.IProjectDataEditor;
+import LinGUIne.extensions.IPropertiesProvider;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
 
-public class TextDataEditor implements IProjectDataEditor {
+public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 
 	@Inject
 	private IEventBroker eventBroker;
 	
 	private StyledText textArea;
+	private Composite propertiesView;
+	private Label lblCharCount;
+	private Label lblCharCountNoSpaces;
 	
 	private Project parentProject;
 	private TextData projectData;
@@ -126,6 +131,39 @@ public class TextDataEditor implements IProjectDataEditor {
 			isDirty = dirty;
 			dirtyListener.dirtyChanged(isDirty);
 		}
+	}
+	
+	@Override
+	public Composite getProperties(Composite parent) {
+		if(propertiesView == null){
+			createPropertiesView(parent);
+		}
+		
+		return propertiesView;
+	}
+	
+	private void createPropertiesView(Composite parent){
+		propertiesView = new Composite(parent, SWT.NONE);
+		propertiesView.setLayout(new GridLayout(1, false));
+		
+		lblCharCount = new Label(propertiesView, SWT.NONE);
+		lblCharCount.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lblCharCount.setText("Character count: ");
+		
+		lblCharCountNoSpaces = new Label(propertiesView, SWT.NONE);
+		lblCharCountNoSpaces.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		lblCharCountNoSpaces.setText("Character count (no spaces): ");
+		
+		updateProperties();
+	}
+	
+	private void updateProperties(){
+		int charCount = textArea.getText().length();
+		int charCountNoSpaces = textArea.getText().replaceAll("\\s", "").length();
+		
+		lblCharCount.setText("Character count: " + charCount);
+		lblCharCountNoSpaces.setText("Character count (no spaces): " +
+				charCountNoSpaces);
 	}
 	
 	private void createContextMenu(Composite container){

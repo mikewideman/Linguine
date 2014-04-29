@@ -17,8 +17,9 @@ import org.eclipse.swt.widgets.Composite;
 import LinGUIne.events.LinGUIneEvents;
 import LinGUIne.extensions.IProjectDataEditor;
 import LinGUIne.extensions.IProjectDataEditor.DirtyStateChangedListener;
+import LinGUIne.extensions.IPropertiesProvider;
 
-public class ProjectDataEditorContainer {
+public class ProjectDataEditorContainer implements IPropertiesProvider {
 
 	@Inject
 	private MPart myPart;
@@ -81,5 +82,14 @@ public class ProjectDataEditorContainer {
 	public void onFocus(){
 		eventBroker.post(LinGUIneEvents.UILifeCycle.ACTIVE_EDITOR_CHANGED,
 				projectDataEditor);
+	}
+
+	@Override
+	public Composite getProperties(Composite parent) {
+		if(projectDataEditor instanceof IPropertiesProvider){
+			return ((IPropertiesProvider)projectDataEditor).getProperties(parent);
+		}
+		
+		return null;
 	}
 }
