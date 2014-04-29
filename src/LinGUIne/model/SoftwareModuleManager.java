@@ -33,7 +33,7 @@ public class SoftwareModuleManager {
 		for(IConfigurationElement analysisElement: analysisElements){
 			try {
 				IAnalysisPlugin analysis = (IAnalysisPlugin)analysisElement.
-						createExecutableExtension(analysisElement.getAttribute("name")); 				
+						createExecutableExtension("class");
 				if(!analyses.containsKey(analysis.getAnalysisLibrary())){
 					analyses.put(analysis.getAnalysisLibrary(),
 							new HashSet<IAnalysisPlugin>());
