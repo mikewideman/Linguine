@@ -47,7 +47,8 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		setControl(container);
 		wizardData = wData;
 		//So there's no index exceptions in listeners or plugin
-		wizardData.getInternetSourceDetails().addAll(Arrays.asList("","","","","",""));
+		wizardData.getInternetSourceDetails()
+			.addAll(Arrays.asList("","","","","",""));
 		
 		
 	}
@@ -60,7 +61,8 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		container.setLayout(layout);
 		
 		Label lblQuery = new Label(container, SWT.NONE);
-		lblQuery.setText("Search Twitter for project Data! Search by @Username or #hashtag.");
+		lblQuery.setText("Search Twitter for project Data! Search by @Username"
+				+ " or #hashtag.");
 		
 		txtSearch = new Text(container, SWT.BORDER | SWT.SINGLE);
 		txtSearch.setText("");
@@ -72,7 +74,8 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(isValidQueryInput()){
-						wizardData.getInternetSourceDetails().set(0, txtSearch.getText());
+						wizardData.getInternetSourceDetails()
+						.set(0, txtSearch.getText());
 				}
 				setPageComplete(isPageComplete());
 			}
@@ -100,7 +103,8 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		});
 		
 		Label lblCount = new Label(container, SWT.NONE);
-		lblCount.setText("Enter the number of tweets(maximum of 100) you would like to receive.");
+		lblCount.setText("Enter the number of tweets(maximum of 100) you would "
+				+ "like to receive.");
 		txtCount = new Text(container, SWT.BORDER | SWT.SINGLE);
 		txtCount.setLayoutData(grid);
 		txtCount.addModifyListener(new ModifyListener(){
@@ -117,16 +121,12 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		
 		txtCount.setText("25");
 		
-		Link link = new Link(container, SWT.NONE);
-		GridData linkData = new GridData();
-		linkData.horizontalSpan = 2;
-		link.setLayoutData(linkData);
-	    String message = "Follow <a href=\"http://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps\">instructions</a> for account and credentials";
-	    link.setText(message);
-	    link.setSize(400, 200);
-	    link.addSelectionListener(new SelectionAdapter(){
-	    	//Need a way to execute the link
-	    });
+		Label instructions = new Label(container, SWT.NONE);
+		instructions.setText("Please reference the Twitter Import User Guide to"
+				+ " help generate your credentials.");
+		GridData instructionsData = new GridData();
+		instructionsData.horizontalSpan = 2;
+		instructions.setLayoutData(instructionsData);
 		
 		Label lblConKey = new Label(container, SWT.NONE);
 		lblConKey.setText("Enter Consumer Key");

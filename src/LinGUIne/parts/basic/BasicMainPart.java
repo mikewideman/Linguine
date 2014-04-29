@@ -105,9 +105,9 @@ public class BasicMainPart {
 		visualizationData = new VisualizationData();
 	    CTabItem projTabItem = new CTabItem(tabFolder, SWT.NONE);
 	    projTabItem.setText(PROJECT_TAB);
-//	    FontData[] fD = projTabItem.getFont().getFontData();
-//	    fD[0].setHeight(15);
-//	    projTabItem.setFont( new Font(getDisplay(),fD[0]));
+	    FontData[] fD = projTabItem.getFont().getFontData();
+	    fD[0].setHeight(14);
+	    projTabItem.setFont( new Font(getDisplay(),fD[0]));
 	    Composite tabComp = new Composite(tabFolder,SWT.NONE);
 	    GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
@@ -122,9 +122,9 @@ public class BasicMainPart {
 	    
 	    lblProjects = new Label(grpProjects, SWT.NONE);
 	    lblProjects.setText("Select a Project:");
-//	    FontData[] fD = lblProjects.getFont().getFontData();
-//	    fD[0].setHeight(14);
-//	    projTabItem.setFont( new Font(getDisplay(),fD[0]));
+	    FontData[] fDProject = lblProjects.getFont().getFontData();
+	    fDProject[0].setHeight(14);
+	    lblProjects.setFont( new Font(getDisplay(),fDProject[0]));
 	    
 	    
 	    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
@@ -201,6 +201,9 @@ public class BasicMainPart {
 			    grpFiles.setText("Files");
 			    
 			    lblFiles = new Label(grpFiles, SWT.NONE);
+			    FontData[] fD = lblFiles.getFont().getFontData();
+			    fD[0].setHeight(14);
+			    lblFiles.setFont( new Font(getDisplay(),fD[0]));
 			    lblFiles.setText("Select the Files on which to run the Analysis:");
 			    
 			    lstFiles = new List(grpFiles, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
@@ -229,8 +232,6 @@ public class BasicMainPart {
 			    });
 			    updateFileList();
 			selectFileTab.setControl(container);
-//			Button importFileButton = new Button(container, SWT.NONE);
-//			importFileButton.setText("Import Text File");
 			Button bButtonFile = new Button(container, SWT.NONE);
 			bButtonFile.setText("Back");
 			Button nButtonFile = new Button(container, SWT.NONE);
@@ -268,13 +269,6 @@ public class BasicMainPart {
 			    layout.marginTop = 15;
 			    layout.makeColumnsEqualWidth = false;
 			container.setLayout(layout);
-
-//			CTabFolder innerFolder = new CTabFolder(container, SWT.NONE);
-//			CTabItem basicAnalysis = new CTabItem(innerFolder, SWT.NONE);
-//			basicAnalysis.setText("Basic Analysis Set");
-//			CTabItem advancedAnalysis = new CTabItem(innerFolder,SWT.NONE);
-//			Composite basicContainer = new Composite(innerFolder, SWT.NONE);
-			
 			Group grpBasicAnalyses = new Group(container, SWT.NONE);
 			grpBasicAnalyses.setLayout(new GridLayout(2, false));
 			GridData gData = new GridData(500,500);
