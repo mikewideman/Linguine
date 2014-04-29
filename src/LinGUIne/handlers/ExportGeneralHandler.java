@@ -24,6 +24,8 @@ public class ExportGeneralHandler {
 		TreeMap<String, String> commands = new TreeMap<String, String>();
 		
 		commands.put("Export File", "linguine.command.export.result");
+		commands.put("Export Annotation", "linguine.command.export.annotation");
+		commands.put("Export Visualization", "linguine.command.export.visualization");
 		
 		SelectCommandWizard selectCommandWizard = new SelectCommandWizard(
 				"Select Wizard", "Select a wizard to run.", commands);

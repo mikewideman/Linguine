@@ -43,6 +43,7 @@
         </children>
         <children xsi:type="menu:Menu" xmi:id="_cr5eoLhQEeOPZ-IS4_9pnA" elementId="linguine.menu.export" label="Export" iconURI="platform:/plugin/LinGUIne/icons/export_wiz.gif">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_jguzALhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.export.result" label="Result" iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Export a result" command="_YZiNYLhXEeOPZ-IS4_9pnA"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_vbWdsM_FEeOEHdHJ6H0lcg" elementId="linguine.handledmenuitem.file.export.annotation" label="Annotation" iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Export an Annotation" command="_eJG50M_FEeOEHdHJ6H0lcg"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_qnASILhREeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.file.export.visualization" label="Visualization" iconURI="platform:/plugin/LinGUIne/icons/brkp_grp.gif" tooltip="Export a visualization" command="_bQQi4LhXEeOPZ-IS4_9pnA"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_e6HpsLhQEeOPZ-IS4_9pnA" elementId="linguine.menuseparator.0"/>
@@ -94,6 +95,7 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_sN1cILhIEeO9ur9GVZ_f2A" elementId="linguine.handledtoolitem.export" iconURI="platform:/plugin/LinGUIne/icons/export_wiz.gif" tooltip="Export a result or visualization" command="_riS6oDxbEeOsebD9DszETw">
           <menu xmi:id="_aLq2MLhTEeOPZ-IS4_9pnA" elementId="linguine.menu.export" label="">
             <children xsi:type="menu:HandledMenuItem" xmi:id="_5HFTkLhVEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.result" label="Result" iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Export a result" command="_YZiNYLhXEeOPZ-IS4_9pnA"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_TXps8M_GEeOEHdHJ6H0lcg" elementId="linguine.handledmenuitem.annotation" label="Annotation" iconURI="platform:/plugin/LinGUIne/icons/test.gif" tooltip="Export an Annotation" command="_eJG50M_FEeOEHdHJ6H0lcg"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_8xDD4LhVEeOPZ-IS4_9pnA" elementId="linguine.handledmenuitem.visualization" label="Visualization" iconURI="platform:/plugin/LinGUIne/icons/brkp_grp.gif" tooltip="Export a visualization" command="_bQQi4LhXEeOPZ-IS4_9pnA"/>
           </menu>
         </children>
@@ -136,6 +138,7 @@
   <handlers xmi:id="_3UOSYMTYEeOwW6CcOLgumg" elementId="linguine.handler.move.group" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.MoveGroupHandler" command="_TJatEMTYEeOwW6CcOLgumg"/>
   <handlers xmi:id="_EL1eAMTZEeOwW6CcOLgumg" elementId="linguine.handler.move.projectData" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.MoveProjectDataHandler" command="_WAdLoMTYEeOwW6CcOLgumg"/>
   <handlers xmi:id="_9tw8UMjTEeOXMMFZjrhIUA" elementId="linguine.handler.install" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.InstallHandler" command="_nJT0gLhXEeOPZ-IS4_9pnA"/>
+  <handlers xmi:id="_mucX8M_FEeOEHdHJ6H0lcg" elementId="linguine.handler.export.annotation" contributionURI="bundleclass://LinGUIne/LinGUIne.handlers.ExportAnnotationHandler" command="_eJG50M_FEeOEHdHJ6H0lcg"/>
   <bindingTables xmi:id="_5qnu_jdzEeOR8_lurf-ldg" bindingContext="_5qnu-TdzEeOR8_lurf-ldg">
     <bindings xmi:id="_5qnu_zdzEeOR8_lurf-ldg" elementId="linguine.keybinding.exit" keySequence="M1+Q" command="_5qnu_DdzEeOR8_lurf-ldg"/>
     <bindings xmi:id="_5qnvBTdzEeOR8_lurf-ldg" elementId="linguine.keybinding.save" keySequence="M1+S" command="_5qnvAzdzEeOR8_lurf-ldg"/>
@@ -209,6 +212,7 @@
     <parameters xmi:id="_fv_zEMTYEeOwW6CcOLgumg" elementId="linguine.command.moveProjectData.parameter.targetData" name="targetData" optional="false"/>
     <parameters xmi:id="_oNNP8MTYEeOwW6CcOLgumg" elementId="linguine.command.moveProjectData.parameter.parentProject" name="parentProject" optional="false"/>
   </commands>
+  <commands xmi:id="_eJG50M_FEeOEHdHJ6H0lcg" elementId="linguine.command.export.annotation" commandName="exportAnnotationCommand" description="Exports Annotations to an external file"/>
   <addons xmi:id="_5qnu8jdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_5qnu8zdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_5qnu9DdzEeOR8_lurf-ldg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

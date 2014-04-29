@@ -16,20 +16,20 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
-import LinGUIne.extensions.CSVExporter;
+import LinGUIne.extensions.IAnnotationExporter;
 import LinGUIne.extensions.IFileExporter;
-import LinGUIne.extensions.XMLExporter;
+import LinGUIne.extensions.XMLAnnotationExporter;
 
-public class ExportFileWizardExporterPage extends WizardPage {
+public class ExportAnnotationWizardExporterPage extends WizardPage {
 
 	private Label lblExporters;
 	private List lstExporters;
 	
-	private ExportFileData wizardData;
+	private ExportAnnotationData wizardData;
 	
-	public ExportFileWizardExporterPage(ExportFileData data){
-		super("Export Result Wizard");
-		setTitle("Export Result Wizard");
+	public ExportAnnotationWizardExporterPage(ExportAnnotationData data){
+		super("Export Annotation Wizard");
+		setTitle("Export Annotation Wizard");
 		setMessage("Select the type of File to which you wish to export.");
 		
 		wizardData = data;
@@ -52,19 +52,16 @@ public class ExportFileWizardExporterPage extends WizardPage {
 		lstExporters.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		IConfigurationElement[] configElements = Platform.getExtensionRegistry().
-				getConfigurationElementsFor("LinGUIne.LinGUIne.extensions.IFileExporter");
+				getConfigurationElementsFor("LinGUIne.LinGUIne.extensions."
+						+ "IAnnotationExporter");
 		
 		final HashMap<String, IConfigurationElement> exporterConfigs =
 				new HashMap<String, IConfigurationElement>();
-		final HashMap<String, IFileExporter> builtInExporters = new HashMap<
-				String, IFileExporter>();
+		final HashMap<String, IAnnotationExporter> builtInExporters = new HashMap<
+				String, IAnnotationExporter>();
 		
 		//Add built-in exporters to the list
-		IFileExporter csv = new CSVExporter();
-		builtInExporters.put(csv.getFileType(), csv);
-		lstExporters.add(csv.getFileType());
-		
-		IFileExporter xml = new XMLExporter();
+		IAnnotationExporter xml = new XMLAnnotationExporter();
 		builtInExporters.put(xml.getFileType(), xml);
 		lstExporters.add(xml.getFileType());
 		
@@ -78,13 +75,13 @@ public class ExportFileWizardExporterPage extends WizardPage {
 		lstExporters.addSelectionListener(new SelectionListener(){
 
 			/**
-			 * Set which IFileExporter is currently selected.
+			 * Set which IAnnotationExporter is currently selected.
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if(lstExporters.getSelectionCount() != 0){
 					String selectedFileType = lstExporters.getSelection()[0];
-					IFileExporter exporter = null;
+					IAnnotationExporter exporter = null;
 					
 					if(builtInExporters.containsKey(selectedFileType)){
 						exporter = builtInExporters.get(selectedFileType);
@@ -94,7 +91,7 @@ public class ExportFileWizardExporterPage extends WizardPage {
 								exporterConfigs.get(selectedFileType);
 						
 						try {
-							exporter = (IFileExporter)exporterConfig.
+							exporter = (IAnnotationExporter)exporterConfig.
 									createExecutableExtension("class");
 						}
 						catch (CoreException e1) {

@@ -5,6 +5,7 @@
    <extension-point id="LinGUIne.extensions.IVisualization" name="IVisualization" schema="schema/LinGUIne.extensions.IVisualization.exsd"/>
    <extension-point id="LinGUIne.extensions.IFileExporter" name="IFileExporter" schema="schema/LinGUIne.extensions.IFileExporter.exsd"/>
    <extension-point id="LinGUIne.extensions.IProjectDataEditor" name="IProjectDataEditor" schema="schema/LinGUIne.extensions.IProjectDataEditor.exsd"/>
+   <extension-point id="LinGUIne.extensions.IAnnotationExporter" name="IAnnotationExporter" schema="schema/LinGUIne.extensions.IAnnotationExporter.exsd"/>
 
    <extension
          id="product"
