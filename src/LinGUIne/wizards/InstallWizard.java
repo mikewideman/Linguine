@@ -45,12 +45,8 @@ public class InstallWizard extends Wizard{
 		boolean installComplete = InstallUtils.installIUs(data.getAgent(), data.getSelectedIUs(),data.getRepoLocation());
 		
 		if(installComplete){
-			boolean restart = MessageDialog.openQuestion(data.getParent(), "Installation Complete",
-					"In order for the newly installed plugins to start, LinGUIne needs to be restarted. Restart now?");
-			
-			if(restart == true){
-				data.getWorkbench().restart();
-			}
+			MessageDialog.openInformation(data.getParent(), "Installation Complete",
+					"In order for the newly installed plugins to start, LinGUIne needs to be restarted.");			
 		}
 		else{
 			MessageDialog.openError(getShell(), "Could not install selected plugins",
