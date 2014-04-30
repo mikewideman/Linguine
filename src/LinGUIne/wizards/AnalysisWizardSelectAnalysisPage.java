@@ -135,8 +135,11 @@ public class AnalysisWizardSelectAnalysisPage extends WizardPage {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
-		lblDescription = new Label(container, SWT.NONE);
-		lblDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData layoutData = new GridData(GridData.FILL_BOTH);
+		layoutData.horizontalSpan = 2;
+		
+		lblDescription = new Label(container, SWT.WRAP);		
+		lblDescription.setLayoutData(layoutData);
 		lblDescription.setText("");
 		
 		setControl(container);

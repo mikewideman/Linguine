@@ -128,7 +128,12 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage
 		grpDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
 		grpDescription.setText("Description");
 
-		lblDescription = new Label(grpDescription, SWT.NONE);
+		GridData layoutData = new GridData(GridData.FILL_BOTH);
+		layoutData.horizontalSpan = 2;
+		
+		lblDescription = new Label(grpDescription, SWT.NONE);		
+		lblDescription.setLayoutData(layoutData);
+		lblDescription.setText("");
 		lblDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		setControl(container);
