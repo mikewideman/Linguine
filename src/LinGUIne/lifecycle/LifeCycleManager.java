@@ -111,13 +111,9 @@ public class LifeCycleManager {
 				projectManagerProjectList);
 		
 		SoftwareModuleManager softwareModuleMan = new SoftwareModuleManager();
-		
 		ProjectManager projectMan = new ProjectManager(Platform.getLocation(),
 				application);
-		projectMan.loadProjects();
-		
 		VisualizationPluginManager visualisationPluginMan = new VisualizationPluginManager();
-		
 		DataEditorManager dataEditorMan = new DataEditorManager();
 		
 		context.set(SoftwareModuleManager.class, softwareModuleMan);
@@ -128,6 +124,8 @@ public class LifeCycleManager {
 		ContextInjectionFactory.inject(dataEditorMan, context);
 		
 		ClassUtils.setBundleContext(InternalPlatform.getDefault().getBundleContext());
+
+		projectMan.loadProjects();
 	}
 	
 	/**

@@ -25,20 +25,19 @@ public class ClassUtils {
 	
 	public static String serializeClassName(Class<?> clazz){
 //		return getBundleIdForClass(clazz) + "-" + clazz.getCanonicalName();
-//		return getBundleNameForClass(clazz) + "-" + clazz.getCanonicalName();
-		return clazz.getCanonicalName();
+		return getBundleNameForClass(clazz) + "-" + clazz.getCanonicalName();
+//		return clazz.getCanonicalName();
 	}
 	
 	public static Class<?> deserializeClassName(String className)
 			throws ClassNotFoundException{
-		//TODO: Figure out why BundleContext isn't getting set. Fuckin' shit up
 //		long bundleId = Long.parseLong(className.split("-")[0]);
-//		String bundleLoc = className.split("-")[0];
-//		className = className.split("-")[1];
+		String bundleName = className.split("-")[0];
+		className = className.split("-")[1];
 		
 //		return loadClassFromBundle(bundleId, className);
-//		return loadClassFromBundle(bundleLoc, className);
-		return Class.forName(className);
+		return loadClassFromBundle(bundleName, className);
+//		return Class.forName(className);
 	}
 	
 	public static Class<?> loadClassFromBundle(long bundleId, String className) 
