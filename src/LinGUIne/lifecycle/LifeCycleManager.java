@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.LinkedList;
 
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -24,6 +25,7 @@ import LinGUIne.model.ProjectManager;
 import LinGUIne.model.SoftwareModuleManager;
 import LinGUIne.model.VisualizationPluginManager;
 import LinGUIne.parts.advanced.DataEditorManager;
+import LinGUIne.utilities.ClassUtils;
 import LinGUIne.utilities.FileUtils;
 
 /**
@@ -124,6 +126,8 @@ public class LifeCycleManager {
 		
 		ContextInjectionFactory.inject(projectMan, context);
 		ContextInjectionFactory.inject(dataEditorMan, context);
+		
+		ClassUtils.setBundleContext(InternalPlatform.getDefault().getBundleContext());
 	}
 	
 	/**

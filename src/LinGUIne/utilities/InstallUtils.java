@@ -39,7 +39,8 @@ public class InstallUtils {
 		ArrayList<IInstallableUnit> iuList = new ArrayList<IInstallableUnit>();
 		IQueryResult<IInstallableUnit> results = repo.query(QueryUtil.createIUAnyQuery(), new NullProgressMonitor());
 		for (IInstallableUnit iu : results.toUnmodifiableSet()) {
-			iuList.add(iu);
+			if(!iu.getId().contains("feature"))
+				iuList.add(iu);
 		}
 		return iuList;
 	}
@@ -85,7 +86,6 @@ public class InstallUtils {
 		installOperation.getProvisioningContext().setArtifactRepositories(new URI[]{uri});
 		installOperation.getProvisioningContext().setMetadataRepositories(new URI[]{uri});
 		IStatus result = installOperation.resolveModal(new NullProgressMonitor());
-		System.out.println(result.toString());
 		if (installOperation.resolveModal(new NullProgressMonitor()).isOK()) {
 			Job job = installOperation.getProvisioningJob(new NullProgressMonitor());
 			job.schedule();

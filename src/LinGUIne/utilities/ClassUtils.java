@@ -10,6 +10,17 @@ public class ClassUtils {
 	
 	public static void setBundleContext(BundleContext bundleContext){
 		context = bundleContext;
+		
+//		System.out.println("Uninstalled = " + Bundle.UNINSTALLED);
+//		System.out.println("Installed = " + Bundle.INSTALLED);
+//		System.out.println("Resolved = " + Bundle.RESOLVED);
+//		System.out.println("Starting = " + Bundle.STARTING);
+//		System.out.println("Stopping = " + Bundle.STOPPING);
+//		System.out.println("Active = " + Bundle.ACTIVE);
+//		
+//		for(Bundle bundle: context.getBundles()){
+//			System.out.println(bundle.getSymbolicName() + ": " + bundle.getState());
+//		}
 	}
 	
 	public static String serializeClassName(Class<?> clazz){
