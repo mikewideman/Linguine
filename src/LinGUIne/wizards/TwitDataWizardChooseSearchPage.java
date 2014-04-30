@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -28,6 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import LinGUIne.utilities.FileUtils;
 
 public class TwitDataWizardChooseSearchPage extends WizardPage {
+	
 	
 	private ImportFileData wizardData;
 	private Composite container;
@@ -186,9 +188,6 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		});
 		setControl(container);
 		setPageComplete(isPageComplete());
-		
-		
-		
 	}
 	
 	private boolean isValidQueryInput(){
@@ -252,4 +251,6 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 			return true;
 		}
 	}
+	
+
 }
