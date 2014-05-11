@@ -16,6 +16,12 @@ import LinGUIne.model.KeyValueResultContents;
 import LinGUIne.model.Result;
 import LinGUIne.model.ResultData;
 
+/**
+ * Exporter to create an XML file from a KeyValueResult.
+ * Keys are XML tags surrounding their associated Values.
+ * 
+ * @author Kyle Mullins
+ */
 public class XMLExporter implements IFileExporter {
 
 	@Override

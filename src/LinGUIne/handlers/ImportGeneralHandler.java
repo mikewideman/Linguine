@@ -14,6 +14,12 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.wizards.SelectCommandWizard;
 
+/**
+ * Launches the SelectCommandWizard with the ImportFile and ImportProject
+ * handlers as options.
+ * 
+ * @author Kyle Mullins
+ */
 public class ImportGeneralHandler {
 
 	@Inject
@@ -32,6 +38,6 @@ public class ImportGeneralHandler {
 		
 		ContextInjectionFactory.inject(selectCommandWizard, application.getContext());
 
-		int retval = wizardDialog.open();
+		wizardDialog.open();
 	}
 }

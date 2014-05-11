@@ -15,6 +15,12 @@ import org.eclipse.swt.widgets.Shell;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Removes a Project and all of its contents from the ProjectExplorer after
+ * prompting the user for confirmation.
+ * 
+ * @author Kyle Mullins
+ */
 public class RemoveProjectHandler {
 	
 	private static final String TARGET_PROJECT_PARAM = "linguine.command."

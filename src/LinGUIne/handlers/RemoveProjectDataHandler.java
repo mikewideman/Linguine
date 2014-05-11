@@ -17,6 +17,12 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 
+/**
+ * Removes a file from some Project in the ProjectExplorer after prompting the
+ * user for confirmation.
+ * 
+ * @author Kyle Mullins
+ */
 public class RemoveProjectDataHandler {
 	
 	private static final String TARGET_DATA_PARAM = "linguine.command."

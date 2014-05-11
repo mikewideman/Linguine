@@ -9,6 +9,12 @@ import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
+/**
+ * Handler to switch to the basic Perspective. Only active when in the advanced
+ * Perspective.
+ * 
+ * @author Kyle Mullins
+ */
 public class SwitchToBasicPerspectiveHandler {
 
 	private static final String PERSPECTIVE_ID =

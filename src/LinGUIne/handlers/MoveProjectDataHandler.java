@@ -11,6 +11,12 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Launches the MoveProjectDataWizard to move a file in the ProjectExplorer.
+ * TODO: MoveProjectDataWizard
+ * 
+ * @author Kyle Mullins
+ */
 public class MoveProjectDataHandler {
 
 	private static final String TARGET_DATA_PARAM = "linguine.command."
@@ -27,7 +33,7 @@ public class MoveProjectDataHandler {
 			@Named(PARENT_PROJECT_PARAM) String parentProject,
 			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		
-//		MoveGroupWizard moveWizard = new MoveGroupWizard(projectMan);
+//		MoveProjectDataWizard moveWizard = new MoveProjectDataWizard(projectMan);
 		
 		Project project = projectMan.getProject(parentProject);
 		

@@ -123,6 +123,7 @@ public class LifeCycleManager {
 		ContextInjectionFactory.inject(projectMan, context);
 		ContextInjectionFactory.inject(dataEditorMan, context);
 		
+		//Workaround for Activator not getting called
 		ClassUtils.setBundleContext(InternalPlatform.getDefault().getBundleContext());
 
 		projectMan.loadProjects();

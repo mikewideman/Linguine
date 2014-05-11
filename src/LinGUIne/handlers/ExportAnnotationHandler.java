@@ -13,6 +13,11 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.wizards.ExportAnnotationWizard;
 
+/**
+ * Launches the ExportAnnotationWizard to export an AnnotationSet to a File.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportAnnotationHandler {
 	
 	@Inject

@@ -14,6 +14,12 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.wizards.SelectCommandWizard;
 
+/**
+ * Launches the SelectCommandWizard with the ExportFile, ExportAnnotation, and
+ * ExportVisualization handlers as options.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportGeneralHandler {
 
 	@Inject
@@ -33,6 +39,6 @@ public class ExportGeneralHandler {
 		
 		ContextInjectionFactory.inject(selectCommandWizard, application.getContext());
 
-		int retval = wizardDialog.open();
+		wizardDialog.open();
 	}
 }

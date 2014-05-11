@@ -8,6 +8,12 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
+/**
+ * Toggles the Quick Analysis View. Only active when in the advanced
+ * Perspective.
+ * 
+ * @author Kyle Mullins
+ */
 public class ViewQuickAnalysisViewHandler {
 
 	private static final String PART_ID =

@@ -17,6 +17,12 @@ import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.wizards.NewFileWizard;
 
+/**
+ * Launches the NewFileWizard to create a new text file in some Project in the
+ * workspace.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewFileHandler {
 	
 	private static final String DEST_PROJECT_PARAM = "linguine.command.newFile"
@@ -51,6 +57,6 @@ public class NewFileHandler {
 		
 		ContextInjectionFactory.inject(newFileWizard, application.getContext());
 
-		int retval = wizardDialog.open();
+		wizardDialog.open();
 	}
 }

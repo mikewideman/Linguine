@@ -17,6 +17,12 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Removes a Group (folder) and all of its contents from some Project in the
+ * ProjectExplorer after prompting the user for confirmation.
+ * 
+ * @author Kyle Mullins
+ */
 public class RemoveGroupHandler {
 	
 	private static final String TARGET_GROUP_PARAM = "linguine.command."

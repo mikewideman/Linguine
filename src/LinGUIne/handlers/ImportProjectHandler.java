@@ -12,6 +12,12 @@ import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.wizards.ImportProjectWizard;
 
+/**
+ * Launches the ImportProjectWizard to import an existing Project into the
+ * workspace.
+ * 
+ * @author Kyle Mullins
+ */
 public class ImportProjectHandler {
 
 	@Inject

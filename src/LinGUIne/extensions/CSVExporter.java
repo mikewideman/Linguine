@@ -16,7 +16,8 @@ import LinGUIne.model.Result;
 import LinGUIne.model.ResultData;
 
 /**
- * Simple exporter for KeyValueResults that produces CSV files.
+ * Exporter to create a CSV file from a KeyValueResult.
+ * Keys are columns and each entry is a row of Values.
  * 
  * @author Kyle Mullins
  */

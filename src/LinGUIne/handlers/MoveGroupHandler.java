@@ -11,6 +11,13 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Launches the MoveGroupWizard to move a folder and all of its contents in the
+ * Project Explorer.
+ * TODO: MoveGroupWizard
+ * 
+ * @author Kyle Mullins
+ */
 public class MoveGroupHandler {
 
 	private static final String TARGET_GROUP_PARAM = "linguine.command."

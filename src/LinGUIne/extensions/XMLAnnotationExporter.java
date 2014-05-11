@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -16,15 +14,19 @@ import java.util.TreeSet;
 import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.AnnotationSetContents;
 import LinGUIne.model.IProjectData;
-import LinGUIne.model.KeyValueResult;
-import LinGUIne.model.KeyValueResultContents;
-import LinGUIne.model.ResultData;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
 import LinGUIne.model.annotations.IAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
+/**
+ * Exporter to create an XML file from TextAnnotations in an AnnotationSet.
+ * Tags are XML tags surrounding the annotated text. Works with nested
+ * Annotations.
+ * 
+ * @author Kyle Mullins
+ */
 public class XMLAnnotationExporter implements IAnnotationExporter {
 
 	@Override
@@ -60,6 +62,7 @@ public class XMLAnnotationExporter implements IAnnotationExporter {
 			TreeMap<Integer, String> annotationTags = new TreeMap<Integer,
 					String>();
 			
+			//Build up the sets of all Tags that will appear at each index
 			for(Tag tag: annotationContents.getTags()){
 				for(IAnnotation annotation: annotationContents.
 						getAnnotations(tag)){
@@ -91,6 +94,8 @@ public class XMLAnnotationExporter implements IAnnotationExporter {
 			NavigableSet<Integer> annotationIndices = new TreeSet<Integer>(
 					annotationTags.keySet()).descendingSet();
 			
+			//Iterate through indices in reverse, inserting the Tag Strings that
+			//we built above into the original text
 			for(Integer annotationIndex: annotationIndices){
 				String textHead = xmlContent.substring(0, annotationIndex);
 				String textTail = xmlContent.substring(annotationIndex);

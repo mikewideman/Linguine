@@ -14,6 +14,12 @@ import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.wizards.NewGroupWizard;
 
+/**
+ * Launches the NewGroupWizard to create a new Group (folder) within some
+ * Project in the ProjectExplorer.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewGroupHandler {
 
 	private static final String DEST_PROJECT_PARAM = "linguine.command.newGroup"
@@ -43,6 +49,6 @@ public class NewGroupHandler {
 		
 		WizardDialog wizardDialog = new WizardDialog(shell, groupWizard);
 		
-		int retval = wizardDialog.open();
+		wizardDialog.open();
 	}
 }
