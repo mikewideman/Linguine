@@ -29,7 +29,7 @@ public class VisualizationData {
 	 * Sets the Project that was chosen.
 	 * 
 	 * @param chosenProject
-	 *            The project to set this object to
+	 *            The project to set this object to.
 	 */
 	public void setChosenProject(Project chosenProject) {
 		this.chosenProject = chosenProject;
@@ -92,7 +92,7 @@ public class VisualizationData {
 	 * Sets the currently chosen Visualization to a given one.
 	 * 
 	 * @param visualization
-	 *            The visualization to associate with this object
+	 *            The visualization to associate with this object.
 	 */
 	public void setChosenVisualization(IVisualization visualization) {
 		chosenVisualization = visualization;

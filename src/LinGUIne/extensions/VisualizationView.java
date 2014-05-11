@@ -12,12 +12,11 @@ import org.eclipse.ui.part.ViewPart;
 public abstract class VisualizationView extends ViewPart {
 
 	/**
-	 * Basic method to create a view within the application. This constructor
-	 * will be called when the application tries to display this visualization
+	 * Basic method to create a view within the application.
 	 * 
 	 * @param parent
 	 *            The container that the application will attempt to hold this
-	 *            view
+	 *            view.
 	 */
 	public abstract void createPartControl(Composite parent);
 
@@ -25,7 +24,7 @@ public abstract class VisualizationView extends ViewPart {
 	 * Returns whether this visualization has a settings pane.
 	 * 
 	 * @return True if this visualization can provide a settings pane to show to
-	 *         the user, false otherwise
+	 *         the user, false otherwise.
 	 */
 	public abstract boolean hasSettings();
 
@@ -34,7 +33,7 @@ public abstract class VisualizationView extends ViewPart {
 	 * pane is available, (hasSettings is false) then this method should return
 	 * null.
 	 * 
-	 * @return The settings pane this visualization provides
+	 * @return The settings pane this visualization provides.
 	 */
 	public abstract IEditorSettings getSettings();
 }

@@ -38,15 +38,15 @@ public class SafeVisualization implements ISafeRunnable {
 	 * Constructs the object with necessary parameters for execution.
 	 * 
 	 * @param shell
-	 *            The current shell
+	 *            The current shell.
 	 * @param visualization
-	 *            The visualization to be ran
-	 * @param sourceResults
-	 *            The source results that were used to run this visualization
+	 *            The visualization to be ran.
 	 * @param results
-	 *            The results to be used to run the visualization
+	 *            The results to be used to run the visualization.
 	 * @param project
-	 *            The source and destination project
+	 *            The source and destination project.
+	 * @param broker
+	 *			  The broker to post the event to.
 	 */
 	public SafeVisualization(Shell shell, IVisualization visualization,
 			Collection<Result> results, Project project, IEventBroker broker) {
@@ -69,8 +69,8 @@ public class SafeVisualization implements ISafeRunnable {
 
 	/**
 	 * Runs the visualization with the results supplied. VisualResults and
-	 * VisualResultContents are then created and saved to the project to be
-	 * displayed later to the user.
+	 * VisualResultContents are then created and saved to the project. An event
+	 * is then posted with the contents.
 	 */
 	@Override
 	public void run() throws Exception {

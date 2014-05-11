@@ -14,7 +14,7 @@ import LinGUIne.utilities.SafeVisualization;
  * This wizard is used to generate visualizations. Visualization plugins can
  * provide their own wizards which will be called from within this wizard. A
  * user can select a project and several results from a project, which will
- * determine which visualizations are available to them.
+ * determine which visualizations are available to run.
  * 
  * @author Peter Dimou
  */

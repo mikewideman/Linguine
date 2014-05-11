@@ -165,7 +165,7 @@ public class VisualizationWizardSelectResultPage extends WizardPage {
 
 	/**
 	 * This page is complete iff there is a chosen project and at least one
-	 * result
+	 * result.
 	 */
 	private void checkIfPageComplete() {
 		if (wizardData.getChosenProject() != null

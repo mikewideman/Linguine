@@ -24,11 +24,10 @@ public class VisualizationHandler {
 	
 	/**
 	 * Prompts the user through a series of wizard windows to set any
-	 * necessary user settings prior to running a visualization
+	 * necessary user settings prior to running a visualization.
 	 * 
 	 * @param shell	The currently active Shell.
 	 */
-	
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		VisualizationWizard visualizationWizard = new VisualizationWizard();
@@ -39,7 +38,6 @@ public class VisualizationHandler {
 		int retval = wizardDialog.open();
 		
 		if(retval == WizardDialog.OK){
-			//TODO: stuff?
 		}
 	}
 }

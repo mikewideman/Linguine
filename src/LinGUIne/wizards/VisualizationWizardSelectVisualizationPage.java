@@ -61,7 +61,7 @@ public class VisualizationWizardSelectVisualizationPage extends WizardPage
 	 * Populates the wizard page with content.
 	 * 
 	 * @param parent
-	 *            The current content pane
+	 *            The current content pane.
 	 */
 	@Override
 	public void createControl(Composite parent) {

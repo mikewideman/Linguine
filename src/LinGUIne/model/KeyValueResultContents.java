@@ -9,7 +9,7 @@ import java.util.Set;
 
 /**
  * Generalized format for Results which can be expressed as key-value pairs.
- * Note: It is assumed that the keys used are consisted and that all uses of a
+ * Note: It is assumed that the keys used are consistent and that all uses of a
  * given key are of the same data type.
  * 
  * @author Peter Dimou

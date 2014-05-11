@@ -17,21 +17,21 @@ public interface IVisualization {
 	/**
 	 * Returns this visualization's name.
 	 * 
-	 * @return The name of this visualization
+	 * @return The name of this visualization.
 	 */
 	String getName();
 
 	/**
-	 * Returns the description for the visualization
+	 * Returns the description for the visualization.
 	 * 
-	 * @return The description of the visualization
+	 * @return The description of the visualization.
 	 */
 	String getVisualizationDescription();
 
 	/**
-	 * Runs the specified visualization and returns the corresponding view.
+	 * Runs the specified visualization and returns the corresponding contents.
 	 * 
-	 * @return The view to be displayed to the user.
+	 * @return The contents to be displayed to the user.
 	 */
 	VisualResultContents runVisualization();
 
@@ -39,14 +39,14 @@ public interface IVisualization {
 	 * Returns the Result types that this visualization supports.
 	 * 
 	 * @return A collection of result types that this visualization can be ran
-	 *         with
+	 *         with.
 	 */
 	Collection<Class<? extends Result>> getSupportedResultTypes();
 
 	/**
 	 * Set the results that this visualization needs in order to run.
 	 * 
-	 * @return True if the results were accepted, false otherwise
+	 * @return True if the results were accepted, false otherwise.
 	 */
 	boolean setResults(Collection<Result> results);
 
@@ -54,7 +54,7 @@ public interface IVisualization {
 	 * Returns the results that this visualization is currently holding on to.
 	 * 
 	 * @return A collection of results if the visualization has results, null
-	 *         otherwise
+	 *         otherwise.
 	 */
 	Collection<Result> getResults();
 	

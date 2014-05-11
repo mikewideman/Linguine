@@ -50,11 +50,11 @@ public class VisualizationPluginManager {
 		}
 	}
 
-
 	/**
-	 * Returns all visualizations currently loaded from plugins
+	 * Returns all visualizations currently loaded.
 	 * 
-	 * @return A collection visualizations currently loaded into the application
+	 * @return A collection visualizations currently loaded into the 
+	 * application.
 	 */
 	public Collection<IVisualization> getVisualizations() {
 		return visualizations.keySet();
@@ -77,12 +77,13 @@ public class VisualizationPluginManager {
 
 	/**
 	 * Returns a list of visualizations that support a given result type set.
-	 * Duplicates are allowed and encouraged to add additional specificity to
-	 * the visualization requirements.
+	 * Duplicate result types are allowed and encouraged to further add 
+	 * specificity to the visualization requirements.
 	 * 
 	 * @param resultTypeSet
-	 *            The result types to query the visualizations for
-	 * @return A collection of visualizations that support the given result type
+	 *            The result types to query the visualizations for.
+	 * @return A collection of visualizations that support the given result 
+	 * type.
 	 */
 	public Collection<IVisualization> getVisualizationsBySupportedResultTypeSet(
 			Collection<Class<? extends Result>> resultTypeSet) {
@@ -106,7 +107,7 @@ public class VisualizationPluginManager {
 	 * 
 	 * @param name
 	 *            The name of the visualization.
-	 * @return The visualization
+	 * @return The visualization requested by name.
 	 */
 	public IVisualization getVisualizationByName(String name) {
 		for (IVisualization visualization : visualizations.keySet()) {
@@ -123,9 +124,9 @@ public class VisualizationPluginManager {
 	 * incorrect, null is returned.
 	 * 
 	 * @param name
-	 *            The name of the visualization
+	 *            The name of the visualization.
 	 * @return The description of the visualization as specified in the
-	 *         extension point schema definition
+	 *         extension point schema definition.
 	 */
 	public String getVisualizationDescriptionByName(String name) {
 		for (IVisualization visualization : visualizations.keySet()) {
