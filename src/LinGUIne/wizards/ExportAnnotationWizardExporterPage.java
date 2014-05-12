@@ -17,9 +17,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
 import LinGUIne.extensions.IAnnotationExporter;
-import LinGUIne.extensions.IFileExporter;
 import LinGUIne.extensions.XMLAnnotationExporter;
 
+/**
+ * Page for the user to select to which type of file they would like to export.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportAnnotationWizardExporterPage extends WizardPage {
 
 	private Label lblExporters;
@@ -116,6 +120,9 @@ public class ExportAnnotationWizardExporterPage extends WizardPage {
 		setControl(container);
 	}
 	
+	/**
+	 * Sets the page complete if an exporter has been chosen.
+	 */
 	private void checkIfPageComplete(){
 		setPageComplete(wizardData.getChosenExporter() != null);
 	}

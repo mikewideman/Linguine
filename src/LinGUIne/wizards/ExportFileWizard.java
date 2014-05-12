@@ -11,6 +11,11 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.utilities.SafeExporter;
 
+/**
+ * Wizard to walk the user through exporting a Result to an external File.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportFileWizard extends Wizard {
 	
 	@Inject

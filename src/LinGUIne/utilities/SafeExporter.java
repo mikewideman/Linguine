@@ -12,6 +12,12 @@ import LinGUIne.extensions.IFileExporter;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Result;
 
+/**
+ * Runnable which wraps the export of a Result to an external File in a safe
+ * fashion.
+ * 
+ * @author Kyle Mullins
+ */
 public class SafeExporter implements ISafeRunnable {
 	private Shell shell;
 	private IFileExporter fileExporter;

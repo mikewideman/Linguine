@@ -1,7 +1,6 @@
 package LinGUIne.utilities;
 
 import java.io.File;
-import java.util.Collection;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -9,11 +8,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import LinGUIne.extensions.IAnnotationExporter;
-import LinGUIne.extensions.IFileExporter;
 import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.IProjectData;
-import LinGUIne.model.Result;
 
+/**
+ * Runnable which wraps the export of Annotations to an external File in a safe
+ * fashion.
+ * 
+ * @author Kyle Mullins
+ */
 public class SafeAnnotationExporter implements ISafeRunnable {
 	
 	private Shell shell;

@@ -23,6 +23,12 @@ import org.eclipse.swt.widgets.Text;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Page for the user to select a Project they would like to import into the
+ * workspace.
+ * 
+ * @author Kyle Mullins
+ */
 public class ImportProjectWizardPage extends WizardPage {
 
 	private ProjectManager projectMan;
@@ -134,10 +140,18 @@ public class ImportProjectWizardPage extends WizardPage {
 		setPageComplete(false);
 	}
 	
+	/**
+	 * Returns the list of selected Projects to be imported.
+	 */
 	public Collection<Project> getProjectsToImport(){
 		return projectsToImport;
 	}
 	
+	/**
+	 * Updates the list of Projects. Can search for Projects in sub-folders.
+	 * 
+	 * @param searchForNested	Whether or not to search for nested Projects.
+	 */
 	private void updateProjectList(boolean searchForNested){
 		LinkedList<File> projectFiles = new LinkedList<File>();
 		
@@ -163,6 +177,14 @@ public class ImportProjectWizardPage extends WizardPage {
 		}
 	}
 	
+	/**
+	 * Searches for Projects by finding valid Project files. Can search for
+	 * Projects in sub-folders.
+	 * 
+	 * @param dir				Directory in which to begin the search.
+	 * @param searchForNested	Whether or not to search for nested Projects.
+	 * @param projectFiles		List of found Project files.
+	 */
 	private void findProjectFiles(File dir, boolean searchForNested,
 			Collection<File> projectFiles){
 		

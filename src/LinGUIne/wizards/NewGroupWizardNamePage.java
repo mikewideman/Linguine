@@ -10,6 +10,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * Page for the user to choose the name for the new ProjectGroup.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewGroupWizardNamePage extends WizardPage {
 
 	private Label lblGroupName;
@@ -52,6 +57,13 @@ public class NewGroupWizardNamePage extends WizardPage {
 		setPageComplete(false);
 	}
 	
+	/**
+	 * Validates the chosen name for the new ProjectGroup.
+	 * 
+	 * @param newGroupName	The currently chosen name for the new Group.
+	 * 
+	 * @return	True iff the name is valid, false otherwise.
+	 */
 	public boolean isGroupNameValid(String newGroupName){
 		boolean isValid = true;
 		String errorMessage = null;

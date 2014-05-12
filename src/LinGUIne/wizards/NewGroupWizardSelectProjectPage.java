@@ -17,6 +17,12 @@ import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.RootProjectGroup;
 
+/**
+ * Page for the user to select the Project into which the new ProjectGroup will
+ * be placed.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewGroupWizardSelectProjectPage extends WizardPage {
 
 	private List lstProjects;
@@ -104,6 +110,9 @@ public class NewGroupWizardSelectProjectPage extends WizardPage {
 		}
 	}
 	
+	/**
+	 * Updates the list of ProjectGroups.
+	 */
 	private void populateGroupList(){
 		TreeSet<String> sortedGroups = new TreeSet<String>();
 		

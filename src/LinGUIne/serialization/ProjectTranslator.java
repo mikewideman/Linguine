@@ -22,6 +22,11 @@ import LinGUIne.model.Result;
 import LinGUIne.model.Project.Subdirectory;
 import LinGUIne.utilities.ClassUtils;
 
+/**
+ * Used to serialize/deserialize Projects to/from JSON.
+ * 
+ * @author Kyle Mullins
+ */
 public class ProjectTranslator {
 
 	private static final String ASSOCIATED_DATA_ATTRIB = "AssociatedData";

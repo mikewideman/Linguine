@@ -12,6 +12,11 @@ import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.utilities.FileUtils;
 
+/**
+ * Page for the user to choose a name for their new File.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewFileWizardNamePage extends WizardPage {
 
 	private Label lblFileName;
@@ -50,6 +55,10 @@ public class NewFileWizardNamePage extends WizardPage {
 		setPageComplete(false);
 	}
 	
+	/**
+	 * Sets the page complete if the entered File name is valid, otherwise sets
+	 * an error message.
+	 */
 	private void checkIfPageComplete(){
 		String errorMessage = null;
 		boolean pageComplete = false;

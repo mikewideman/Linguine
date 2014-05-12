@@ -20,6 +20,11 @@ import LinGUIne.extensions.CSVExporter;
 import LinGUIne.extensions.IFileExporter;
 import LinGUIne.extensions.XMLExporter;
 
+/**
+ * Page for the user to select which exporter they are going to use.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportFileWizardExporterPage extends WizardPage {
 
 	private Label lblExporters;
@@ -119,6 +124,9 @@ public class ExportFileWizardExporterPage extends WizardPage {
 		setControl(container);
 	}
 	
+	/**
+	 * Sets the page complete if an exporter has been chosen.
+	 */
 	private void checkIfPageComplete(){
 		setPageComplete(wizardData.getChosenExporter() != null);
 	}

@@ -13,7 +13,6 @@ import LinGUIne.extensions.IFileImporter;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.IProjectDataContents;
 import LinGUIne.model.Project;
-import LinGUIne.model.TextData;
 
 /**
  * Runnable which wraps the execution of an IFileImporter in a safe fashion.

@@ -1,7 +1,6 @@
 package LinGUIne.wizards;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -14,11 +13,16 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
-import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 
+/**
+ * Page for the user to select the Result they would like to export to an
+ * external File.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportFileWizardChooseResultPage extends WizardPage {
 
 	private Label lblProjects;
@@ -117,6 +121,9 @@ public class ExportFileWizardChooseResultPage extends WizardPage {
 	    setPageComplete(false);
 	}
 	
+	/**
+	 * Updates the Result list.
+	 */
 	private void updateFileList(){
 		lstResults.deselectAll();
 		lstResults.removeAll();
@@ -133,6 +140,9 @@ public class ExportFileWizardChooseResultPage extends WizardPage {
 		lstResults.update();
 	}
 	
+	/**
+	 * Sets the page complete if a Project and Result have both been chosen.
+	 */
 	private void checkIfPageComplete(){
 		setPageComplete(wizardData.getChosenProject() != null &&
 				wizardData.getChosenResult() != null);

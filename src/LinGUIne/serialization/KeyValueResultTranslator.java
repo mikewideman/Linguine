@@ -12,6 +12,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Used to serialize/deserialize KeyValueResults to/from JSON.
+ * 
+ * @author Kyle Mullins
+ */
 public class KeyValueResultTranslator {
 
 	private static final String DATA_ATTRIB = "data";

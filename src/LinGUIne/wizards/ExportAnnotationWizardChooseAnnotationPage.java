@@ -1,7 +1,6 @@
 package LinGUIne.wizards;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -17,8 +16,13 @@ import org.eclipse.swt.widgets.List;
 import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
-import LinGUIne.model.Result;
 
+/**
+ * Page for the user to select which ProjectData's Annotations they would like
+ * to export.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportAnnotationWizardChooseAnnotationPage extends WizardPage {
 
 	private Label lblProjects;
@@ -117,6 +121,9 @@ public class ExportAnnotationWizardChooseAnnotationPage extends WizardPage {
 	    setPageComplete(false);
 	}
 	
+	/**
+	 * Updates the ProjectData list.
+	 */
 	private void updateFileList(){
 		lstData.deselectAll();
 		lstData.removeAll();
@@ -137,6 +144,10 @@ public class ExportAnnotationWizardChooseAnnotationPage extends WizardPage {
 		lstData.update();
 	}
 	
+	/**
+	 * Sets the page as complete if a Project and ProjectData have both been
+	 * chosen.
+	 */
 	private void checkIfPageComplete(){
 		setPageComplete(wizardData.getChosenProject() != null &&
 				wizardData.getChosenAnnotatedData() != null);

@@ -7,6 +7,11 @@ import org.eclipse.jface.wizard.Wizard;
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Wizard to walk the user through importing a Project.
+ * 
+ * @author Kyle Mullins
+ */
 public class ImportProjectWizard extends Wizard {
 
 	@Inject

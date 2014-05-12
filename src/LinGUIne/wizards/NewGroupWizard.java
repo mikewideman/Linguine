@@ -9,6 +9,11 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
 
+/**
+ * Wizard to walk the user through creating a new ProjectGroup.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewGroupWizard extends Wizard {
 
 	private ProjectManager projectMan;
@@ -24,6 +29,10 @@ public class NewGroupWizard extends Wizard {
 		wizardData = new NewGroupData();
 	}
 	
+	/**
+	 * Adds data already chosen by the user through the context of the
+	 * ProjectExplorer.
+	 */
 	public void addStartingData(Project project, ProjectGroup group){		
 		wizardData.setDestProject(project);
 		wizardData.setParentGroup(group);

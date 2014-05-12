@@ -18,6 +18,11 @@ import LinGUIne.model.annotations.MetaAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
+/**
+ * Used to serialize/deserialize AnnotationSets to/from JSON.
+ * 
+ * @author Kyle Mullins
+ */
 public class AnnotationSetTranslator {
 
 	private final static String TAGS_ATTRIB = "Tags";

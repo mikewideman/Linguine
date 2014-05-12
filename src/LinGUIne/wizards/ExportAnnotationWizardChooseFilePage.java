@@ -19,6 +19,11 @@ import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.utilities.FileUtils;
 
+/**
+ * Page for the user to choose the File to which they would like to export.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportAnnotationWizardChooseFilePage extends WizardPage {
 
 	private Label lblDestFile;
@@ -104,6 +109,9 @@ public class ExportAnnotationWizardChooseFilePage extends WizardPage {
 		setControl(container);
 	}
 	
+	/**
+	 * Sets the page complete if a destination File has been chosen.
+	 */
 	private void checkIfPageComplete(){
 		setPageComplete(wizardData.getDestFile() != null);
 	}

@@ -11,6 +11,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
+/**
+ * Page for the user to select a Command to run from a list of provided options.
+ * 
+ * @author Kyle Mullins
+ */
 public class SelectCommandWizardPage extends WizardPage {
 
 	private List lstOptions;
@@ -60,6 +65,11 @@ public class SelectCommandWizardPage extends WizardPage {
 		setControl(lstOptions);
 	}
 	
+	/**
+	 * Returns the Command option that was selected.
+	 * 
+	 * @return
+	 */
 	public String getSelectedOption(){
 		return selectedOption;
 	}

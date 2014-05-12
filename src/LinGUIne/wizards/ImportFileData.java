@@ -152,20 +152,22 @@ public class ImportFileData {
 	 * 			has been chosen, and a Project has been chosen.
 	 */
 	public boolean isComplete(){
-//		return chosenImporter != null && !chosenFiles.isEmpty() &&
-//				chosenProject != null;
 		return isReadyForFiles() && !chosenFiles.isEmpty();
 	}
 	
 	/**
-	 * Determines whether or not we are looking to import a concrete file on the disk or must pull 
-	 * the data from a non-local source
+	 * Determines whether or not we are looking to import a concrete file on the
+	 * disk or must pull the data from a non-local source
+	 * 
 	 * @return True if the file is not local, false otherwise.
 	 */
 	public boolean isInternetSource(){
 		return internetSource;
 	}
 	
+	/**
+	 * Sets whether or not the import source is an internet source.
+	 */
 	public void setInternetSource(boolean value){
 		internetSource = value;
 	}

@@ -9,6 +9,11 @@ import LinGUIne.model.AnnotationSet;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.utilities.SafeAnnotationExporter;
 
+/**
+ * Wizard to walk the user through exporting Annotations to an external file.
+ * 
+ * @author Kyle Mullins
+ */
 public class ExportAnnotationWizard extends Wizard {
 	
 	@Inject

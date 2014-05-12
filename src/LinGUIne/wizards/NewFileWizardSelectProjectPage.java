@@ -4,8 +4,6 @@ import java.util.TreeSet;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -14,14 +12,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.model.Project;
 import LinGUIne.model.ProjectGroup;
 import LinGUIne.model.ProjectManager;
-import LinGUIne.model.RootProjectGroup;
-import LinGUIne.utilities.FileUtils;
 
+/**
+ * Page for the user to select into which Project they want to put the new File.
+ * 
+ * @author Kyle Mullins
+ */
 public class NewFileWizardSelectProjectPage extends WizardPage {
 
 	private ProjectManager projectMan;
@@ -32,7 +32,9 @@ public class NewFileWizardSelectProjectPage extends WizardPage {
 	private List lstGroups;
 	private Label lblGroups;
 	
-	public NewFileWizardSelectProjectPage(NewFileData data, ProjectManager projects) {
+	public NewFileWizardSelectProjectPage(NewFileData data,
+			ProjectManager projects) {
+		
 		super("New File Wizard");
 		setTitle("New File Wizard");
 		setDescription("Select where the new File should go.");
@@ -124,6 +126,9 @@ public class NewFileWizardSelectProjectPage extends WizardPage {
 		}
 	}
 	
+	/**
+	 * Updates the list of ProjectGroups.
+	 */
 	private void populateGroupList(){
 		TreeSet<String> sortedGroups = new TreeSet<String>();
 		ProjectGroup projDataGroup = wizardData.getChosenProject().
@@ -140,6 +145,9 @@ public class NewFileWizardSelectProjectPage extends WizardPage {
 		}
 	}
 	
+	/**
+	 * Recursively adds child Groups to the list of ProjectGroups.
+	 */
 	private void addChildGroups(ProjectGroup parentGroup,
 			TreeSet<String> sortedGroups){
 		
