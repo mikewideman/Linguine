@@ -30,6 +30,13 @@ import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
 import LinGUIne.model.Project.Subdirectory;
 
+/**
+ * Handles the opening of ProjectDataEditors by listening for OpenProjectData
+ * events, finding a compatible editor/viewer for the requested ProjectData, and
+ * then opening a new instance of the ProjectDataEditor that was found.
+ * 
+ * @author Kyle Mullins
+ */
 public class DataEditorManager {
 
 	private static final String CONTAINER_PART_ID = "linguine.partdescriptor."

@@ -19,6 +19,12 @@ import LinGUIne.extensions.IProjectDataEditor;
 import LinGUIne.extensions.IProjectDataEditor.DirtyStateChangedListener;
 import LinGUIne.extensions.IPropertiesProvider;
 
+/**
+ * Generic container for ProjectDataEditors that controls dirty state,
+ * ActiveEditorChanged events, providing properties, and the Part icon/label.
+ * 
+ * @author Kyle Mullins
+ */
 public class ProjectDataEditorContainer implements IPropertiesProvider {
 
 	@Inject
@@ -33,6 +39,12 @@ public class ProjectDataEditorContainer implements IPropertiesProvider {
 	private Composite editorParent;
 	private IProjectDataEditor projectDataEditor;
 	
+	/**
+	 * Sets the ProjectDataEditor that this container is encapsulating.
+	 * 
+	 * @param dataEditor	The ProjectDataEditor instance being displayed by
+	 * 						this container.
+	 */
 	public void setProjectDataEditor(IProjectDataEditor dataEditor){
 		projectDataEditor = dataEditor;
 		
@@ -55,10 +67,17 @@ public class ProjectDataEditorContainer implements IPropertiesProvider {
 				projectDataEditor);
 	}
 	
+	/**
+	 * Returns the ProjectDataEditor contained within this instance.
+	 */
 	public IProjectDataEditor getProjectDataEditor(){
 		return projectDataEditor;
 	}
 	
+	/**
+	 * Registers a DisposeListener so that an ActiveEditorChanged event can be
+	 * sent out when the encapsulated editor is closed.
+	 */
 	@PostConstruct
 	public void createComposite(Composite parent){
 		editorParent = parent;
@@ -73,11 +92,21 @@ public class ProjectDataEditorContainer implements IPropertiesProvider {
 		});
 	}
 	
+	/**
+	 * Calls on the encapsulated editor to save its changes.
+	 * 
+	 * @param dirty			The editor's dirty state.
+	 * 
+	 * @throws IOException
+	 */
 	@Persist
 	public void save(MDirtyable dirty) throws IOException{
 		projectDataEditor.saveChanges();
 	}
 	
+	/**
+	 * Sends out an ActiveEditorChanged event upon receiving focus.
+	 */
 	@Focus
 	public void onFocus(){
 		eventBroker.post(LinGUIneEvents.UILifeCycle.ACTIVE_EDITOR_CHANGED,

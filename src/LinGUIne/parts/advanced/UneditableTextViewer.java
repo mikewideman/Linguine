@@ -2,21 +2,22 @@ package LinGUIne.parts.advanced;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 
 import LinGUIne.extensions.IEditorSettings;
 import LinGUIne.extensions.IProjectDataEditor;
-import LinGUIne.model.IProjectData;
 import LinGUIne.model.IPlaintextViewable;
+import LinGUIne.model.IProjectData;
 import LinGUIne.model.Project;
-import LinGUIne.model.TextData;
-import LinGUIne.model.TextDataContents;
 
+/**
+ * Simple un-editable viewer of ProjectDataContents objects which implement
+ * IPlaintextViewable.
+ * 
+ * @author Kyle Mullins
+ */
 public class UneditableTextViewer implements IProjectDataEditor {
 
 	private StyledText textArea;

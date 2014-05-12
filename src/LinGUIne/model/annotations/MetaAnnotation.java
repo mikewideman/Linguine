@@ -54,6 +54,7 @@ public class MetaAnnotation implements IAnnotation {
 		return Integer.compare(hashCode(), otherAnnotation.hashCode());
 	}
 
+	@Override
 	public IAnnotation copy(){
 		return new MetaAnnotation(myTag.copy(), annotatedTag.copy());
 	}

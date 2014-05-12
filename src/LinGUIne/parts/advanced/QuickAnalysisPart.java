@@ -71,10 +71,16 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 	private Label lblNumFiles;
 	private Label lblNumJobs;
 	
+	/**
+	 * Creates a new QuickAnalysisPart and populates its controls.
+	 */
 	public QuickAnalysisPart() {
 		projectSelection = new ProjectExplorerSelection();
 	}
 
+	/**
+	 * Creates the QuickAnalysisView's Composite.
+	 */
 	@PostConstruct
 	public void createComposite(Composite parent){
 		myParent = parent;
@@ -206,6 +212,12 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 	@Focus
 	public void onFocus() {}
 	
+	/**
+	 * Called whenever the ProjectExplorerSelection changes to trigger an update
+	 * to the view.
+	 * 
+	 * @param selection	The current selection in the ProjectExplorer.
+	 */
 	@Inject
 	public void setProjectDataSelection(@Optional
 			@Named(IServiceConstants.ACTIVE_SELECTION)
@@ -242,6 +254,9 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 		return propertiesView;
 	}
 	
+	/**
+	 * Creates the properties Composite for the view.
+	 */
 	private void createPropertiesView(Composite parent){
 		propertiesView = new Composite(parent, SWT.NONE);
 		propertiesView.setLayout(new GridLayout(1, false));
@@ -271,6 +286,10 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 		lblNumJobs.setText("Analysis jobs: 0");
 	}
 	
+	/**
+	 * Updates the properties Composite with the given data taken from the
+	 * selection in the ProjectExplorer.
+	 */
 	private void updatePropertiesView(int numFiles, int numProjects){
 		if(propertiesView != null){
 			lblNumFiles.setText("Selected files: " + numFiles);
@@ -281,6 +300,9 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 		}
 	}
 	
+	/**
+	 * Updates the properties Composite with the given selected AnalysisPlugin.
+	 */
 	private void updatePropertiesView(IAnalysisPlugin analysis){
 		if(propertiesView != null){
 			if(analysis != null){
@@ -298,6 +320,9 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 		}
 	}
 	
+	/**
+	 * Runs the given AnalysisPlugin if possible.
+	 */
 	private void runAnalysis(IAnalysisPlugin analysis){
 		Shell theShell = myParent.getShell();
 		LinkedList<SafeAnalysis> safeAnalyses = new LinkedList<SafeAnalysis>();
@@ -337,10 +362,10 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 						}
 					}
 					
-				if(hasAllResults){
-					sourceData.add(projData);
-					sourceData.addAll(results);
-				}
+					if(hasAllResults){
+						sourceData.add(projData);
+						sourceData.addAll(results);
+					}
 				}
 				else{
 					//Unsupported source type for this analysis

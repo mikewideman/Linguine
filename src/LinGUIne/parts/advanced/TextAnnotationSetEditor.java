@@ -29,6 +29,11 @@ import LinGUIne.model.annotations.MetaAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
+/**
+ * ProjectDataEditor for TextAnnotations in an AnnotationSet for TextData.
+ * 
+ * @author Kyle Mullins
+ */
 public class TextAnnotationSetEditor implements IProjectDataEditor {
 
 	private StyledText textArea;
@@ -84,6 +89,10 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 				}
 			}
 		});
+
+		/*
+		 * Set up listeners to keep the settings updated properly.
+		 */
 		
 		textArea.addCaretListener(new CaretListener(){
 			@Override
@@ -162,6 +171,11 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 		return null;
 	}
 	
+	/**
+	 * Sets the dirty state of the editor.
+	 * 
+	 * @param dirty
+	 */
 	public void setDirty(boolean dirty){
 		if(isDirty != dirty){
 			isDirty = dirty;
@@ -169,6 +183,10 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 		}
 	}
 	
+	/**
+	 * Updates the text area to reflect changes to the Annotations from the
+	 * settings view.
+	 */
 	public void annotationsChanged(){
 		int caretOffset = textArea.getCaretOffset();
 		
@@ -177,6 +195,10 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 		textArea.setCaretOffset(caretOffset);
 	}
 	
+	/**
+	 * Updates the text area to reflect the current state of the AnnotationSet's
+	 * contents.
+	 */
 	private void updateTextArea() {
 		//Silly flagging to keep update calls from triggering the ModifyListener
 		updatingTextArea = true;{
@@ -207,6 +229,9 @@ public class TextAnnotationSetEditor implements IProjectDataEditor {
 		}
 	}
 	
+	/**
+	 * Creates the context menu.
+	 */
 	private void createContextMenu(Composite container){
 		Menu contextMenu = new Menu(container);
 		container.setMenu(contextMenu);

@@ -19,11 +19,17 @@ public class AnnotationSet implements ITypedProjectData<AnnotationSetContents> {
 	private File annotationFile;
 	private AnnotationSetContents contents;
 	
+	/**
+	 * Creates a new AnnotationSet for the given File.
+	 * 
+	 * @param annotation	The File for this AnnotationSet.
+	 */
 	public AnnotationSet(File annotation){
 		annotationFile = annotation;
 		contents = null;
 	}
 	
+	@Override
 	public File getFile() {
 		return annotationFile;
 	}

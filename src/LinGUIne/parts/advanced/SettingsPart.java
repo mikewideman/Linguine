@@ -30,6 +30,12 @@ public class SettingsPart {
 	private Composite currentComposite;
 	private Composite defaultComposite;
 	
+	/**
+	 * Creates the Settings container as well as a blank default Composite to
+	 * show whenever there are no Settings for the active editor.
+	 * 
+	 * @param parent
+	 */
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		mainParent = parent;
@@ -50,6 +56,13 @@ public class SettingsPart {
 	@Focus
 	public void onFocus() {}
 	
+	/**
+	 * Called whenever the active ProjectDataEditor is changed to update the
+	 * currently displayed settings Composite.
+	 * 
+	 * @param editor	The currently active ProjectDataEditor or null if there
+	 * 					are none active at the moment.
+	 */
 	@Inject
 	public void activeEditorChangedEvent(@Optional @UIEventTopic(LinGUIneEvents.
 			UILifeCycle.ACTIVE_EDITOR_CHANGED) IProjectDataEditor editor){

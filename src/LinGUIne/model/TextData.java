@@ -32,6 +32,7 @@ public class TextData implements ITypedProjectData<TextDataContents> {
 		contents = null;
 	}
 	
+	@Override
 	public File getFile() {
 		return dataFile;
 	}
@@ -87,7 +88,6 @@ public class TextData implements ITypedProjectData<TextDataContents> {
 			
 			//Only write to disk if the two contents are different
 			if(contents == null || contents.compareTo(newTextContents) != 0){
-				Charset cs = Charset.defaultCharset();
 				try(BufferedWriter writer = Files.newBufferedWriter(dataFile.toPath(),
 							Charset.forName("UTF-8"))){
 					

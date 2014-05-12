@@ -130,6 +130,7 @@ public class TextAnnotation implements IAnnotation {
 		return Integer.compare(hashCode(), otherAnnotation.hashCode());
 	}
 
+	@Override
 	public IAnnotation copy(){
 		return new TextAnnotation(myTag.copy(), startChar, textLength);
 	}

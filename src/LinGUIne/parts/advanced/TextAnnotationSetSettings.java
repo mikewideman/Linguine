@@ -14,8 +14,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -37,6 +35,12 @@ import LinGUIne.model.annotations.IAnnotation;
 import LinGUIne.model.annotations.Tag;
 import LinGUIne.model.annotations.TextAnnotation;
 
+/**
+ * Settings view for the TextAnnotationSetEditor to enable addition and removal
+ * of Tags and Annotations.
+ * 
+ * @author Kyle Mullins
+ */
 public class TextAnnotationSetSettings implements IEditorSettings {
 
 	private Composite parentComposite;
@@ -54,6 +58,14 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 	private int caretOffset;
 	private Point selectionOffsets;
 	
+	/**
+	 * Creates a new settings view for the given TextAnnotationSetEditor and its
+	 * contents.
+	 * 
+	 * @param editor		The editor to which this settings view is tied.
+	 * @param data			The text contents of the editor.
+	 * @param annotations	The annotation contents of the editor.
+	 */
 	public TextAnnotationSetSettings(TextAnnotationSetEditor editor,
 			TextDataContents data, AnnotationSetContents annotations){
 		parentEditor = editor;
@@ -117,6 +129,11 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 		return parentComposite;
 	}
 	
+	/**
+	 * Called whenever the caret position in the editor changes.
+	 * 
+	 * @param newCaretOffset	The new character offset of the caret.
+	 */
 	public void caretMoved(int newCaretOffset){
 		caretOffset = newCaretOffset;
 		annotationsAtLocation.clear();
@@ -139,6 +156,12 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 		}
 	}
 	
+	/**
+	 * Called whenever the current selection in the editor changes.
+	 * 
+	 * @param newSelectionOffsets	The start and end position of the new
+	 * 								selection.
+	 */
 	public void selectionChanged(Point newSelectionOffsets){
 		if(newSelectionOffsets.x == newSelectionOffsets.y){
 			selectionOffsets = null;
@@ -148,6 +171,12 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 		}
 	}
 	
+	/**
+	 * Sub-panel for actions and information regarding the current caret
+	 * position or text selection in the editor.
+	 * 
+	 * @author Kyle Mullins
+	 */
 	private class LocalPanel{
 		
 		private Composite thePanel;
@@ -305,6 +334,12 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 		}
 	}
 	
+	/**
+	 * Sub-panel for actions and information regarding the currently selected
+	 * Tag.
+	 * 
+	 * @author Kyle Mullins
+	 */
 	private class TagPanel{
 		
 		private Composite thePanel;
@@ -429,6 +464,12 @@ public class TextAnnotationSetSettings implements IEditorSettings {
 		}
 	}
 	
+	/**
+	 * Sub-panel for actions and information regarding the entire contents of
+	 * the editor the settings panel is tied to.
+	 * 
+	 * @author Kyle Mullins
+	 */
 	private class GlobalPanel{
 		
 		private Composite thePanel;

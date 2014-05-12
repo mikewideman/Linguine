@@ -10,6 +10,11 @@ import LinGUIne.model.Project;
 import LinGUIne.model.VisualResult;
 import LinGUIne.model.VisualResultContents;
 
+/**
+ * Generic container editor for all VisualResult subclasses.
+ * 
+ * @author Kyle Mullins
+ */
 public class VisualResultViewEditor implements IProjectDataEditor {
 
 	private VisualResult visualResult;

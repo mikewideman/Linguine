@@ -42,61 +42,9 @@ public class SoftwareModuleManager {
 				analyses.get(analysis.getAnalysisLibrary()).add(analysis);
 			}
 			catch(CoreException e) {
-				//TODO: Error handling
 				e.printStackTrace();
 			}
 		}
-		
-//		//TODO: REMOVE! For demonstrative purposes only
-//		analyses.put("NLTK", new HashSet<IAnalysisPlugin>());
-//		analyses.get("NLTK").add(new IAnalysisPlugin(){
-//
-//			@Override
-//			public String getName() {
-//				return "Tokenization";
-//			}
-//
-//			@Override
-//			public String getAnalysisLibrary() {
-//				return "NLTK";
-//			}
-//
-//			@Override
-//			public Object getPluginData() {
-//				return null;
-//			}
-//
-//			@Override
-//			public String getAnalysisDescription() {
-//				return "This is an NLTK Tokenization analysis";
-//			}
-//
-//			@Override
-//			public Collection<IProjectDataContents> runAnalysis(
-//					Collection<IProjectData> sourceData) {
-//				return new HashSet<IProjectDataContents>();
-//			}
-//
-//			@Override
-//			public Collection<Class<? extends IProjectData>> getSupportedSourceDataTypes() {
-//				HashSet<Class<? extends IProjectData>> supportedSourceTypes =
-//						new HashSet<Class<? extends IProjectData>>();
-//				
-//				supportedSourceTypes.add(TextData.class);
-//				
-//				return supportedSourceTypes;
-//			}
-//
-//			@Override
-//			public Collection<Class<? extends Result>> getRequiredResultTypes() {
-//				return new HashSet<Class<? extends Result>>();
-//			}
-//
-//			@Override
-//			public Class<? extends Result> getReturnedResultType() {
-//				return Result.class;//Don't *ever* do this
-//			}
-//		});
 	}
 	
 	/**

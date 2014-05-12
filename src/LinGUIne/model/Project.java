@@ -862,11 +862,6 @@ public class Project {
 		//Create root project directory
 		Files.createDirectory(projectDir.toFile().toPath());
 		
-		//Create sub-directories
-//		Files.createDirectory(getSubdirectory(Subdirectory.Data).toFile().toPath());
-//		Files.createDirectory(getSubdirectory(Subdirectory.Results).toFile().toPath());
-//		Files.createDirectory(getSubdirectory(Subdirectory.Annotations).toFile().toPath());
-		
 		for(ProjectGroup group: groups.keySet()){
 			group.createGroupDirectory(projectDir);
 		}

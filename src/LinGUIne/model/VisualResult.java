@@ -20,6 +20,9 @@ public class VisualResult extends Result {
 
 	private VisualResultContents contents;
 	
+	/**
+	 * Creates a new VisualResult for the given File in the workspace.
+	 */
 	public VisualResult(File file) {
 		super(file);
 	}
@@ -35,6 +38,8 @@ public class VisualResult extends Result {
 				if(reader.ready()){
 					String className = reader.readLine();
 					
+					//Read the VisualResultContents class name and attempt to
+					//create an instance of it
 					try {
 						Class<?> clazz = ClassUtils.deserializeClassName(className);
 						newContents = (VisualResultContents)clazz.
@@ -79,7 +84,10 @@ public class VisualResult extends Result {
 				try(BufferedWriter writer = Files.newBufferedWriter(
 						resultFile.toPath(), Charset.defaultCharset())){
 					
-					writer.write(ClassUtils.serializeClassName(newVisualContents.getClass()) + "\n");
+					//Write the VisualResultContents class name as the first
+					//line of the file
+					writer.write(ClassUtils.serializeClassName(
+							newVisualContents.getClass()) + "\n");
 					
 					if(!newVisualContents.compose(writer)){
 						return false;

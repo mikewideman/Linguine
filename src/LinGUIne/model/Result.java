@@ -32,6 +32,7 @@ public abstract class Result implements IProjectData {
 		resultFile = file;
 	}
 	
+	@Override
 	public File getFile() {
 		return resultFile;
 	}

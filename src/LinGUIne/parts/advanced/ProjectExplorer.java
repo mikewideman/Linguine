@@ -245,6 +245,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		newCascade.setText("New");
 		newCascade.setMenu(newMenu);
 		
+		//New > File
 		final MenuItem newFile = new MenuItem(newMenu, SWT.NONE);
 		newFile.setText("File");
 		newFile.addSelectionListener(new SelectionListener(){
@@ -285,6 +286,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		//New > Folder
 		final MenuItem newGroup = new MenuItem(newMenu, SWT.NONE);
 		newGroup.setText("Folder");
 		newGroup.addSelectionListener(new SelectionListener(){
@@ -325,6 +327,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		//New > Project
 		final MenuItem newProject = new MenuItem(newMenu, SWT.NONE);
 		newProject.setText("Project");
 		newProject.addSelectionListener(new SelectionListener(){
@@ -346,6 +349,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		importCascade.setText("Import");
 		importCascade.setMenu(importMenu);
 		
+		//Import > File
 		final MenuItem importFile = new MenuItem(importMenu, SWT.NONE);
 		importFile.setText("File");
 		importFile.addSelectionListener(new SelectionListener(){
@@ -358,6 +362,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		//Import > Project
 		final MenuItem importProject = new MenuItem(importMenu, SWT.NONE);
 		importProject.setText("Project");
 		importProject.addSelectionListener(new SelectionListener(){
@@ -464,6 +469,10 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		/*
+		 * Rename
+		 */
+		
 		final MenuItem rename = new MenuItem(contextMenu, SWT.NONE);
 		rename.setText("Rename");
 		rename.addSelectionListener(new SelectionListener(){
@@ -517,6 +526,10 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		/*
+		 * Open
+		 */
+		
 		final MenuItem openFile = new MenuItem(contextMenu, SWT.NONE);
 		openFile.setText("Open");
 		openFile.addSelectionListener(new SelectionListener(){
@@ -535,8 +548,12 @@ public class ProjectExplorer implements IPropertiesProvider{
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 		
+		/*
+		 * Move
+		 */
+		
 		final MenuItem move = new MenuItem(contextMenu, SWT.NONE);
-		move.setText("Move...");
+		move.setText("Move");
 		move.addSelectionListener(new SelectionListener(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -581,6 +598,7 @@ public class ProjectExplorer implements IPropertiesProvider{
 		
 		tree.getTree().setMenu(contextMenu);
 		
+		//Handle enabling of context menu items
 		contextMenu.addMenuListener(new MenuListener(){
 			@Override
 			public void menuHidden(MenuEvent e) {}
@@ -710,6 +728,10 @@ public class ProjectExplorer implements IPropertiesProvider{
 		}
 	}
 	
+	/**
+	 * Adds the given node to one of the given lists as appropriate based on its
+	 * type.
+	 */
 	private void addNode(ProjectExplorerNode node, LinkedList<IProjectData> data,
 			LinkedList<ProjectGroup> groups, boolean shouldAddGroups){
 		

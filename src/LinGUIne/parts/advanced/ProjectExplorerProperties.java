@@ -18,6 +18,11 @@ import LinGUIne.model.Project;
 import LinGUIne.model.ProjectManager;
 import LinGUIne.model.Result;
 
+/**
+ * Properties Composite to display metadata about selected ProjectData.
+ * 
+ * @author Kyle Mullins
+ */
 public class ProjectExplorerProperties {
 
 	private ProjectManager projectMan;
@@ -25,10 +30,20 @@ public class ProjectExplorerProperties {
 	private Composite mainComposite;
 	private TableViewer tblMetadata;
 	
+	/**
+	 * Creates a new properties view.
+	 * 
+	 * @param projects	The ProjectManager.
+	 */
 	public ProjectExplorerProperties(ProjectManager projects){
 		projectMan = projects;
 	}
 	
+	/**
+	 * Creates the Composite for the properties.
+	 * 
+	 * @param parent	The parent Composite.
+	 */
 	public void createComposite(Composite parent){
 		mainComposite = new Composite(parent, SWT.NONE);
 		mainComposite.setLayout(new GridLayout(1, false));
@@ -44,6 +59,9 @@ public class ProjectExplorerProperties {
 		tblMetadata.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
 	
+	/**
+	 * Returns the properties Composite that was created.
+	 */
 	public Composite getComposite(){
 		return mainComposite;
 	}
@@ -172,6 +190,9 @@ public class ProjectExplorerProperties {
 		return viewerColumn;
 	}
 	
+	/**
+	 * Finds and returns the Project containing the given ProjectData.
+	 */
 	private Project getParentProject(IProjectData projData){
 		for(Project proj: projectMan.getProjects()){
 			if(proj.containsProjectData(projData)){

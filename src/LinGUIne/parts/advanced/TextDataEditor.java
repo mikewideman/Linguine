@@ -25,6 +25,11 @@ import LinGUIne.model.Project;
 import LinGUIne.model.TextData;
 import LinGUIne.model.TextDataContents;
 
+/**
+ * Simple editor for TextData objects.
+ * 
+ * @author Kyle Mullins
+ */
 public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 
 	@Inject
@@ -56,6 +61,9 @@ public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 		return null;
 	}
 
+	/**
+	 * Creates the editor area and hooks up listeners as needed.
+	 */
 	public void createComposite(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new GridLayout(1, false));
@@ -126,6 +134,9 @@ public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 		return null;
 	}
 	
+	/**
+	 * Sets the dirty state of the editor.
+	 */
 	public void setDirty(boolean dirty){
 		if(isDirty != dirty){
 			isDirty = dirty;
@@ -142,6 +153,9 @@ public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 		return propertiesView;
 	}
 	
+	/**
+	 * Creates the properties Composite for this editor.
+	 */
 	private void createPropertiesView(Composite parent){
 		propertiesView = new Composite(parent, SWT.NONE);
 		propertiesView.setLayout(new GridLayout(1, false));
@@ -157,6 +171,9 @@ public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 		updateProperties();
 	}
 	
+	/**
+	 * Updates the properties Composite based on the editor's contents.
+	 */
 	private void updateProperties(){
 		int charCount = textArea.getText().length();
 		int charCountNoSpaces = textArea.getText().replaceAll("\\s", "").length();
@@ -166,6 +183,9 @@ public class TextDataEditor implements IProjectDataEditor, IPropertiesProvider {
 				charCountNoSpaces);
 	}
 	
+	/**
+	 * Creates the context menu for the editor.
+	 */
 	private void createContextMenu(Composite container){
 		final TextDataEditor self = this;
 		
