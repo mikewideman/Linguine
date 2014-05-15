@@ -37,6 +37,11 @@ import LinGUIne.model.VisualizationPluginManager;
 import LinGUIne.wizards.AnalysisData;
 import LinGUIne.wizards.VisualizationData;
 
+/**
+ * Creates the Basic Perspectice of LinGUIne. Currently Incomplete
+ * 
+ *
+ */
 public class BasicMainPart {
 	
 	
@@ -56,15 +61,11 @@ public class BasicMainPart {
 	private AnalysisData analysisData;
 	private VisualizationData visualizationData;
 	private Label lblAnalyses;
-	private List lstAnalyses;
 	
 	private Button analysisButton;
 	private Button visButton;
 
-	
-	@Inject
-	private MApplication application;
-	
+		
 	@Inject
 	private ProjectManager projectMan;
 	
@@ -73,17 +74,18 @@ public class BasicMainPart {
 	
 	@Inject
 	private VisualizationPluginManager visualizationPluginMan;
-	private Display display;
 	
 
 	
 
 	
 
-	
+	/**
+	 * Creates the CTabFolder for the basic perspective and populates the project selection tab.
+	 * @param parent - The parent composite
+	 */
 	@PostConstruct
 	public void createComposite(Composite parent){
-		display = getDisplay();
 		projectMan.loadProjects();
 		tabFolder = new CTabFolder(parent,SWT.NONE);
 		tabFolder.setData("org.eclipse.e4.ui.css.id", "basicFolder");
@@ -101,6 +103,7 @@ public class BasicMainPart {
 				
 			}
 		});
+		//Create new data objects
 		analysisData = new AnalysisData();
 		visualizationData = new VisualizationData();
 	    CTabItem projTabItem = new CTabItem(tabFolder, SWT.NONE);
@@ -126,7 +129,7 @@ public class BasicMainPart {
 	    fDProject[0].setHeight(14);
 	    lblProjects.setFont( new Font(getDisplay(),fDProject[0]));
 	    
-	    
+	    //Create the list of projects
 	    lstProjects = new List(grpProjects, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
 	    lstProjects.setLayoutData(new GridData(370,370));
 	    lstProjects.setEnabled(true);
@@ -180,7 +183,9 @@ public class BasicMainPart {
 	}
 	
 
-	
+	/**
+	 * Populates the file selection tab of the basic perspective
+	 */
 	public void openSelectFileTab(){
 		if(fileTab == null){
 			Label lblFiles;
@@ -205,7 +210,7 @@ public class BasicMainPart {
 			    fD[0].setHeight(14);
 			    lblFiles.setFont( new Font(getDisplay(),fD[0]));
 			    lblFiles.setText("Select the Files on which to run the Analysis:");
-			    
+			    //Create the list of files
 			    lstFiles = new List(grpFiles, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
 			    lstFiles.setLayoutData(new GridData(370,370));
 			    lstFiles.setEnabled(true);
@@ -256,6 +261,10 @@ public class BasicMainPart {
 		tabFolder.setSelection(fileTab);
 		
 	}
+	
+	/**
+	 * Populates the Analysis tab.
+	 */
 	public void openAnalysisTab(){
 		if(analysisTab == null){
 			ArrayList<String> softwareModuleList = new ArrayList<String>();
@@ -318,36 +327,7 @@ public class BasicMainPart {
 			}
 
 			
-//			lstAnalyses = new List(grpBasicAnalyses, SWT.BORDER | SWT.V_SCROLL);
-//			lstAnalyses.setLayoutData(new GridData(370,370));
-//			lstAnalyses.setEnabled(true);
-//			
-//			lstAnalyses.addSelectionListener(new SelectionListener(){
-//
-//				@Override
-//				public void widgetSelected(SelectionEvent e) {
-//					if(lstAnalyses.getSelectionCount() > 0){
-//						String analysisName = lstAnalyses.getSelection()[0];
-//						String selectedModule = softModMap.get(analysisName);
-//		
-//						
-//						IAnalysisPlugin analysis = softwareModuleMan.getAnalysisByName(
-//								selectedModule, analysisName);
-//						
-//						if(analysis != null){
-//							analysisData.setChosenAnalysis(analysis);
-//						}
-//					}
-//				}
-//
-//				@Override
-//				public void widgetDefaultSelected(SelectionEvent e) {}
-//			});
-			
-//			updateAnalysisList();
-//			advancedAnalysis.setText("Advanced Analysis Set");
-//			basicAnalysis.setControl(innerFolder);
-//			innerFolder.setLayoutData(new GridData(800, 300));
+
 			Button analysisBButton = new Button(container, SWT.NONE);
 			analysisBButton.setText("Back");
 			Button analysisNButton = new Button(container, SWT.NONE);
@@ -366,7 +346,6 @@ public class BasicMainPart {
 					tabSelectionChanged(tabFolder.getSelection().getText());
 				}
 			});
-//			innerFolder.setSelection(basicAnalysis);
 			analysisTabItem.setControl(container);
 			analysisTab = analysisTabItem;
 			
@@ -375,6 +354,11 @@ public class BasicMainPart {
 		tabFolder.setSelection(analysisTab);
 	}
 	
+	/**
+	 * Populates the VisualizationTab. This tab isn't complete, requires
+	 * a button handler to end the basic perspectives use flow and run analyses/generate visuals
+	 * 
+	 */
 	public void openVisualizationTab(){
 		if(visualTab == null){
 			CTabItem visualizationTabItem = new CTabItem(tabFolder, SWT.NONE);
@@ -425,6 +409,7 @@ public class BasicMainPart {
 			}
 			visualizationPluginMan.getVisualizationNames();
 			Button bButton = new Button(container, SWT.NONE);
+			//This button needs a listener!
 			Button fButton = new Button(container, SWT.NONE);
 			bButton.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -445,7 +430,7 @@ public class BasicMainPart {
 	}
 	
 	/**
-	 * Updates the contents of lstFiles.
+	 * Updates the contents of lstFiles with the data from the currently selected project.
 	 */
 	private void updateFileList(){
 		lstFiles.deselectAll();
@@ -458,24 +443,11 @@ public class BasicMainPart {
 		lstFiles.update();
 	}
 	
-	private void updateAnalysisList(){
-		lstAnalyses.removeAll();
-		
-		
-		for( String name : softwareModuleMan.getSoftwareModuleNames()){
-			System.out.println(name);
-			for( IAnalysisPlugin plug : softwareModuleMan.getAnalyses(name)){
-				System.out.println(plug.getName());
-				lstAnalyses.add(plug.getName());
-				softModMap.put(plug.getName(), name);
-			}
-		}
-//		tokenization = softwareModuleMan.getAnalysisByName("NLTK", "Tokenization");
-//		lstAnalyses.add(tokenization.getName());
-		
-		lstAnalyses.update();
-	}
-	
+	/**
+	 * Case selection statement for tab selection. Properly opens the selected tab
+	 * and disposes of any open tabs that come after it.
+	 * @param selectedTab
+	 */
 	private void tabSelectionChanged(String selectedTab){
 		if(selectedTab.equals(PROJECT_TAB)){
 			if(fileTab != null){fileTab.dispose();}
@@ -497,7 +469,10 @@ public class BasicMainPart {
 		}
 		
 	}
-	
+		/**
+		 * Helper method to grab the current Display instance
+		 * @return The current Display instance
+		 */
 	   public static Display getDisplay() {
 		      Display display = Display.getCurrent();
 		      //may be null if outside the UI thread

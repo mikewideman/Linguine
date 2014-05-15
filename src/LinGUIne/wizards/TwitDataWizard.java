@@ -15,24 +15,40 @@ import LinGUIne.model.Project;
 import LinGUIne.model.TextData;
 import LinGUIne.model.Project.Subdirectory;
 
+/**
+ * Wizard for Twitter data import, for use with Twitter Data Plugin
+ * Creates the wizard form which will be used to create the twitter query
+ * 
+ * @author Peter Maresca
+ *
+ */
 public class TwitDataWizard extends Wizard {
 	
 	ImportFileData wizardData;
 	TwitDataWizardChooseSearchPage wizardSearchPage;
 
-	
+	/**
+	 * Constructor for the wizard
+	 * @param wData - Import file data the wizard is getting handed from Import wizard
+	 */
 	public TwitDataWizard(ImportFileData wData){
 		super();
 		wizardData = wData;
 		
 	}
 	
+	/**
+	 * Adds the Search Page to the wizard
+	 */
 	@Override
 	public void addPages() {
 		wizardSearchPage = new TwitDataWizardChooseSearchPage(wizardData);
 		addPage(wizardSearchPage);
 	}
 	
+	/**
+	 * Creates a new file with the project information from the import data. 
+	 */
 	@Override
 	public boolean performFinish() {
 		Project chosenProject = wizardData.getChosenProject();

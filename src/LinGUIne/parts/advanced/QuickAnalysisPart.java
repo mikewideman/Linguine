@@ -244,7 +244,9 @@ public class QuickAnalysisPart implements IPropertiesProvider {
 			updatePropertiesView(numFiles, numProjects);
 		}
 	}
-	
+	/**
+	 * Gets the properties view, instantiates it if null
+	 */
 	@Override
 	public Composite getProperties(Composite parent){
 		if(propertiesView == null){

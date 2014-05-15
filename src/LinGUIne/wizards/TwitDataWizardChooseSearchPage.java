@@ -28,6 +28,12 @@ import org.eclipse.ui.PlatformUI;
 
 import LinGUIne.utilities.FileUtils;
 
+/**
+ * A wizard page for populating the fields necessary to execute a twitter query with the Twitter
+ * plugin. 
+ * @author Pete
+ *
+ */
 public class TwitDataWizardChooseSearchPage extends WizardPage {
 	
 	
@@ -43,6 +49,11 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 	
 	private final static String QUERY_TOO_SHORT = "Invalid Query Input";
 	
+	/**
+	 * Constructs the wizard page, sets title as well as populates the internetSourceDetails array
+	 * of the wizard data.
+	 * @param wData the project data we are performing an import on
+	 */
 	public TwitDataWizardChooseSearchPage(ImportFileData wData){
 		super("TwitDataWizard");
 		setTitle("Twitter Data Wizard");
@@ -55,6 +66,9 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		
 	}
 	
+	/**
+	 * Creates the Twitter import query field forms.
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
@@ -189,7 +203,10 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		setControl(container);
 		setPageComplete(isPageComplete());
 	}
-	
+	/**
+	 * Checks to see that what is put in the search text field is valid
+	 * @return false if the text is empty or of length one, returns true otherwise
+	 */
 	private boolean isValidQueryInput(){
 		boolean isValid = true;
 		String errorMessage = null;
@@ -204,7 +221,10 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		
 		return isValid;
 	}
-	
+	/**
+	 * Checks that the file name chosen for the import doesn't already exist in the project
+	 * @return True if the chosen name is valid, false otherwise
+	 */
 	private boolean isValidName(){
 		String errorMessage = null;
 		boolean isValid = false;
@@ -231,7 +251,9 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 		return isValid;
 	}
 	
-	
+	/**
+	 * Returns whether the wizard page is complete
+	 */
 	public boolean isPageComplete(){
 		if(isValidQueryInput() && isValidName()){
 			return true;
@@ -240,7 +262,10 @@ public class TwitDataWizardChooseSearchPage extends WizardPage {
 			return false;
 		}
 	}
-	
+	/**
+	 * Determines whether the oAuth credentials are filled out
+	 * @return false if any of the oAuth fields are missing, true if all fields are filled.
+	 */
 	public boolean isCredentialFilled(){
 		if(consumerKey.getText().isEmpty() || consumerSecret.getText().isEmpty() || accessTok.getText().isEmpty() 
 				|| accessTokSecret.getText().isEmpty()){
