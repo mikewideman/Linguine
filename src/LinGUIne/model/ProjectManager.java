@@ -173,8 +173,10 @@ public class ProjectManager {
 		
 		for(File projectFile: projectFiles){
 			Project newProject = Project.createFromFile(projectFile);
-			newProject.setParentDirectory(workspace);
-			addProject(newProject);
+			if (newProject != null) {
+				newProject.setParentDirectory(workspace);
+				addProject(newProject);
+			}
 		}
 	}
 	

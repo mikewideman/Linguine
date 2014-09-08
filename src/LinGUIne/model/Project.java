@@ -163,8 +163,10 @@ public class Project {
 			ioe.printStackTrace();
 			return null;
 		}
-		
-		newProj.hasProjectFiles = true;
+	
+		if (newProj != null) {
+			newProj.hasProjectFiles = true;
+		}
 		
 		return newProj;
 	}
